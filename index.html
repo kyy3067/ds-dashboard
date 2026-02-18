@@ -1,541 +1,688 @@
 <!DOCTYPE html>
-<html lang="ko"><head>
+<html lang="ko">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DS Quality Performance</title>
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-
-    <!-- ✅ Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
     <style>
         :root {
-            --primary: #4f46e5;
-            --primary-light: #6366f1;
-            --secondary: #64748b;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --background: #f8fafc;
-            --card-bg: #ffffff;
-            --text-primary: #0f172a;
-            --text-secondary: #64748b;
-            --border: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            --radius: 12px;
-            --radius-lg: 16px;
+            --navy:       #0c1e3e;
+            --navy-mid:   #152d56;
+            --navy-light: #1e3d6e;
+            --gold:       #e8a020;
+            --gold-light: #f5c55a;
+            --gold-pale:  #fdf3de;
+            --cyan:       #38bdf8;
+            --success:    #10b981;
+            --danger:     #f43f5e;
+            --warning:    #f59e0b;
+            --bg:         #f0f4fb;
+            --surface:    #ffffff;
+            --surface2:   #f8faff;
+            --border:     #e0e8f5;
+            --text:       #0c1e3e;
+            --text-sub:   #5a7099;
+            --text-muted: #94a3b8;
+            --shadow-sm:  0 2px 8px rgba(12,30,62,0.07);
+            --shadow-md:  0 8px 24px rgba(12,30,62,0.10);
+            --shadow-lg:  0 20px 48px rgba(12,30,62,0.14);
+            --r:          14px;
+            --r-lg:       20px;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body { 
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            color: var(--text-primary);
-            padding: 24px; 
-            line-height: 1.6;
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            font-family: 'Noto Sans KR', 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
+            padding: 28px;
+            background-image:
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(56,189,248,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 100% 100%, rgba(232,160,32,0.05) 0%, transparent 50%);
+            word-break: keep-all;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* ===== 로딩 오버레이 ===== */
+        /* ─── Loading ─── */
         #loadingOverlay {
-            position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(255,255,255,0.92);
+            position: fixed; inset: 0;
+            background: linear-gradient(135deg, #0c1e3e 0%, #152d56 100%);
             z-index: 99999;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            gap: 16px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
         }
-        .loading-spinner {
-            width: 48px; height: 48px;
-            border: 4px solid #e2e8f0;
-            border-top: 4px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+        .loading-logo { font-size: 36px; font-weight: 800; color: white; letter-spacing: -1px; font-family: 'Inter', 'Noto Sans KR', sans-serif; }
+        .loading-logo span { color: var(--gold); }
+        .loading-bar {
+            width: 200px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .loading-text { font-size: 15px; color: var(--text-secondary); font-weight: 600; }
+        .loading-bar-inner {
+            height: 100%; width: 0%; background: linear-gradient(90deg, var(--gold), var(--cyan));
+            border-radius: 2px; animation: loadBar 1.8s ease-in-out forwards;
+        }
+        @keyframes loadBar { to { width: 100%; } }
+        .loading-text { font-size: 13px; color: rgba(255,255,255,0.5); font-weight: 500; letter-spacing: 0.3px; font-family: 'Noto Sans KR', sans-serif; }
 
-        /* ===== Firebase 상태 표시 ===== */
+        /* ─── Sync Status ─── */
         #syncStatus {
-            position: fixed; bottom: 20px; right: 20px;
-            padding: 10px 16px; border-radius: var(--radius);
-            font-size: 13px; font-weight: 600;
-            z-index: 9999; display: flex; align-items: center; gap: 8px;
-            box-shadow: var(--shadow-lg);
+            position: fixed; bottom: 24px; right: 24px;
+            padding: 10px 18px; border-radius: 40px;
+            font-size: 12px; font-weight: 700; z-index: 9999;
+            display: flex; align-items: center; gap: 8px;
+            backdrop-filter: blur(12px); letter-spacing: 0.3px;
             transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.3);
         }
-        .sync-online  { background: #dcfce7; color: #15803d; }
-        .sync-saving  { background: #fef3c7; color: #d97706; }
-        .sync-offline { background: #fee2e2; color: #b91c1c; }
-        .sync-dot { width: 8px; height: 8px; border-radius: 50%; }
-        .sync-online  .sync-dot { background: #15803d; animation: pulse 1.5s infinite; }
-        .sync-saving  .sync-dot { background: #d97706; animation: pulse 0.5s infinite; }
-        .sync-offline .sync-dot { background: #b91c1c; }
-        @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+        .sync-online  { background: rgba(16,185,129,0.15); color: #059669; border-color: rgba(16,185,129,0.3); }
+        .sync-saving  { background: rgba(245,158,11,0.15); color: #d97706; border-color: rgba(245,158,11,0.3); }
+        .sync-offline { background: rgba(244,63,94,0.15);  color: #e11d48; border-color: rgba(244,63,94,0.3); }
+        .sync-dot { width: 7px; height: 7px; border-radius: 50%; }
+        .sync-online  .sync-dot { background: #059669; animation: blink 2s infinite; }
+        .sync-saving  .sync-dot { background: #d97706; animation: blink 0.6s infinite; }
+        .sync-offline .sync-dot { background: #e11d48; }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-        /* ===== Firebase 설정 배너 (설정 전에만 표시) ===== */
-        #configBanner {
-            background: linear-gradient(135deg, #fef3c7, #fde68a);
-            border: 2px solid #f59e0b;
-            border-radius: var(--radius-lg);
-            padding: 24px 28px;
-            margin-bottom: 24px;
-            display: none;
+        /* ─── Save Toast ─── */
+        .save-toast {
+            position: fixed; top: 28px; right: 28px;
+            background: var(--navy); color: white;
+            padding: 14px 22px; border-radius: var(--r);
+            font-size: 14px; font-weight: 600;
+            box-shadow: var(--shadow-lg);
+            z-index: 9999; display: none;
+            border-left: 4px solid var(--gold);
+            animation: toastIn 0.4s cubic-bezier(.34,1.56,.64,1);
         }
-        #configBanner h3 { color: #b45309; margin-bottom: 8px; font-size: 18px; }
-        #configBanner p  { color: #78350f; font-size: 14px; line-height: 1.7; }
-        #configBanner code {
-            background: rgba(0,0,0,0.08); padding: 2px 8px;
-            border-radius: 6px; font-family: monospace; font-size: 13px;
-        }
+        @keyframes toastIn { from{transform:translateY(-80px);opacity:0} to{transform:translateY(0);opacity:1} }
 
-        .save-success { 
-            position: fixed; top: 24px; right: 24px; 
-            background: var(--success); color: white; 
-            padding: 16px 24px; border-radius: var(--radius); 
-            box-shadow: var(--shadow-lg); 
-            z-index: 9999; font-weight: 600; display: none; 
-            animation: slideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        /* ─── Page Enter Animation ─── */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.5s ease forwards;
         }
-        @keyframes slideIn { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
 
-        .header { 
-            background: white;
-            padding: 28px; border-radius: var(--radius-lg); margin-bottom: 24px; 
-            box-shadow: var(--shadow);
-            border: 1px solid rgba(255,255,255,0.8);
+        /* ─── Header ─── */
+        .header {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+            border-radius: var(--r-lg);
+            padding: 32px 36px;
+            margin-bottom: 28px;
             position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            animation: fadeUp 0.5s ease forwards;
         }
-        
-        .header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; gap: 20px; }
-        .header h1 { 
-            font-size: 28px; font-weight: 800; color: var(--text-primary); 
-            letter-spacing: -0.02em; margin-bottom: 6px; display: flex; align-items: center; gap: 12px; 
+        .header::before {
+            content: '';
+            position: absolute; top: -60px; right: -60px;
+            width: 240px; height: 240px;
+            background: radial-gradient(circle, rgba(232,160,32,0.15) 0%, transparent 70%);
+            pointer-events: none;
         }
-        .header-sub { font-size: 14px; color: var(--text-secondary); font-weight: 500; }
-
-        .logo-container {
-            position: absolute;
-            top: 28px;
-            right: 28px;
-            text-align: right;
+        .header::after {
+            content: '';
+            position: absolute; bottom: -40px; left: 30%;
+            width: 300px; height: 180px;
+            background: radial-gradient(ellipse, rgba(56,189,248,0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .header-grid {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: start;
+            gap: 24px;
+            position: relative; z-index: 1;
+        }
+        .header-brand { display: flex; align-items: center; gap: 16px; margin-bottom: 6px; }
+        .brand-badge {
+            width: 44px; height: 44px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; box-shadow: 0 4px 12px rgba(232,160,32,0.4);
+        }
+        .header h1 {
+            font-size: 24px; font-weight: 800; color: white;
+            letter-spacing: -0.3px; line-height: 1.2;
+            font-family: 'Inter', 'Noto Sans KR', sans-serif;
+        }
+        .header-sub {
+            font-size: 12px; color: rgba(255,255,255,0.45);
+            font-weight: 400; margin-top: 4px; letter-spacing: 0.2px;
+            font-family: 'Noto Sans KR', sans-serif;
         }
         .logo-text {
-            font-family: 'Arial', sans-serif;
-            font-weight: 900;
-            font-size: 32px;
-            color: #0070c0;
-            letter-spacing: -1px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 800; font-size: 26px;
+            color: white; letter-spacing: -1px;
             line-height: 1;
         }
+        .logo-text span { color: var(--gold); }
+        .logo-sub { font-size: 10px; color: rgba(255,255,255,0.4); letter-spacing: 2px; text-transform: uppercase; margin-top: 3px; font-family: 'Inter', sans-serif; }
 
-        .btn-group { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
-        .btn { 
-            padding: 10px 18px; border: none; border-radius: var(--radius); cursor: pointer; 
-            font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; 
-            gap: 8px; transition: all 0.2s ease; color: white; justify-content: center;
-            box-shadow: var(--shadow);
-            text-decoration: none;
+        /* ─── Controls Row ─── */
+        .controls-row {
+            display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+            margin-top: 24px; padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            position: relative; z-index: 1;
         }
-        .btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); filter: brightness(1.05); }
+        .lang-switch {
+            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 10px; padding: 3px; display: flex; gap: 2px;
+        }
+        .lang-btn {
+            border: none; background: transparent; color: rgba(255,255,255,0.5);
+            padding: 7px 16px; border-radius: 8px; cursor: pointer;
+            font-size: 13px; font-weight: 700; transition: all 0.2s;
+            font-family: 'Noto Sans KR', sans-serif; letter-spacing: 0;
+        }
+        .lang-btn.active { background: rgba(255,255,255,0.18); color: white; }
+
+        .btn {
+            padding: 9px 16px; border: none; border-radius: 10px; cursor: pointer;
+            font-size: 13px; font-weight: 700; display: inline-flex; align-items: center;
+            gap: 6px; transition: all 0.2s; font-family: 'Noto Sans KR', 'Inter', sans-serif;
+            letter-spacing: 0; white-space: nowrap;
+        }
+        .btn:hover { transform: translateY(-2px); }
         .btn:active { transform: translateY(0); }
+        .btn-prod  { background: linear-gradient(135deg, #6366f1, #818cf8); color: white; box-shadow: 0 4px 12px rgba(99,102,241,0.35); }
+        .btn-ship  { background: linear-gradient(135deg, #8b5cf6, #a78bfa); color: white; box-shadow: 0 4px 12px rgba(139,92,246,0.35); }
+        .btn-def   { background: linear-gradient(135deg, var(--gold), #f5c55a); color: var(--navy); box-shadow: 0 4px 12px rgba(232,160,32,0.35); }
+        .btn-excel { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.15); }
+        .btn-excel:hover { background: rgba(255,255,255,0.18); }
 
-        .btn-primary { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); }
-        .btn-success { background: linear-gradient(135deg, var(--success) 0%, #059669 100%); }
-        .btn-secondary { background: white; color: var(--text-primary); border: 1px solid var(--border); }
-        .btn-secondary:hover { background: #f8fafc; }
-        .btn-danger { background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%); }
-        .btn-warning { background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%); }
-        
-        .lang-switch { 
-            background: #f1f5f9; padding: 4px; border-radius: 10px; 
-            display: flex; gap: 2px; margin-right: 16px;
+        /* ─── Filter Row ─── */
+        .filter-section {
+            background: white; border-radius: var(--r-lg);
+            padding: 18px 24px; margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
             border: 1px solid var(--border);
+            animation: fadeUp 0.5s 0.1s ease both;
         }
-        .lang-btn { 
-            border: none; background: transparent; color: var(--text-secondary); 
-            padding: 8px 14px; border-radius: 8px; cursor: pointer; 
-            font-size: 13px; font-weight: 600; transition: all 0.2s;
+        .filter-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .filter-row + .filter-row { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); }
+        .filter-label {
+            font-size: 11px; font-weight: 700; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 1px; min-width: 44px;
+            font-family: 'Inter', sans-serif;
         }
-        .lang-btn.active { 
-            background: white; color: var(--primary); 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+        .filter-btns { display: flex; gap: 5px; flex-wrap: wrap; }
+        .filter-btn {
+            background: var(--surface2); border: 1.5px solid var(--border);
+            color: var(--text-sub); padding: 6px 14px; border-radius: 30px;
+            font-size: 12px; cursor: pointer; transition: all 0.18s ease;
+            font-weight: 600; font-family: 'Noto Sans KR', 'Inter', sans-serif;
+            letter-spacing: 0; line-height: 1.4;
         }
-
-        .filter-container { 
-            border-top: 1px solid var(--border); padding-top: 20px; 
-            display: flex; flex-direction: column; gap: 16px; 
-        }
-        .filter-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-        .filter-label { 
-            font-weight: 700; min-width: 50px; font-size: 14px; 
-            color: var(--text-primary); 
-        }
-        .filter-btns { display: flex; gap: 8px; flex-wrap: wrap; }
-        
-        .filter-btn { 
-            background: white; 
-            border: 1px solid var(--border); 
-            color: var(--text-secondary); 
-            padding: 8px 16px; 
-            border-radius: 20px;
-            font-size: 13px; 
-            cursor: pointer; 
-            transition: all 0.2s ease; 
-            font-weight: 500;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-        }
-        .filter-btn:hover { 
-            border-color: var(--primary); 
-            color: var(--primary); 
-            background: #eef2ff; 
-            transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .filter-btn.active { 
-            background: var(--primary); 
-            color: white; 
-            border-color: var(--primary); 
-            font-weight: 600; 
-            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+        .filter-btn:hover { border-color: #6366f1; color: #4f46e5; background: #eef2ff; }
+        .filter-btn.active {
+            background: var(--navy); color: white; border-color: var(--navy);
+            box-shadow: 0 2px 8px rgba(12,30,62,0.20);
         }
 
-        .kpi-container { 
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
-            gap: 20px; margin-bottom: 28px; 
+        /* ─── KPI Cards ─── */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 16px; margin-bottom: 24px;
         }
-        .kpi-card { 
-            background: white; padding: 24px; border-radius: var(--radius-lg); 
-            box-shadow: var(--shadow); text-align: center; 
-            transition: all 0.2s; border: 1px solid rgba(255,255,255,0.8);
+        .kpi-card {
+            background: white; border-radius: var(--r);
+            padding: 22px 24px;
+            border: 1px solid var(--border);
             position: relative; overflow: hidden;
+            transition: all 0.25s;
+            box-shadow: var(--shadow-sm);
+            animation: fadeUp 0.5s ease both;
         }
-        .kpi-card::before {
+        .kpi-card:nth-child(1){animation-delay:0.1s}
+        .kpi-card:nth-child(2){animation-delay:0.15s}
+        .kpi-card:nth-child(3){animation-delay:0.2s}
+        .kpi-card:nth-child(4){animation-delay:0.25s}
+        .kpi-card:nth-child(5){animation-delay:0.3s}
+        .kpi-card:nth-child(6){animation-delay:0.35s}
+        .kpi-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+        .kpi-card::after {
             content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
-            transform: scaleX(0);
-            transition: transform 0.3s;
+            position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
         }
-        .kpi-card:hover { 
-            transform: translateY(-4px); 
-            box-shadow: var(--shadow-lg); 
-        }
-        .kpi-card:hover::before { transform: scaleX(1); }
-        
-        .kpi-value { 
-            font-size: 28px; font-weight: 800; margin-bottom: 6px; 
-            letter-spacing: -0.02em; 
-        }
-        .kpi-label { 
-            font-size: 13px; color: var(--text-secondary); 
-            font-weight: 600; text-transform: uppercase; 
-            letter-spacing: 0.5px; 
-        }
-        
-        .text-blue { color: var(--primary); } 
-        .text-red { color: var(--danger); } 
-        .text-gray { color: var(--text-primary); } 
-        .text-orange { color: var(--warning); }
+        .kpi-card.c-blue::after  { background: linear-gradient(90deg,#6366f1,#818cf8); }
+        .kpi-card.c-red::after   { background: linear-gradient(90deg,#f43f5e,#fb7185); }
+        .kpi-card.c-slate::after { background: linear-gradient(90deg,#475569,#64748b); }
+        .kpi-card.c-orange::after{ background: linear-gradient(90deg,var(--gold),#f5c55a); }
 
-        .grid-2col { display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 24px; margin-bottom: 28px; }
-        .grid-3col { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; margin-bottom: 28px; }
-        .grid-full { width: 100%; margin-bottom: 28px; }
-        
-        .card { 
-            background: white; padding: 24px; border-radius: var(--radius-lg); 
-            box-shadow: var(--shadow); height: 100%; 
+        .kpi-icon {
+            width: 36px; height: 36px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; margin-bottom: 14px;
+        }
+        .c-blue  .kpi-icon { background: #eef2ff; }
+        .c-red   .kpi-icon { background: #fff1f2; }
+        .c-slate .kpi-icon { background: #f1f5f9; }
+        .c-orange .kpi-icon { background: #fffbeb; }
+        .kpi-value {
+            font-size: 28px; font-weight: 800; letter-spacing: -0.5px;
+            font-family: 'JetBrains Mono', 'Inter', monospace; margin-bottom: 4px; line-height: 1.1;
+        }
+        .c-blue   .kpi-value { color: #4f46e5; }
+        .c-red    .kpi-value { color: #e11d48; }
+        .c-slate  .kpi-value { color: #334155; }
+        .c-orange .kpi-value { color: #b45309; }
+        .kpi-label {
+            font-size: 11px; color: var(--text-muted); font-weight: 500;
+            letter-spacing: 0.3px; font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        /* ─── Section Header ─── */
+        .section-hd {
+            display: flex; align-items: center; gap: 12px;
+            margin: 36px 0 18px;
+        }
+        .section-hd-line {
+            flex: 1; height: 1px;
+            background: linear-gradient(90deg, var(--border), transparent);
+        }
+        .section-hd-title {
+            font-size: 13px; font-weight: 800; color: var(--text-sub);
+            text-transform: uppercase; letter-spacing: 1.5px;
+            white-space: nowrap;
+        }
+
+        /* ─── Grid Layouts ─── */
+        .g2 { display: grid; grid-template-columns: repeat(auto-fit,minmax(440px,1fr)); gap: 20px; margin-bottom: 20px; }
+        .g3 { display: grid; grid-template-columns: repeat(auto-fit,minmax(340px,1fr)); gap: 20px; margin-bottom: 20px; }
+        .g-full { width: 100%; margin-bottom: 20px; }
+
+        /* ─── Card ─── */
+        .card {
+            background: white; border-radius: var(--r);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
             display: flex; flex-direction: column;
-            border: 1px solid rgba(255,255,255,0.8);
-            transition: all 0.2s;
+            transition: box-shadow 0.2s;
+            overflow: hidden;
         }
-        .card:hover { box-shadow: var(--shadow-lg); }
-        
-        .card-header { 
+        .card:hover { box-shadow: var(--shadow-md); }
+        .card-head {
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 20px; padding-bottom: 16px; 
-            border-bottom: 2px solid transparent;
-            border-image: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
-            border-image-slice: 1;
+            padding: 18px 22px 0;
         }
-        .card-title { 
-            font-size: 16px; font-weight: 700; color: var(--text-primary); 
-            display: flex; align-items: center; gap: 10px; 
+        .card-title {
+            font-size: 13px; font-weight: 700; color: var(--text);
+            display: flex; align-items: center; gap: 8px;
+            letter-spacing: 0; font-family: 'Noto Sans KR', sans-serif;
         }
-        .card-title::before { 
-            content: ''; display: block; width: 4px; height: 18px; 
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); 
-            border-radius: 2px; 
+        .card-title-dot {
+            width: 8px; height: 8px; border-radius: 2px;
+            background: linear-gradient(135deg, #6366f1, #818cf8);
+            flex-shrink: 0;
         }
+        .card-body { padding: 16px 22px 22px; flex: 1; }
 
-        .table-container { overflow-x: auto; }
-        table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 14px; }
-        th { 
-            background: #f8fafc; color: var(--text-secondary); padding: 12px; 
-            text-align: center; font-weight: 600; font-size: 13px; 
-            border-bottom: 2px solid var(--border); 
-            text-transform: uppercase; letter-spacing: 0.3px;
-            position: sticky; top: 0; z-index: 10;
+        /* ─── Tables ─── */
+        .tbl-wrap { overflow-x: auto; }
+        .tbl-wrap::-webkit-scrollbar { height: 5px; }
+        .tbl-wrap::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 3px; }
+        .tbl-wrap::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        thead th {
+            background: var(--surface2); color: var(--text-sub);
+            padding: 10px 14px; text-align: center; font-weight: 700;
+            font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--border);
+            position: sticky; top: 0; z-index: 5;
+            font-family: 'Inter', sans-serif;
         }
-        td { 
-            padding: 12px; border-bottom: 1px solid var(--border); 
-            text-align: center; color: var(--text-primary); 
+        thead th:first-child { text-align: left; }
+        tbody td {
+            padding: 10px 14px; border-bottom: 1px solid #f1f5f9;
+            text-align: center; color: var(--text);
             font-variant-numeric: tabular-nums;
+            font-family: 'Noto Sans KR', sans-serif; font-size: 13px;
         }
-        tr:last-child td { border-bottom: none; }
-        tr:hover td { background-color: #f8fafc; }
+        tbody td:first-child { text-align: left; font-weight: 600; }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover td { background: #f8faff; }
 
-        .chart-box { position: relative; height: 280px; width: 100%; }
-        .chart-box-compact { position: relative; height: 200px; width: 100%; }
-        .chart-box-tall { position: relative; height: 320px; width: 100%; }
-        
-        .badge { 
-            padding: 6px 12px; border-radius: 20px; font-size: 12px; 
-            font-weight: 700; display: inline-block; 
+        .badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 4px 10px; border-radius: 6px;
+            font-size: 11px; font-weight: 800; letter-spacing: 0.3px;
         }
-        .badge-good { background: #dcfce7; color: #15803d; }
-        .badge-warn { background: #fee2e2; color: #b91c1c; }
+        .badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; }
+        .badge-ok   { background: #f0fdf4; color: #16a34a; }
+        .badge-ok::before { background: #16a34a; }
+        .badge-ng   { background: #fff1f2; color: #e11d48; }
+        .badge-ng::before { background: #e11d48; }
 
-        .modal { 
-            display: none; position: fixed; top: 0; left: 0; 
-            width: 100%; height: 100%; 
-            background: rgba(15, 23, 42, 0.6); z-index: 1000; 
-            backdrop-filter: blur(4px);
+        .yield-good { color: #16a34a; font-weight: 700; font-family:'JetBrains Mono','Inter',monospace; }
+        .yield-bad  { color: #e11d48; font-weight: 700; font-family:'JetBrains Mono','Inter',monospace; }
+
+        /* ─── Chart Boxes ─── */
+        .ch-sm  { position: relative; height: 190px; }
+        .ch-md  { position: relative; height: 270px; }
+        .ch-lg  { position: relative; height: 310px; }
+
+        /* ─── Defect Table ─── */
+        #tblDefectType thead th {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+            color: rgba(255,255,255,0.9); border-bottom: none;
+            font-family: 'Inter', sans-serif; font-size: 11px;
+            letter-spacing: 0.5px; padding: 12px 14px;
         }
-        .modal-content { 
-            background: white; width: 92%; max-width: 1000px; 
-            margin: 40px auto; padding: 32px; border-radius: var(--radius-lg); 
-            max-height: 85vh; overflow-y: auto; 
+        #tblDefectType thead th:first-child { text-align: left; }
+        #tblDefectType tbody td {
+            font-family: 'Noto Sans KR', sans-serif; font-size: 13px;
+        }
+        #tblDefectType tbody td:first-child {
+            font-family: 'Noto Sans KR', sans-serif; font-weight: 600; color: var(--text);
+        }
+        #tblDefectType tbody td:last-child {
+            color: #4f46e5; font-weight: 700;
+            font-family: 'JetBrains Mono', monospace; font-size: 13px;
+        }
+        #tblDefectType tbody tr.grand-row td {
+            background: #f0f4fb !important; font-weight: 700;
+            border-top: 2px solid var(--navy); color: var(--navy);
+            font-family: 'Noto Sans KR', sans-serif; font-size: 13px;
+        }
+        #tblDefectType tbody tr.grand-row td:first-child {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        #tblDefectType tbody tr.grand-row td:last-child {
+            background: var(--navy) !important; color: white;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .d-zero   { color: #c8d6e5; font-style: normal; font-size: 15px; line-height: 1; }
+        .d-low    { color: #d97706; font-weight: 700; font-family: 'JetBrains Mono', monospace !important; }
+        .d-med    { color: #ea580c; font-weight: 700; font-family: 'JetBrains Mono', monospace !important; }
+        .d-high   { color: #dc2626; font-weight: 800; font-family: 'JetBrains Mono', monospace !important; }
+
+        /* ─── Modal ─── */
+        .modal {
+            display: none; position: fixed; inset: 0; z-index: 2000;
+            background: rgba(12,30,62,0.65); backdrop-filter: blur(6px);
+        }
+        .modal-box {
+            background: white; width: 92%; max-width: 980px;
+            margin: 36px auto; padding: 36px; border-radius: var(--r-lg);
+            max-height: 88vh; overflow-y: auto;
             box-shadow: var(--shadow-lg);
-            animation: modalSlide 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: modalUp 0.3s cubic-bezier(.34,1.56,.64,1);
         }
-        @keyframes modalSlide { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        
-        .modal-header { font-size: 22px; font-weight: 800; margin-bottom: 8px; color: var(--text-primary); }
-        .modal-desc { font-size: 14px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.5; }
-        
-        .paste-area { 
-            width: 100%; height: 100px; padding: 16px; 
-            border: 2px dashed var(--border); border-radius: var(--radius);
-            background: #f8fafc; font-family: monospace; 
-            font-size: 13px; margin-bottom: 20px; 
-            transition: all 0.2s; resize: vertical;
+        @keyframes modalUp { from{transform:translateY(40px);opacity:0} to{transform:translateY(0);opacity:1} }
+        .modal-title { font-size: 20px; font-weight: 700; color: var(--navy); margin-bottom: 6px; font-family: 'Noto Sans KR', sans-serif; }
+        .modal-desc { font-size: 13px; color: var(--text-sub); margin-bottom: 20px; line-height: 1.7; font-family: 'Noto Sans KR', sans-serif; }
+        .paste-area {
+            width: 100%; height: 90px; padding: 14px;
+            border: 2px dashed var(--border); border-radius: var(--r);
+            background: var(--surface2); font-family: 'DM Mono', monospace;
+            font-size: 12px; margin-bottom: 16px; resize: vertical;
+            transition: border-color 0.2s;
         }
-        .paste-area:focus { 
-            outline: none; border-color: var(--primary); 
-            background: #eef2ff; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        .paste-area:focus { outline: none; border-color: #6366f1; background: #eef2ff; }
+        .modal-footer {
+            display: flex; gap: 12px; margin-top: 24px;
+            padding-top: 20px; border-top: 1px solid var(--border);
         }
-        
-        .entry-table th { background: #f1f5f9; position: sticky; top: 0; z-index: 10; }
-        .entry-table input, .entry-table select { 
-            width: 100%; padding: 10px; border: 1px solid var(--border); 
-            border-radius: 8px; font-size: 14px; transition: all 0.2s;
-            background: white;
+        .btn-full { flex: 1; padding: 13px; font-size: 14px; border-radius: 10px; }
+        .btn-save   { background: linear-gradient(135deg,var(--navy),var(--navy-light)); color:white; border:none; cursor:pointer; font-family:inherit; font-weight:700; transition:all .2s; }
+        .btn-save:hover { box-shadow: 0 6px 18px rgba(12,30,62,0.3); transform:translateY(-2px); }
+        .btn-cancel { background: var(--surface2); color: var(--text-sub); border:1px solid var(--border); cursor:pointer; font-family:inherit; font-weight:600; transition:all .2s; }
+        .btn-cancel:hover { border-color: var(--text-sub); }
+        .btn-parse  { background: #eef2ff; color: #4f46e5; border: 1px solid #c7d2fe; cursor:pointer; padding:10px 16px; border-radius:8px; font-family:inherit; font-weight:700; font-size:13px; flex:1; transition:all .2s; }
+        .btn-parse:hover { background: #e0e7ff; }
+        .btn-clr    { background: #fff1f2; color: #e11d48; border:1px solid #fecdd3; cursor:pointer; padding:10px 16px; border-radius:8px; font-family:inherit; font-weight:700; font-size:13px; width:110px; transition:all .2s; }
+        .btn-clr:hover { background:#ffe4e6; }
+        .btn-addrow { width:100%; margin-top:12px; padding:10px; background:var(--surface2); border:1px dashed var(--border); border-radius:8px; cursor:pointer; font-family:inherit; font-weight:600; font-size:13px; color:var(--text-sub); transition:all .2s; }
+        .btn-addrow:hover { border-color:#6366f1; color:#4f46e5; background:#eef2ff; }
+
+        .entry-tbl { width:100%; border-collapse:collapse; font-size:13px; }
+        .entry-tbl th { background:#f8faff; color:var(--text-sub); padding:9px 10px; text-align:center; font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:0.5px; border-bottom:2px solid var(--border); font-family:'Inter',sans-serif; }
+        .entry-tbl td { padding:6px 6px; border-bottom:1px solid #f1f5f9; }
+        .entry-tbl input, .entry-tbl select {
+            width:100%; padding:8px 10px; border:1px solid var(--border);
+            border-radius:7px; font-size:13px; font-family:'Noto Sans KR','Inter',sans-serif;
+            background:white; transition:all .2s; color:var(--text);
         }
-        .entry-table input:focus, .entry-table select:focus { 
-            outline: none; border-color: var(--primary); 
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); 
+        .entry-tbl input:focus, .entry-tbl select:focus { outline:none; border-color:#6366f1; box-shadow:0 0 0 3px rgba(99,102,241,0.1); }
+        .entry-tbl select { cursor:pointer; appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath fill='%236366f1' d='M6 9L1 4h10z'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 10px center; padding-right:30px; }
+        .btn-del { background:#fff1f2; color:#e11d48; border:1px solid #fecdd3; padding:6px 10px; border-radius:6px; cursor:pointer; font-size:11px; font-weight:700; transition:all .2s; font-family:'Noto Sans KR',sans-serif; }
+        .btn-del:hover { background:#ffe4e6; }
+
+        /* ─── Config Banner ─── */
+        #configBanner {
+            background: linear-gradient(135deg,#fffbeb,#fef3c7);
+            border: 2px solid #fcd34d; border-radius: var(--r);
+            padding: 20px 24px; margin-bottom: 20px; display: none;
         }
-        .entry-table select {
-            cursor: pointer; appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234f46e5' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat; background-position: right 10px center;
-            padding-right: 35px;
+        #configBanner h3 { color: #92400e; margin-bottom: 6px; font-size: 16px; }
+        #configBanner p  { color: #78350f; font-size: 13px; line-height: 1.7; }
+        #configBanner code { background:rgba(0,0,0,0.07); padding:2px 7px; border-radius:5px; font-family:'DM Mono',monospace; font-size:12px; }
+
+        /* ─── Chart filter mini-btns ─── */
+        .mini-filters { display:flex; gap:5px; flex-wrap:wrap; margin-bottom:12px; }
+        .mini-btn {
+            padding: 5px 13px; border-radius: 30px; border: 1.5px solid var(--border);
+            background: var(--surface2); color: var(--text-sub);
+            font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.15s;
+            font-family: 'Noto Sans KR', 'Inter', sans-serif;
+            letter-spacing: 0; line-height: 1.4;
+        }
+        .mini-btn:hover { border-color: #6366f1; color: #4f46e5; background: #eef2ff; }
+        .mini-btn.active { background: var(--navy); color: white; border-color: var(--navy); box-shadow: 0 2px 6px rgba(12,30,62,0.15); }
+
+        @media(max-width:768px){
+            body{padding:14px;}
+            .header-grid{grid-template-columns:1fr;}
+            .g2,.g3{grid-template-columns:1fr;}
+            .kpi-grid{grid-template-columns:repeat(2,1fr);}
         }
 
-        .modal-footer { 
-            display: flex; gap: 12px; margin-top: 28px; 
-            border-top: 1px solid var(--border); padding-top: 24px; 
+        /* ─── Password Modal ─── */
+        #pwModal {
+            display:none; position:fixed; inset:0; z-index:3000;
+            background:rgba(12,30,62,0.75); backdrop-filter:blur(8px);
+            align-items:center; justify-content:center;
         }
-        .btn-full { flex: 1; padding: 14px; font-size: 15px; }
+        #pwModal.open { display:flex; }
+        .pw-box {
+            background:white; border-radius:var(--r-lg);
+            padding:36px 40px; width:360px;
+            box-shadow:var(--shadow-lg); text-align:center;
+            animation:modalUp 0.3s cubic-bezier(.34,1.56,.64,1);
+        }
+        .pw-icon { font-size:40px; margin-bottom:16px; }
+        .pw-title { font-size:18px; font-weight:800; color:var(--navy); margin-bottom:6px; font-family:'Noto Sans KR',sans-serif; }
+        .pw-sub { font-size:13px; color:var(--text-sub); margin-bottom:22px; font-family:'Noto Sans KR',sans-serif; }
+        .pw-input {
+            width:100%; padding:13px 16px; border:2px solid var(--border);
+            border-radius:10px; font-size:16px; text-align:center;
+            font-family:'JetBrains Mono',monospace; letter-spacing:4px;
+            transition:all .2s; margin-bottom:16px;
+        }
+        .pw-input:focus { outline:none; border-color:#6366f1; box-shadow:0 0 0 3px rgba(99,102,241,0.1); }
+        .pw-err { font-size:12px; color:#e11d48; margin-bottom:12px; height:16px; font-family:'Noto Sans KR',sans-serif; }
+        .pw-btns { display:flex; gap:10px; }
+        .pw-ok { flex:1; padding:12px; background:linear-gradient(135deg,var(--navy),var(--navy-light)); color:white; border:none; border-radius:10px; cursor:pointer; font-size:14px; font-weight:700; font-family:'Noto Sans KR',sans-serif; transition:all .2s; }
+        .pw-ok:hover { box-shadow:0 4px 14px rgba(12,30,62,0.3); transform:translateY(-1px); }
+        .pw-cancel { padding:12px 20px; background:var(--surface2); color:var(--text-sub); border:1px solid var(--border); border-radius:10px; cursor:pointer; font-size:14px; font-weight:600; font-family:'Noto Sans KR',sans-serif; transition:all .2s; }
+        .pw-cancel:hover { border-color:var(--text-sub); }
 
-        .section-header {
-            margin-top: 40px; margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 3px solid var(--primary-light);
-        }
-        .section-title {
-            color: var(--primary); font-size: 22px; font-weight: 800;
-            display: flex; align-items: center; gap: 10px;
-        }
+        /* ─── Backup Button ─── */
+        .btn-backup { background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.8); border:1px solid rgba(255,255,255,0.15); font-size:12px; padding:8px 14px; }
+        .btn-backup:hover { background:rgba(255,255,255,0.15); color:white; }
 
-        .filter-btns-compact .filter-btn { padding: 6px 12px; font-size: 12px; }
-
-        #tblDefectType {
-            border-collapse: separate; border-spacing: 0;
-            border: 2px solid #e2e8f0; border-radius: 8px; overflow: hidden; font-size: 13px;
+        /* ─── Backup Modal ─── */
+        #backupModal {
+            display:none; position:fixed; inset:0; z-index:3000;
+            background:rgba(12,30,62,0.75); backdrop-filter:blur(8px);
+            align-items:center; justify-content:center;
         }
-        #tblDefectType th {
-            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
-            color: white; padding: 12px 10px; text-align: center;
-            font-weight: 700; font-size: 12px; border-bottom: 2px solid #4338ca;
-            position: sticky; top: 0; z-index: 15; text-transform: uppercase; letter-spacing: 0.5px;
+        #backupModal.open { display:flex; }
+        .backup-box {
+            background:white; border-radius:var(--r-lg); padding:36px;
+            width:500px; max-height:80vh; overflow-y:auto;
+            box-shadow:var(--shadow-lg);
+            animation:modalUp 0.3s cubic-bezier(.34,1.56,.64,1);
         }
-        #tblDefectType td {
-            padding: 10px 8px; text-align: center; border-bottom: 1px solid #e5e7eb;
-            font-variant-numeric: tabular-nums; transition: all 0.2s ease;
+        .backup-item {
+            display:flex; align-items:center; justify-content:space-between;
+            padding:12px 16px; border:1px solid var(--border); border-radius:10px;
+            margin-bottom:8px; transition:all .2s;
         }
-        #tblDefectType tbody tr:nth-child(even) td { background-color: #f9fafb; }
-        #tblDefectType tbody tr:hover td { background-color: #f1f5f9 !important; }
-        #tblDefectType th:first-child, #tblDefectType td:first-child {
-            position: sticky; left: 0; z-index: 12; background-color: #ffffff;
-            font-weight: 700; color: #1f2937; border-right: 2px solid #e5e7eb;
-            text-align: left; padding-left: 12px;
-        }
-        #tblDefectType tbody tr:nth-child(even) td:first-child { background-color: #f9fafb; }
-        .defect-zero { color: #9ca3af; font-style: italic; }
-        .defect-low { background-color: #fef3c7 !important; color: #d97706; font-weight: 600; }
-        .defect-medium { background-color: #fed7aa !important; color: #ea580c; font-weight: 700; }
-        .defect-high { background-color: #fee2e2 !important; color: #dc2626; font-weight: 800; }
-        #tblDefectType th:last-child, #tblDefectType td:last-child {
-            background-color: #eef2ff !important; color: #4f46e5; font-weight: 800;
-            border-left: 3px solid #4f46e5; font-size: 14px;
-        }
-        #tblDefectType tr.grand-total-row td {
-            border-top: 3px solid #4f46e5;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%) !important;
-            font-weight: 800; color: #1f2937; font-size: 14px; padding: 14px 8px;
-        }
-        #tblDefectType tr.grand-total-row td:last-child {
-            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%) !important;
-            color: white; font-size: 16px;
-        }
-        .no-data-message { padding: 40px; text-align: center; color: #9ca3af; font-style: italic; }
-
-        @media (max-width: 768px) {
-            .header-top { flex-direction: column; align-items: flex-start; }
-            .logo-container { position: static; margin-bottom: 20px; text-align: left; }
-            .grid-2col, .grid-3col { grid-template-columns: 1fr; }
-            .btn-group { width: 100%; justify-content: center; }
-            .kpi-container { grid-template-columns: repeat(2, 1fr); }
-            body { padding: 16px; }
-        }
+        .backup-item:hover { border-color:#6366f1; background:#fafbff; }
+        .backup-item-info { font-size:13px; }
+        .backup-item-time { font-weight:700; color:var(--navy); font-family:'JetBrains Mono',monospace; }
+        .backup-item-size { font-size:11px; color:var(--text-muted); margin-top:2px; }
+        .backup-restore-btn { padding:7px 14px; background:#eef2ff; color:#4f46e5; border:1px solid #c7d2fe; border-radius:8px; cursor:pointer; font-size:12px; font-weight:700; font-family:'Noto Sans KR',sans-serif; transition:all .2s; }
+        .backup-restore-btn:hover { background:#e0e7ff; }
+        .backup-del-btn { padding:7px 10px; background:#fff1f2; color:#e11d48; border:1px solid #fecdd3; border-radius:8px; cursor:pointer; font-size:12px; font-weight:700; margin-left:6px; transition:all .2s; }
+        .backup-del-btn:hover { background:#ffe4e6; }
     </style>
 </head>
 <body>
 
-    <!-- 로딩 화면 -->
-    <div id="loadingOverlay">
-        <div class="loading-spinner"></div>
-        <div class="loading-text">🔥 Firebase에서 데이터를 불러오는 중...</div>
-    </div>
+<!-- Loading -->
+<div id="loadingOverlay">
+    <div class="loading-logo">DREAM<span>TECH</span></div>
+    <div class="loading-bar"><div class="loading-bar-inner"></div></div>
+    <div class="loading-text">🔥 Firebase에서 데이터를 불러오는 중...</div>
+</div>
 
-    <!-- 실시간 동기화 상태 -->
-    <div id="syncStatus" class="sync-online">
-        <div class="sync-dot"></div>
-        <span id="syncText">실시간 연결됨</span>
-    </div>
+<div id="syncStatus" class="sync-online">
+    <div class="sync-dot"></div>
+    <span id="syncText">실시간 연결됨</span>
+</div>
 
-    <div id="saveSuccess" class="save-success">✅ 저장 완료! 모든 팀원에게 즉시 반영됩니다.</div>
+<div id="saveSuccess" class="save-toast">✅ 저장 완료! 모든 팀원에게 즉시 반영됩니다.</div>
+<div id="configBanner">
+    <h3>⚠️ Firebase 설정이 필요합니다</h3>
+    <p>파일의 <code>FIREBASE_CONFIG</code> 값을 실제 Firebase 프로젝트 정보로 교체해 주세요.</p>
+</div>
 
-    <!-- Firebase 미설정 배너 (설정 필요 시 표시) -->
-    <div id="configBanner">
-        <h3>⚠️ Firebase 설정이 필요합니다</h3>
-        <p>
-            이 파일의 <code>FIREBASE_CONFIG</code> 섹션에 Firebase 프로젝트 정보를 입력해 주세요.<br>
-            설정 방법: 파일을 메모장으로 열기 → <code>YOUR_API_KEY</code> 등을 실제 값으로 교체 → 저장<br>
-            Firebase 콘솔: <a href="https://console.firebase.google.com" target="_blank" style="color:#b45309;">console.firebase.google.com</a>
-        </p>
-    </div>
-
-    <div class="header">
-        <div class="logo-container">
-            <div class="logo-text">DREAMTECH</div>
-        </div>
-        
-        <div class="header-top">
-            <div>
-                <h1 id="mainTitle">📊 DS Quality Performance</h1>
-                <div class="header-sub" id="lastUpdate">데이터 로딩 중...</div>
-            </div>
-            <div style="display: flex; align-items: center; gap: 16px; margin-top: 40px;">
-                <div class="lang-switch">
-                    <button class="lang-btn active" onclick="setLang('ko')" id="btnKo">한글</button>
-                    <button class="lang-btn" onclick="setLang('en')" id="btnEn">English</button>
-                </div>
-                <div class="btn-group">
-                    <button class="btn btn-primary" onclick="openModal('prod')" id="btnProd">✏️ 생산 입력</button>
-                    <button class="btn btn-primary" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);" onclick="openModal('ship')" id="btnShip">📦 출하 입력</button>
-                    <button class="btn btn-warning" onclick="openModal('defect')" id="btnDefect">🛠️ 불량 유형 입력</button>
-                    <button class="btn btn-secondary" onclick="exportExcel()">📊 Excel 다운로드</button>
+<!-- Header -->
+<div class="header">
+    <div class="header-grid">
+        <div>
+            <div class="header-brand">
+                <div class="brand-badge">📊</div>
+                <div>
+                    <h1 id="mainTitle">DS Quality Performance</h1>
+                    <div class="header-sub" id="lastUpdate">데이터 로딩 중...</div>
                 </div>
             </div>
         </div>
-
-        <div class="filter-container">
-            <div class="filter-row">
-                <div class="filter-label" id="lblProd">제품</div>
-                <div class="filter-btns" id="filterProduct"></div>
-            </div>
-            <div class="filter-row">
-                <div class="filter-label" id="lblPeriod">기간</div>
-                <div class="filter-btns" id="filterMonth"></div>
-            </div>
-            <div class="filter-row">
-                <div class="filter-label" id="lblProcess">공정</div>
-                <div class="filter-btns" id="filterProcess"></div>
-            </div>
+        <div style="text-align:right">
+            <div class="logo-text">DREAM<span>TECH</span></div>
+            <div class="logo-sub">DS Division</div>
         </div>
     </div>
-
-    <div class="kpi-container">
-        <div class="kpi-card">
-            <div class="kpi-value text-blue" id="kpiYield">-</div>
-            <div class="kpi-label" id="lblKpiYield">종합 수율</div>
+    <div class="controls-row">
+        <div class="lang-switch">
+            <button class="lang-btn active" onclick="setLang('ko')" id="btnKo">한글</button>
+            <button class="lang-btn" onclick="setLang('en')" id="btnEn">English</button>
         </div>
-        <div class="kpi-card">
-            <div class="kpi-value text-red" id="kpiPPM">-</div>
-            <div class="kpi-label" id="lblKpiPPM">당사 귀책 불량률</div>
-        </div>
-        <div class="kpi-card">
-            <div class="kpi-value text-gray" id="kpiInput">-</div>
-            <div class="kpi-label" id="lblKpiInput">총 투입 수량</div>
-        </div>
-        <div class="kpi-card">
-            <div class="kpi-value text-gray" id="kpiOutput">-</div>
-            <div class="kpi-label" id="lblKpiOutput">총 산출 수량</div>
-        </div>
-        <div class="kpi-card">
-            <div class="kpi-value text-red" id="kpiDefect">-</div>
-            <div class="kpi-label" id="lblKpiDefect">총 불량 수량</div>
-        </div>
-        <div class="kpi-card">
-            <div class="kpi-value text-orange" id="kpiCompDefect">-</div>
-            <div class="kpi-label" id="lblKpiCompDefect">당사 귀책 불량 수량</div>
-        </div>
+        <button class="btn btn-prod" onclick="openModal('prod')" id="btnProd">✏️ 생산 입력</button>
+        <button class="btn btn-ship" onclick="openModal('ship')" id="btnShip">📦 출하 입력</button>
+        <button class="btn btn-def"  onclick="openModal('defect')" id="btnDefect">🛠️ 불량 유형 입력</button>
+        <button class="btn btn-excel" onclick="exportExcel()">📊 Excel</button>
+        <button class="btn btn-backup" onclick="openBackupModal()">💾 백업</button>
     </div>
+</div>
 
-    <div class="grid-3col">
-        <div class="card">
-            <div class="card-header"><div class="card-title" id="titProcYield">공정별 수율 현황</div></div>
-            <div class="table-container">
+<!-- Filters -->
+<div class="filter-section">
+    <div class="filter-row">
+        <div class="filter-label" id="lblProd">제품</div>
+        <div class="filter-btns" id="filterProduct"></div>
+    </div>
+    <div class="filter-row">
+        <div class="filter-label" id="lblPeriod">기간</div>
+        <div class="filter-btns" id="filterMonth"></div>
+    </div>
+    <div class="filter-row">
+        <div class="filter-label" id="lblProcess">공정</div>
+        <div class="filter-btns" id="filterProcess"></div>
+    </div>
+</div>
+
+<!-- KPI -->
+<div class="kpi-grid">
+    <div class="kpi-card c-blue">
+        <div class="kpi-icon">📈</div>
+        <div class="kpi-value" id="kpiYield">—</div>
+        <div class="kpi-label" id="lblKpiYield">종합 수율</div>
+    </div>
+    <div class="kpi-card c-red">
+        <div class="kpi-icon">⚠️</div>
+        <div class="kpi-value" id="kpiPPM">—</div>
+        <div class="kpi-label" id="lblKpiPPM">당사 귀책 불량률</div>
+    </div>
+    <div class="kpi-card c-slate">
+        <div class="kpi-icon">📥</div>
+        <div class="kpi-value" id="kpiInput">—</div>
+        <div class="kpi-label" id="lblKpiInput">총 투입 수량</div>
+    </div>
+    <div class="kpi-card c-slate">
+        <div class="kpi-icon">📤</div>
+        <div class="kpi-value" id="kpiOutput">—</div>
+        <div class="kpi-label" id="lblKpiOutput">총 산출 수량</div>
+    </div>
+    <div class="kpi-card c-red">
+        <div class="kpi-icon">❌</div>
+        <div class="kpi-value" id="kpiDefect">—</div>
+        <div class="kpi-label" id="lblKpiDefect">총 불량 수량</div>
+    </div>
+    <div class="kpi-card c-orange">
+        <div class="kpi-icon">🏭</div>
+        <div class="kpi-value" id="kpiCompDefect">—</div>
+        <div class="kpi-label" id="lblKpiCompDefect">당사 귀책 불량</div>
+    </div>
+</div>
+
+<!-- Tables row -->
+<div class="g3">
+    <div class="card">
+        <div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="titProcYield">공정별 수율 현황</span></div></div>
+        <div class="card-body">
+            <div class="tbl-wrap">
                 <table id="tblProcYield">
                     <thead><tr><th id="thProc">공정</th><th id="thIn">투입</th><th id="thOut">산출</th><th id="thFail">불량</th><th id="thYld">수율</th><th id="thStat">판정</th></tr></thead>
                     <tbody></tbody>
                 </table>
             </div>
         </div>
-        <div class="card">
-            <div class="card-header"><div class="card-title" id="titMonthYield">공정별 월별 수율 추이</div></div>
-            <div class="table-container">
+    </div>
+    <div class="card">
+        <div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="titMonthYield">공정별 월별 수율 추이</span></div></div>
+        <div class="card-body">
+            <div class="tbl-wrap">
                 <table id="tblMonthYield">
                     <thead><tr><th id="thMonth">기간</th><th>SMD</th><th>ROUTER</th><th>ATE</th><th>PCT</th><th>AVI</th></tr></thead>
                     <tbody></tbody>
                 </table>
             </div>
         </div>
-        <div class="card">
-            <div class="card-header"><div class="card-title" id="titProdYield">제품별 수율 현황</div></div>
-            <div class="table-container">
+    </div>
+    <div class="card">
+        <div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="titProdYield">제품별 수율 현황</span></div></div>
+        <div class="card-body">
+            <div class="tbl-wrap">
                 <table id="tblProdYield">
                     <thead><tr><th id="thProd">제품</th><th id="thIn2">투입</th><th id="thOut2">산출</th><th id="thFail2">불량</th><th id="thYld2">수율</th><th id="thStat2">판정</th></tr></thead>
                     <tbody></tbody>
@@ -543,62 +690,74 @@
             </div>
         </div>
     </div>
+</div>
 
-    <div class="grid-full">
-        <div class="card">
-            <div class="card-header"><div class="card-title" id="titTotalTrend">종합 수율 월별 트렌드 (%)</div></div>
-            <div class="chart-box-compact"><canvas id="chartTotalYield"></canvas></div>
+<!-- Total Yield Trend -->
+<div class="g-full">
+    <div class="card">
+        <div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="titTotalTrend">종합 수율 월별 트렌드 (%)</span></div></div>
+        <div class="card-body"><div class="ch-sm"><canvas id="chartTotalYield"></canvas></div></div>
+    </div>
+</div>
+
+<!-- 3 charts -->
+<div class="g3">
+    <div class="card">
+        <div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="titProdTrend">제품별 수율 추이 (%)</span></div></div>
+        <div class="card-body">
+            <div class="mini-filters" id="prodChartFilter"></div>
+            <div class="ch-md"><canvas id="chartProdYield"></canvas></div>
         </div>
     </div>
-
-    <div class="grid-3col">
-        <div class="card">
-            <div class="card-header"><div class="card-title" id="titProdTrend">제품별 월별 수율 추이 (%)</div></div>
-            <div class="filter-btns" id="prodChartFilter" style="margin-bottom:12px;"></div>
-            <div class="chart-box"><canvas id="chartProdYield"></canvas></div>
-        </div>
-        <div class="card">
-            <div class="card-header"><div class="card-title" id="titProcTrend">공정별 월별 수율 추이 (%)</div></div>
-            <div class="filter-btns" id="procChartFilter" style="margin-bottom:12px;"></div>
-            <div class="chart-box"><canvas id="chartProcYield"></canvas></div>
-        </div>
-        <div class="card">
-            <div class="card-header"><div class="card-title" id="titProdVol">DS 생산 실적</div></div>
-            <div class="chart-box"><canvas id="chartProdVol"></canvas></div>
+    <div class="card">
+        <div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="titProcTrend">공정별 수율 추이 (%)</span></div></div>
+        <div class="card-body">
+            <div class="mini-filters" id="procChartFilter"></div>
+            <div class="ch-md"><canvas id="chartProcYield"></canvas></div>
         </div>
     </div>
-
-    <div class="section-header">
-        <h2 class="section-title" id="titDefectSection">📉 불량 분석 및 상세 현황</h2>
+    <div class="card">
+        <div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="titProdVol">DS 생산 실적</span></div></div>
+        <div class="card-body"><div class="ch-md"><canvas id="chartProdVol"></canvas></div></div>
     </div>
-    
-    <div class="grid-2col">
-        <div class="card">
-            <div class="card-header"><div class="card-title" id="titTotalDefect">월별 불량 수 트렌드</div></div>
-            <div class="chart-box-tall"><canvas id="chartTotalDefect"></canvas></div>
+</div>
+
+<!-- Defect Section -->
+<div class="section-hd">
+    <div class="section-hd-title" id="titDefectSection">📉 불량 분석 및 상세 현황</div>
+    <div class="section-hd-line"></div>
+</div>
+
+<div class="g2">
+    <div class="card">
+        <div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="titTotalDefect">월별 불량 수 트렌드</span></div></div>
+        <div class="card-body"><div class="ch-lg"><canvas id="chartTotalDefect"></canvas></div></div>
+    </div>
+    <div class="card">
+        <div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="titCompDefect">당사 귀책 불량 수 트렌드</span></div></div>
+        <div class="card-body"><div class="ch-lg"><canvas id="chartCompDefect"></canvas></div></div>
+    </div>
+</div>
+
+<div class="g3">
+    <div class="card">
+        <div class="card-head">
+            <div class="card-title"><div class="card-title-dot"></div><span id="titDefectType">불량 유형 차트</span></div>
+            <button class="btn-del" onclick="openModal('defect')">수정</button>
         </div>
-        <div class="card">
-            <div class="card-header"><div class="card-title" id="titCompDefect">당사 귀책 불량 수 트렌드</div></div>
-            <div class="chart-box-tall"><canvas id="chartCompDefect"></canvas></div>
+        <div class="card-body">
+            <div class="mini-filters" id="defectTypeFilters"></div>
+            <div class="ch-lg"><canvas id="chartDefectType"></canvas></div>
         </div>
     </div>
-
-    <div class="grid-3col">
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title" id="titDefectType">불량 유형 차트 (Bar)</div>
-                <button class="btn btn-secondary" onclick="openModal('defect')" style="padding:6px 10px; font-size:11px;">수정</button>
-            </div>
-            <div class="filter-btns filter-btns-compact" id="defectTypeFilters" style="margin-bottom:12px;"></div>
-            <div class="chart-box-tall"><canvas id="chartDefectType"></canvas></div>
-        </div>
-        <div class="card">
-            <div class="card-header"><div class="card-title">불량 유형 비율 (Pie)</div></div>
-            <div class="chart-box-tall"><canvas id="chartDefectTypePie"></canvas></div>
-        </div>
-        <div class="card">
-            <div class="card-header"><div class="card-title" id="titDefectTable">불량 유형 상세 현황</div></div>
-            <div class="table-container" style="height:320px; overflow-y:auto;">
+    <div class="card">
+        <div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span>불량 유형 비율 (Pie)</span></div></div>
+        <div class="card-body"><div class="ch-lg"><canvas id="chartDefectTypePie"></canvas></div></div>
+    </div>
+    <div class="card">
+        <div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="titDefectTable">불량 유형 상세 현황</span></div></div>
+        <div class="card-body" style="padding-top:0;">
+            <div class="tbl-wrap" style="max-height:320px;overflow-y:auto;">
                 <table id="tblDefectType">
                     <thead><tr><th>기간</th><th>Human Error</th><th>Handling Damage</th><th>Component Lifting</th><th>합계</th></tr></thead>
                     <tbody></tbody>
@@ -606,780 +765,637 @@
             </div>
         </div>
     </div>
+</div>
 
-    <div class="section-header">
-        <h2 class="section-title" id="titShipSection">📦 출하 실적</h2>
-    </div>
-    <div class="grid-2col">
-        <div class="card">
-            <div class="card-header"><div class="card-title" id="titShipTable">월별 출하 수량</div></div>
-            <div class="table-container">
+<!-- Shipment Section -->
+<div class="section-hd">
+    <div class="section-hd-title" id="titShipSection">📦 출하 실적</div>
+    <div class="section-hd-line"></div>
+</div>
+<div class="g2">
+    <div class="card">
+        <div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="titShipTable">월별 출하 수량</span></div></div>
+        <div class="card-body">
+            <div class="tbl-wrap">
                 <table id="tblShipment">
                     <thead><tr><th id="thShipMonth">기간</th><th>RDIMM</th><th>SODIMM</th><th>UDIMM</th><th id="thTotal">합계</th></tr></thead>
                     <tbody></tbody>
                 </table>
             </div>
         </div>
-        <div class="card">
-            <div class="card-header"><div class="card-title" id="titShipChart">월별 출하 실적 추이</div></div>
-            <div class="chart-box"><canvas id="chartShipment"></canvas></div>
+    </div>
+    <div class="card">
+        <div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="titShipChart">월별 출하 실적 추이</span></div></div>
+        <div class="card-body"><div class="ch-md"><canvas id="chartShipment"></canvas></div></div>
+    </div>
+</div>
+
+<!-- Modals -->
+<div id="modalProd" class="modal">
+    <div class="modal-box">
+        <div class="modal-title" id="moTitProd">✏️ 생산 데이터 입력</div>
+        <div class="modal-desc">Excel에서 <strong>[제품 | 기간 | 공정 | 투입 | 산출 | 불량]</strong> 순서로 복사하여 붙여넣을 수 있습니다.</div>
+        <textarea class="paste-area" id="pasteProd" placeholder="Excel 데이터를 여기에 붙여넣기 (Ctrl+V)"></textarea>
+        <div style="display:flex;gap:10px;margin-bottom:20px;">
+            <button class="btn-parse" onclick="parsePaste('prod')">📋 데이터 적용</button>
+            <button class="btn-clr" onclick="clearTable('prod')">🗑️ 초기화</button>
+        </div>
+        <div style="max-height:380px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;">
+            <table class="entry-tbl" id="tblEntryProd">
+                <thead><tr><th>제품</th><th>기간</th><th>공정</th><th>투입</th><th>산출</th><th>불량</th><th>삭제</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <button class="btn-addrow" onclick="addRow('prod')">+ 행 추가</button>
+        <div class="modal-footer">
+            <button class="btn-save btn-full" onclick="saveData('prod')">💾 저장 (즉시 반영)</button>
+            <button class="btn-cancel btn-full" onclick="closeModal('prod')">취소</button>
         </div>
     </div>
+</div>
 
-    <!-- 생산 입력 모달 -->
-    <div id="modalProd" class="modal">
-        <div class="modal-content">
-            <div class="modal-header" id="moTitProd">✏️ 생산 데이터 입력</div>
-            <div class="modal-desc">Excel에서 <strong>[제품 | 기간 | 공정 | 투입 | 산출 | 불량]</strong> 순서로 복사하여 붙여넣을 수 있습니다.</div>
-            <textarea class="paste-area" id="pasteProd" placeholder="Excel 데이터를 여기에 붙여넣기 (Ctrl+V)"></textarea>
-            <div style="display:flex;gap:12px;margin-bottom:24px;">
-                <button class="btn btn-primary" onclick="parsePaste('prod')" style="flex:1;">📋 데이터 적용</button>
-                <button class="btn btn-danger" onclick="clearTable('prod')" style="width:120px;">🗑️ 초기화</button>
-            </div>
-            <div style="max-height:400px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--radius);">
-                <table class="entry-table" id="tblEntryProd">
-                    <thead><tr><th>제품</th><th>기간</th><th>공정</th><th>투입</th><th>산출</th><th>불량</th><th>삭제</th></tr></thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-            <button class="btn btn-secondary" onclick="addRow('prod')" style="margin-top:16px;width:100%;">+ 행 추가</button>
-            <div class="modal-footer">
-                <button class="btn btn-success btn-full" onclick="saveData('prod')">💾 저장 (즉시 반영)</button>
-                <button class="btn btn-secondary btn-full" onclick="closeModal('prod')">취소</button>
-            </div>
+<div id="modalShip" class="modal">
+    <div class="modal-box">
+        <div class="modal-title" id="moTitShip">📦 출하 데이터 입력</div>
+        <div class="modal-desc">Excel에서 <strong>[모델 | 모델명 | 날짜 | 수량 | 사유]</strong> 순서로 복사하여 붙여넣을 수 있습니다.</div>
+        <textarea class="paste-area" id="pasteShip" placeholder="Excel 데이터를 여기에 붙여넣기 (Ctrl+V)"></textarea>
+        <div style="display:flex;gap:10px;margin-bottom:20px;">
+            <button class="btn-parse" onclick="parsePaste('ship')">📋 데이터 적용</button>
+            <button class="btn-clr" onclick="clearTable('ship')">🗑️ 초기화</button>
+        </div>
+        <div style="max-height:380px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;">
+            <table class="entry-tbl" id="tblEntryShip">
+                <thead><tr><th>모델</th><th>모델명</th><th>날짜</th><th>수량</th><th>사유</th><th>기간(자동)</th><th>삭제</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <button class="btn-addrow" onclick="addRow('ship')">+ 행 추가</button>
+        <div class="modal-footer">
+            <button class="btn-save btn-full" onclick="saveData('ship')">💾 저장 (즉시 반영)</button>
+            <button class="btn-cancel btn-full" onclick="closeModal('ship')">취소</button>
         </div>
     </div>
+</div>
 
-    <!-- 출하 입력 모달 -->
-    <div id="modalShip" class="modal">
-        <div class="modal-content">
-            <div class="modal-header" id="moTitShip">📦 출하 데이터 입력</div>
-            <div class="modal-desc">Excel에서 <strong>[모델 | 모델명 | 날짜 | 수량 | 사유]</strong> 순서로 복사하여 붙여넣을 수 있습니다.</div>
-            <textarea class="paste-area" id="pasteShip" placeholder="Excel 데이터를 여기에 붙여넣기 (Ctrl+V)"></textarea>
-            <div style="display:flex;gap:12px;margin-bottom:24px;">
-                <button class="btn btn-primary" onclick="parsePaste('ship')" style="flex:1;">📋 데이터 적용</button>
-                <button class="btn btn-danger" onclick="clearTable('ship')" style="width:120px;">🗑️ 초기화</button>
-            </div>
-            <div style="max-height:400px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--radius);">
-                <table class="entry-table" id="tblEntryShip">
-                    <thead><tr><th>모델</th><th>모델명</th><th>날짜</th><th>수량</th><th>사유</th><th>기간(자동)</th><th>삭제</th></tr></thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-            <button class="btn btn-secondary" onclick="addRow('ship')" style="margin-top:16px;width:100%;">+ 행 추가</button>
-            <div class="modal-footer">
-                <button class="btn btn-success btn-full" onclick="saveData('ship')">💾 저장 (즉시 반영)</button>
-                <button class="btn btn-secondary btn-full" onclick="closeModal('ship')">취소</button>
-            </div>
+<div id="modalDefect" class="modal">
+    <div class="modal-box">
+        <div class="modal-title" id="moTitDefect">🛠️ 불량 유형 데이터 입력</div>
+        <div class="modal-desc">Excel에서 <strong>[불량명 | 기간(YY.MM) | 수량]</strong> 순서로 복사하여 붙여넣을 수 있습니다.</div>
+        <textarea class="paste-area" id="pasteDefect" placeholder="예시: Human Error&#9;26.02&#9;5"></textarea>
+        <div style="display:flex;gap:10px;margin-bottom:20px;">
+            <button class="btn-parse" onclick="parsePaste('defect')">📋 데이터 적용</button>
+            <button class="btn-clr" onclick="clearTable('defect')">🗑️ 초기화</button>
+        </div>
+        <div style="max-height:380px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;">
+            <table class="entry-tbl" id="tblEntryDefect">
+                <thead><tr><th>불량명</th><th>기간 (YY.MM)</th><th>수량</th><th>삭제</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <button class="btn-addrow" onclick="addRow('defect')">+ 행 추가</button>
+        <div class="modal-footer">
+            <button class="btn-save btn-full" onclick="saveData('defect')">💾 저장 (즉시 반영)</button>
+            <button class="btn-cancel btn-full" onclick="closeModal('defect')">취소</button>
         </div>
     </div>
+</div>
 
-    <!-- 불량 유형 입력 모달 -->
-    <div id="modalDefect" class="modal">
-        <div class="modal-content">
-            <div class="modal-header" id="moTitDefect">🛠️ 불량 유형 데이터 입력</div>
-            <div class="modal-desc">Excel에서 <strong>[불량명 | 기간(YY.MM) | 수량]</strong> 순서로 복사하여 붙여넣을 수 있습니다.</div>
-            <textarea class="paste-area" id="pasteDefect" placeholder="예시: Human Error&#9;26.02&#9;5"></textarea>
-            <div style="display:flex;gap:12px;margin-bottom:24px;">
-                <button class="btn btn-warning" onclick="parsePaste('defect')" style="flex:1;">📋 데이터 적용</button>
-                <button class="btn btn-danger" onclick="clearTable('defect')" style="width:120px;">🗑️ 초기화</button>
-            </div>
-            <div style="max-height:400px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--radius);">
-                <table class="entry-table" id="tblEntryDefect">
-                    <thead><tr><th>불량명</th><th>기간 (YY.MM)</th><th>수량</th><th>삭제</th></tr></thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-            <button class="btn btn-secondary" onclick="addRow('defect')" style="margin-top:16px;width:100%;">+ 행 추가</button>
-            <div class="modal-footer">
-                <button class="btn btn-success btn-full" onclick="saveData('defect')">💾 저장 (즉시 반영)</button>
-                <button class="btn btn-secondary btn-full" onclick="closeModal('defect')">취소</button>
-            </div>
+<!-- Password Modal -->
+<div id="pwModal">
+    <div class="pw-box">
+        <div class="pw-icon">🔒</div>
+        <div class="pw-title" id="pwTitle">데이터 입력 비밀번호</div>
+        <div class="pw-sub" id="pwSub">데이터를 수정하려면 비밀번호를 입력하세요</div>
+        <input type="password" class="pw-input" id="pwInput" placeholder="••••" maxlength="20" onkeydown="if(event.key==='Enter')pwConfirm()">
+        <div class="pw-err" id="pwErr"></div>
+        <div class="pw-btns">
+            <button class="pw-cancel" onclick="pwCancel()" id="pwCancelBtn">취소</button>
+            <button class="pw-ok" onclick="pwConfirm()" id="pwOkBtn">확인</button>
         </div>
     </div>
+</div>
 
-    <script>
-    // ============================================================
-    // 🔥 FIREBASE 설정 - 여기를 실제 값으로 교체하세요!
-    // Firebase 콘솔 > 프로젝트 설정 > 앱 등록 후 복사
-    // ============================================================
-    const FIREBASE_CONFIG = {
-        apiKey:            "AIzaSyAQAqYYenEzp0ps7lLRxF9ikcYywq8WwQo",
-        authDomain:        "ds-quality-41ad2.firebaseapp.com",
-        databaseURL:       "https://ds-quality-41ad2-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId:         "ds-quality-41ad2",
-        storageBucket:     "ds-quality-41ad2.firebasestorage.app",
-        messagingSenderId: "910427066275",
-        appId:             "1:910427066275:web:3aa0c8009e17619ad3d416"
+<!-- Backup Modal -->
+<div id="backupModal">
+    <div class="backup-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <div>
+                <div style="font-size:20px;font-weight:800;color:var(--navy);font-family:'Noto Sans KR',sans-serif;" id="backupTitle">💾 데이터 백업 관리</div>
+                <div style="font-size:12px;color:var(--text-sub);margin-top:4px;font-family:'Noto Sans KR',sans-serif;" id="backupSubTitle">최대 10개 백업 저장 · 잘못 입력 시 복원 가능</div>
+            </div>
+            <button onclick="closeBackupModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-muted);">✕</button>
+        </div>
+        <button onclick="createBackup()" style="width:100%;padding:13px;background:linear-gradient(135deg,var(--navy),var(--navy-light));color:white;border:none;border-radius:10px;cursor:pointer;font-size:14px;font-weight:700;font-family:'Noto Sans KR',sans-serif;margin-bottom:20px;transition:all .2s;" id="backupNowBtn" onmouseover="this.style.opacity='.9'" onmouseout="this.style.opacity='1'">📸 지금 백업 생성</button>
+        <div id="backupList"><div style="text-align:center;padding:40px;color:var(--text-muted);font-family:'Noto Sans KR',sans-serif;">백업이 없습니다</div></div>
+    </div>
+</div>
+
+<script>
+// ============================================================
+// 🔥 FIREBASE 설정
+// ============================================================
+const FIREBASE_CONFIG = {
+    apiKey:            "AIzaSyAQAqYYenEzp0ps71LRxF9ikcYywq8WwQo",
+    authDomain:        "ds-quality-41ad2.firebaseapp.com",
+    databaseURL:       "https://ds-quality-41ad2-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId:         "ds-quality-41ad2",
+    storageBucket:     "ds-quality-41ad2.firebasestorage.app",
+    messagingSenderId: "910427066275",
+    appId:             "1:910427066275:web:3aa0c8009e17619ad3d416"
+};
+// ============================================================
+
+const isConfigured = !Object.values(FIREBASE_CONFIG).some(v=>v.includes('YOUR_'));
+let db=null, prodData=[], shipData=[], defectTypeData=[];
+let filters={product:'전체',month:'전체',process:'전체',defectType:'전체'};
+let procChartFilter='전체', prodChartFilter='전체';
+let charts={}, lang='ko';
+let dataLoaded={prod:false,ship:false,defect:false};
+
+// ─── PASSWORD ───────────────────────────────────────
+const DATA_PASSWORD = "ds2025"; // ← 여기서 비밀번호 변경하세요!
+let pwCallback = null;
+
+function requirePassword(cb){
+    pwCallback = cb;
+    document.getElementById('pwInput').value='';
+    document.getElementById('pwErr').innerText='';
+    document.getElementById('pwModal').classList.add('open');
+    setTimeout(()=>document.getElementById('pwInput').focus(),100);
+}
+function pwConfirm(){
+    const v=document.getElementById('pwInput').value;
+    if(v===DATA_PASSWORD){ document.getElementById('pwModal').classList.remove('open'); if(pwCallback){pwCallback();pwCallback=null;} }
+    else{ document.getElementById('pwErr').innerText=lang==='ko'?'❌ 비밀번호가 틀렸습니다':'❌ Incorrect password'; document.getElementById('pwInput').value=''; document.getElementById('pwInput').focus(); }
+}
+function pwCancel(){ document.getElementById('pwModal').classList.remove('open'); pwCallback=null; }
+
+// ─── BACKUP ─────────────────────────────────────────
+function createBackup(){
+    const now=new Date(), p=x=>String(x).padStart(2,'0');
+    const ts=`${now.getFullYear()}-${p(now.getMonth()+1)}-${p(now.getDate())} ${p(now.getHours())}:${p(now.getMinutes())}:${p(now.getSeconds())}`;
+    const key=`backup_${now.getTime()}`;
+    const snapshot={ts,prodData:[...prodData],shipData:[...shipData],defectTypeData:[...defectTypeData]};
+    if(db){
+        db.ref('backups/'+key).set(snapshot).then(()=>{
+            cleanOldBackups(); loadBackupList();
+            alert(lang==='ko'?'✅ 백업이 생성되었습니다!':'✅ Backup created successfully!');
+        }).catch(()=>alert(lang==='ko'?'⚠️ 백업 저장 실패':'⚠️ Backup failed'));
+    } else {
+        try{const bs=JSON.parse(localStorage.getItem('ds_backups')||'{}');bs[key]=snapshot;const keys=Object.keys(bs).sort();if(keys.length>10){delete bs[keys[0]];}localStorage.setItem('ds_backups',JSON.stringify(bs));loadBackupList();alert(lang==='ko'?'✅ 백업이 생성되었습니다! (로컬 저장)':'✅ Backup created (local)!');}catch(e){alert('백업 오류');}
+    }
+}
+function cleanOldBackups(){
+    if(!db)return;
+    db.ref('backups').once('value',s=>{
+        const bks=s.val(); if(!bks)return;
+        const keys=Object.keys(bks).sort();
+        if(keys.length>10){ const toDelete=keys.slice(0,keys.length-10); toDelete.forEach(k=>db.ref('backups/'+k).remove()); }
+    });
+}
+function loadBackupList(){
+    const list=document.getElementById('backupList'); if(!list)return;
+    if(db){
+        db.ref('backups').orderByKey().limitToLast(10).once('value',s=>{
+            const bks=s.val();
+            if(!bks){list.innerHTML=`<div style="text-align:center;padding:40px;color:var(--text-muted);font-family:'Noto Sans KR',sans-serif;">${lang==='ko'?'백업이 없습니다':'No backups'}</div>`;return;}
+            const keys=Object.keys(bks).sort().reverse();
+            list.innerHTML=keys.map((k,i)=>`<div class="backup-item"><div class="backup-item-info"><div class="backup-item-time">${bks[k].ts}</div><div class="backup-item-size">${lang==='ko'?`생산 ${bks[k].prodData?.length||0}건 · 출하 ${bks[k].shipData?.length||0}건 · 불량 ${bks[k].defectTypeData?.length||0}건`:`Prod ${bks[k].prodData?.length||0} · Ship ${bks[k].shipData?.length||0} · Defect ${bks[k].defectTypeData?.length||0}`}</div></div><div style="display:flex;align-items:center;gap:6px;"><button class="backup-restore-btn" onclick="restoreBackup('${k}')">${lang==='ko'?'복원':'Restore'}</button><button class="backup-del-btn" onclick="deleteBackup('${k}')">✕</button></div></div>`).join('');
+        });
+    } else {
+        try{const bs=JSON.parse(localStorage.getItem('ds_backups')||'{}');const keys=Object.keys(bs).sort().reverse();if(!keys.length){list.innerHTML=`<div style="text-align:center;padding:40px;color:var(--text-muted);font-family:'Noto Sans KR',sans-serif;">${lang==='ko'?'백업이 없습니다':'No backups'}</div>`;return;}list.innerHTML=keys.map(k=>`<div class="backup-item"><div class="backup-item-info"><div class="backup-item-time">${bs[k].ts}</div><div class="backup-item-size">${lang==='ko'?`생산 ${bs[k].prodData?.length||0}건 · 출하 ${bs[k].shipData?.length||0}건 · 불량 ${bs[k].defectTypeData?.length||0}건`:`Prod ${bs[k].prodData?.length||0} · Ship ${bs[k].shipData?.length||0} · Defect ${bs[k].defectTypeData?.length||0}`}</div></div><div style="display:flex;align-items:center;gap:6px;"><button class="backup-restore-btn" onclick="restoreBackup('${k}')">${lang==='ko'?'복원':'Restore'}</button><button class="backup-del-btn" onclick="deleteBackup('${k}')">✕</button></div></div>`).join('');}catch(e){}
+    }
+}
+function restoreBackup(key){
+    if(!confirm(lang==='ko'?'⚠️ 이 백업으로 모든 데이터를 복원하시겠습니까?\n현재 데이터는 덮어씌워집니다.':'⚠️ Restore from this backup?\nCurrent data will be overwritten.'))return;
+    const doRestore=(snap)=>{
+        if(!snap)return;
+        prodData=snap.prodData||[]; shipData=snap.shipData||[]; defectTypeData=snap.defectTypeData||[];
+        if(db){saveToFirebase('prod',prodData);saveToFirebase('ship',shipData);saveToFirebase('defect',defectTypeData);}
+        updateSmartLists(); updateUI(); updateLastUpdate(); closeBackupModal();
+        alert(lang==='ko'?'✅ 복원 완료!':'✅ Restore complete!');
     };
-    // ============================================================
+    if(db){db.ref('backups/'+key).once('value',s=>doRestore(s.val()));}
+    else{try{const bs=JSON.parse(localStorage.getItem('ds_backups')||'{}');doRestore(bs[key]);}catch(e){}}
+}
+function deleteBackup(key){
+    if(!confirm(lang==='ko'?'이 백업을 삭제하시겠습니까?':'Delete this backup?'))return;
+    if(db){db.ref('backups/'+key).remove().then(()=>loadBackupList());}
+    else{try{const bs=JSON.parse(localStorage.getItem('ds_backups')||'{}');delete bs[key];localStorage.setItem('ds_backups',JSON.stringify(bs));loadBackupList();}catch(e){}}
+}
+function openBackupModal(){ document.getElementById('backupModal').classList.add('open'); loadBackupList(); }
+function closeBackupModal(){ document.getElementById('backupModal').classList.remove('open'); }
 
-    // Firebase 설정 확인
-    const isConfigured = !Object.values(FIREBASE_CONFIG).some(v => v.includes('YOUR_'));
-    
-    let db = null;
-    let prodData = [], shipData = [], defectTypeData = [];
-    let filters = { product: '전체', month: '전체', process: '전체', defectType: '전체' };
-    let procChartFilter = '전체', prodChartFilter = '전체';
-    let charts = {}, lang = 'ko';
-    let dataLoaded = { prod: false, ship: false, defect: false };
+Chart.register(ChartDataLabels);
 
-    Chart.register(ChartDataLabels);
-
-    // ===== Firebase 초기화 =====
-    function initFirebase() {
-        if (!isConfigured) {
-            document.getElementById('configBanner').style.display = 'block';
-            document.getElementById('loadingOverlay').style.display = 'none';
-            setSyncStatus('offline', '⚠️ Firebase 미설정');
-            // 기본 샘플 데이터로 시작
-            prodData = getDefaultProdData();
-            shipData = getDefaultShipData();
-            defectTypeData = getDefaultDefectData();
-            initUI();
-            return;
-        }
-
-        try {
-            firebase.initializeApp(FIREBASE_CONFIG);
-            db = firebase.database();
-            setupRealtimeListeners();
-        } catch (e) {
-            console.error('Firebase 초기화 오류:', e);
-            setSyncStatus('offline', '연결 오류');
-            document.getElementById('loadingOverlay').style.display = 'none';
-        }
+function initFirebase(){
+    if(!isConfigured){
+        document.getElementById('configBanner').style.display='block';
+        document.getElementById('loadingOverlay').style.display='none';
+        setSyncStatus('offline','⚠️ Firebase 미설정');
+        prodData=getDefaultProdData(); shipData=getDefaultShipData(); defectTypeData=getDefaultDefectData();
+        initUI(); return;
     }
+    try{
+        firebase.initializeApp(FIREBASE_CONFIG); db=firebase.database();
+        setupListeners();
+    }catch(e){ setSyncStatus('offline','연결 오류'); document.getElementById('loadingOverlay').style.display='none'; }
+}
 
-    // ===== 실시간 리스너 =====
-    function setupRealtimeListeners() {
-        setSyncStatus('saving', '데이터 로딩 중...');
+function setupListeners(){
+    setSyncStatus('saving','데이터 로딩 중...');
+    db.ref('prodData').on('value',s=>{ prodData=s.val()?Object.values(s.val()):getDefaultProdData(); dataLoaded.prod=true; checkLoaded(); });
+    db.ref('shipData').on('value',s=>{ shipData=s.val()?Object.values(s.val()):getDefaultShipData(); dataLoaded.ship=true; checkLoaded(); });
+    db.ref('defectTypeData').on('value',s=>{ defectTypeData=s.val()?Object.values(s.val()):getDefaultDefectData(); dataLoaded.defect=true; checkLoaded(); });
+    firebase.database().ref('.info/connected').on('value',s=>setSyncStatus(s.val()?'online':'offline',s.val()?'실시간 연결됨':'오프라인'));
+}
 
-        db.ref('prodData').on('value', snap => {
-            prodData = snap.val() ? Object.values(snap.val()) : getDefaultProdData();
-            dataLoaded.prod = true;
-            checkAllLoaded();
+function checkLoaded(){ if(dataLoaded.prod&&dataLoaded.ship&&dataLoaded.defect){ document.getElementById('loadingOverlay').style.display='none'; initUI(); } }
+function initUI(){ updateSmartLists(); renderFilterButtons(); updateUI(); updateLastUpdate(); }
+function setSyncStatus(t,x){ const e=document.getElementById('syncStatus'); e.className='sync-'+t; document.getElementById('syncText').textContent=x; }
+
+function saveToFirebase(type,data){
+    if(!db) return Promise.resolve();
+    setSyncStatus('saving','저장 중...');
+    const k=type==='prod'?'prodData':type==='ship'?'shipData':'defectTypeData';
+    return db.ref(k).set(data).then(()=>setSyncStatus('online','실시간 연결됨')).catch(()=>setSyncStatus('offline','저장 실패'));
+}
+
+function getDefaultProdData(){return[{"prod":"RDIMM","month":"10월","proc":"SMD","in":3450,"out":3450,"fail":0},{"prod":"RDIMM","month":"10월","proc":"ROUTER","in":3450,"out":3450,"fail":0},{"prod":"RDIMM","month":"10월","proc":"ATE","in":3450,"out":3448,"fail":2},{"prod":"RDIMM","month":"10월","proc":"PCT","in":3448,"out":3418,"fail":30},{"prod":"RDIMM","month":"10월","proc":"AVI","in":3418,"out":3413,"fail":5},{"prod":"RDIMM","month":"11월","proc":"SMD","in":1410,"out":1410,"fail":0},{"prod":"RDIMM","month":"11월","proc":"ROUTER","in":1410,"out":1409,"fail":1},{"prod":"RDIMM","month":"11월","proc":"ATE","in":1409,"out":1407,"fail":2},{"prod":"RDIMM","month":"11월","proc":"PCT","in":1407,"out":1386,"fail":21},{"prod":"RDIMM","month":"11월","proc":"AVI","in":1386,"out":1384,"fail":2},{"prod":"RDIMM","month":"12월","proc":"SMD","in":7632,"out":7630,"fail":2},{"prod":"RDIMM","month":"12월","proc":"ROUTER","in":7630,"out":7628,"fail":2},{"prod":"RDIMM","month":"12월","proc":"ATE","in":7628,"out":7622,"fail":6},{"prod":"RDIMM","month":"12월","proc":"PCT","in":7622,"out":7581,"fail":41},{"prod":"RDIMM","month":"12월","proc":"AVI","in":7581,"out":7576,"fail":5},{"prod":"RDIMM","month":"1월","proc":"SMD","in":3204,"out":3204,"fail":0},{"prod":"RDIMM","month":"1월","proc":"ROUTER","in":3204,"out":3204,"fail":0},{"prod":"RDIMM","month":"1월","proc":"ATE","in":3204,"out":3201,"fail":3},{"prod":"RDIMM","month":"1월","proc":"PCT","in":3201,"out":3179,"fail":22},{"prod":"RDIMM","month":"1월","proc":"AVI","in":3179,"out":3179,"fail":0},{"prod":"SODIMM","month":"11월","proc":"SMD","in":2574,"out":2574,"fail":0},{"prod":"SODIMM","month":"11월","proc":"ROUTER","in":2574,"out":2574,"fail":0},{"prod":"SODIMM","month":"11월","proc":"ATE","in":2574,"out":2574,"fail":0},{"prod":"SODIMM","month":"11월","proc":"PCT","in":2574,"out":2562,"fail":12},{"prod":"SODIMM","month":"11월","proc":"AVI","in":2562,"out":2559,"fail":3},{"prod":"SODIMM","month":"12월","proc":"SMD","in":1404,"out":1404,"fail":0},{"prod":"SODIMM","month":"12월","proc":"ROUTER","in":1404,"out":1404,"fail":0},{"prod":"SODIMM","month":"12월","proc":"ATE","in":1404,"out":1404,"fail":0},{"prod":"SODIMM","month":"12월","proc":"PCT","in":1404,"out":1399,"fail":5},{"prod":"SODIMM","month":"12월","proc":"AVI","in":1399,"out":1398,"fail":1},{"prod":"UDIMM","month":"12월","proc":"SMD","in":4212,"out":4212,"fail":0},{"prod":"UDIMM","month":"12월","proc":"ROUTER","in":4212,"out":4212,"fail":0},{"prod":"UDIMM","month":"12월","proc":"ATE","in":4212,"out":4212,"fail":0},{"prod":"UDIMM","month":"12월","proc":"PCT","in":4212,"out":4198,"fail":14},{"prod":"UDIMM","month":"12월","proc":"AVI","in":4198,"out":4198,"fail":0},{"prod":"UDIMM","month":"1월","proc":"SMD","in":2046,"out":2046,"fail":0},{"prod":"UDIMM","month":"1월","proc":"ROUTER","in":2046,"out":2046,"fail":0},{"prod":"UDIMM","month":"1월","proc":"ATE","in":2046,"out":2045,"fail":1},{"prod":"UDIMM","month":"1월","proc":"PCT","in":2045,"out":2042,"fail":3},{"prod":"UDIMM","month":"1월","proc":"AVI","in":2042,"out":2042,"fail":0}];}
+function getDefaultShipData(){return[{"model":"RDIMM","name":"M321R8GA0EB2-CWMXJ-IRB","date":"2025-10-28","qty":1026,"reason":"Mass Production","month":"25.10"},{"model":"RDIMM","name":"M321R8GA0EB2-CWMXJ-IRB","date":"2025-11-06","qty":4304,"reason":"Mass Production","month":"25.11"},{"model":"UDIMM","name":"M323R2GA3EB0-CWMOL-IYB","date":"2025-11-25","qty":2000,"reason":"Mass Production","month":"25.11"},{"model":"RDIMM","name":"M321R8GA0EB2-CWMXJ-IRB","date":"2025-12-16","qty":2344,"reason":"Mass Production","month":"25.12"},{"model":"SODIMM","name":"M425R2GA3EB0-CWMOL-IYB","date":"2025-12-16","qty":1935,"reason":"Mass Production","month":"25.12"}];}
+function getDefaultDefectData(){return[{"reason":"Human Error","month":"25.10","qty":0},{"reason":"Human Error","month":"25.11","qty":3},{"reason":"Human Error","month":"25.12","qty":1},{"reason":"Human Error","month":"26.01","qty":0},{"reason":"Handling Damage","month":"25.10","qty":5},{"reason":"Handling Damage","month":"25.11","qty":3},{"reason":"Handling Damage","month":"25.12","qty":8},{"reason":"Handling Damage","month":"26.01","qty":0},{"reason":"Component Lifting","month":"25.10","qty":0},{"reason":"Component Lifting","month":"25.11","qty":0},{"reason":"Component Lifting","month":"25.12","qty":1},{"reason":"Component Lifting","month":"26.01","qty":0}];}
+
+const T={ko:{mainTitle:'📊 DS Quality Performance',lblProd:'제품',lblPeriod:'기간',lblProcess:'공정',btnProd:'✏️ 생산 입력',btnShip:'📦 출하 입력',btnDefect:'🛠️ 불량 유형 입력',lblKpiYield:'종합 수율',lblKpiPPM:'당사 귀책 불량률',lblKpiInput:'총 투입 수량',lblKpiOutput:'총 산출 수량',lblKpiDefect:'총 불량 수량',lblKpiCompDefect:'당사 귀책 불량',titProcYield:'공정별 수율 현황',titMonthYield:'공정별 월별 수율 추이',titProdYield:'제품별 수율 현황',titTotalTrend:'종합 수율 월별 트렌드 (%)',titProdTrend:'제품별 수율 추이 (%)',titProcTrend:'공정별 수율 추이 (%)',titProdVol:'DS 생산 실적',titTotalDefect:'월별 불량 수 트렌드',titCompDefect:'당사 귀책 불량 수 트렌드',titDefectType:'불량 유형 차트',titDefectTable:'불량 유형 상세 현황',titDefectSection:'📉 불량 분석 및 상세 현황',titShipSection:'📦 출하 실적',titShipTable:'월별 출하 수량',titShipChart:'월별 출하 실적 추이',thProc:'공정',thIn:'투입',thOut:'산출',thFail:'불량',thYld:'수율',thStat:'판정',thMonth:'기간',thProd:'제품',thIn2:'투입',thOut2:'산출',thFail2:'불량',thYld2:'수율',thStat2:'판정',thShipMonth:'기간',thTotal:'합계',moTitProd:'✏️ 생산 데이터 입력',moTitShip:'📦 출하 데이터 입력',moTitDefect:'🛠️ 불량 유형 데이터 입력',all:'전체',good:'양호',warn:'경고'},en:{mainTitle:'📊 DS Quality Performance',lblProd:'Product',lblPeriod:'Period',lblProcess:'Process',btnProd:'✏️ Production',btnShip:'📦 Shipment',btnDefect:'🛠️ Defect Types',lblKpiYield:'Overall Yield',lblKpiPPM:'Defect Rate (PPM)',lblKpiInput:'Total Input',lblKpiOutput:'Total Output',lblKpiDefect:'Total Defects',lblKpiCompDefect:'Company Defects',titProcYield:'Process Yield',titMonthYield:'Monthly Process Yield',titProdYield:'Product Yield',titTotalTrend:'Overall Yield Trend (%)',titProdTrend:'Product Yield Trend (%)',titProcTrend:'Process Yield Trend (%)',titProdVol:'Production Volume',titTotalDefect:'Total Defect Trend',titCompDefect:'Company Defect Trend',titDefectType:'Defect Type Chart',titDefectTable:'Defect Type Details',titDefectSection:'📉 Defect Analysis',titShipSection:'📦 Shipment Performance',titShipTable:'Monthly Shipment',titShipChart:'Shipment Trend',thProc:'Process',thIn:'Input',thOut:'Output',thFail:'Defect',thYld:'Yield',thStat:'Status',thMonth:'Period',thProd:'Product',thIn2:'Input',thOut2:'Output',thFail2:'Defect',thYld2:'Yield',thStat2:'Status',thShipMonth:'Period',thTotal:'Total',moTitProd:'✏️ Production Data Entry',moTitShip:'📦 Shipment Data Entry',moTitDefect:'🛠️ Defect Type Data Entry',all:'All',good:'Good',warn:'Warning'}};
+
+function getUV(a,k){return[...new Set(a.map(d=>d[k]))].filter(v=>v&&v.toString().trim()).sort();}
+function updateSmartLists(){
+    document.querySelectorAll('datalist').forEach(d=>d.remove());
+    const months=[...new Set([...prodData.map(d=>d.month),...shipData.map(d=>d.month),...defectTypeData.map(d=>d.month)])];
+    const dReasons=[...new Set([...getUV(defectTypeData,'reason'),'Human Error','Handling Damage','Component Lifting'])];
+    const sReasons=[...new Set([...getUV(shipData,'reason'),'Mass Production','Sample','RMA'])];
+    document.body.insertAdjacentHTML('beforeend',`<datalist id="list-products"><option value="RDIMM"><option value="SODIMM"><option value="UDIMM"></datalist><datalist id="list-months">${months.map(m=>`<option value="${m}">`).join('')}</datalist><datalist id="list-model-names">${getUV(shipData,'name').map(n=>`<option value="${n}">`).join('')}</datalist><datalist id="list-ship-reasons">${sReasons.map(r=>`<option value="${r}">`).join('')}</datalist><datalist id="list-defect-reasons">${dReasons.map(r=>`<option value="${r}">`).join('')}</datalist>`);
+}
+function updateLastUpdate(){
+    const el=document.getElementById('lastUpdate'); if(!el)return;
+    const n=new Date(), p=x=>String(x).padStart(2,'0');
+    el.innerText=(lang==='ko'?'최종 업데이트: ':'Last Update: ')+`${n.getFullYear()}-${p(n.getMonth()+1)}-${p(n.getDate())} ${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())}`;
+}
+window.onload=initFirebase;
+
+function extractYM(s){
+    if(!s)return''; const c=s.toString().trim();
+    if(/^\d{2}\.\d{2}$/.test(c))return c;
+    const km=c.match(/(\d{2,4})\s*년\s*(\d{1,2})\s*월?/);
+    if(km){let y=km[1];const m=km[2].padStart(2,'0');if(y.length===4)y=y.slice(2);return`${y}.${m}`;}
+    const dm=c.match(/(\d{4})[-/](\d{1,2})/);
+    if(dm)return`${dm[1].slice(2)}.${dm[2].padStart(2,'0')}`;
+    return c;
+}
+function fmtPeriod(p){
+    if(!/^\d{2}\.\d{2}$/.test(p))return p;
+    const[y,m]=p.split('.'),mn=parseInt(m);
+    if(lang==='en'){const ns=["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];return`${ns[mn]} ${y}`;}
+    return`${y}년 ${mn}월`;
+}
+function getPM(){return[...new Set(prodData.map(d=>d.month))].sort();}
+function getSM(){return[...new Set(shipData.map(d=>d.month))].sort();}
+function getDM(){return[...new Set(defectTypeData.map(d=>d.month))].sort();}
+function getAM(){return[...new Set([...prodData.map(d=>d.month),...shipData.map(d=>d.month),...defectTypeData.map(d=>d.month)])].sort();}
+function getFD(){return prodData.filter(d=>(filters.product==='전체'||d.prod===filters.product)&&(filters.month==='전체'||d.month===filters.month)&&(filters.process==='전체'||d.proc===filters.process));}
+function cleanNum(v){return Number((v||'').toString().replace(/[,\s]/g,''))||0;}
+
+function saveData(type){
+    const tid=type==='prod'?'tblEntryProd':type==='ship'?'tblEntryShip':'tblEntryDefect';
+    const rows=document.querySelector(`#${tid} tbody`).querySelectorAll('tr');
+    const nd=[];
+    rows.forEach(tr=>{
+        const i=tr.querySelectorAll('input,select');
+        if(type==='prod'&&i[0].value)nd.push({prod:i[0].value,month:i[1].value.trim(),proc:i[2].value,in:cleanNum(i[3].value),out:cleanNum(i[4].value),fail:cleanNum(i[5].value)});
+        else if(type==='ship'&&i[0].value.trim())nd.push({model:i[0].value.trim(),name:i[1].value.trim(),date:i[2].value.trim(),qty:cleanNum(i[3].value),reason:i[4].value.trim(),month:i[5].value.trim()});
+        else if(type==='defect'&&i[0].value.trim())nd.push({reason:i[0].value.trim(),month:i[1].value.trim(),qty:cleanNum(i[2].value)});
+    });
+    if(!nd.length){alert('⚠️ 데이터가 없습니다.');return;}
+    if(type==='prod')prodData=nd; else if(type==='ship')shipData=nd; else defectTypeData=nd;
+    saveToFirebase(type,nd).then(()=>{
+        closeModal(type); updateSmartLists(); updateUI(); updateLastUpdate();
+        const s=document.getElementById('saveSuccess'); s.style.display='block'; setTimeout(()=>s.style.display='none',3000);
+    });
+}
+
+function setLang(l){
+    lang=l;
+    document.getElementById('btnKo').className=l==='ko'?'lang-btn active':'lang-btn';
+    document.getElementById('btnEn').className=l==='en'?'lang-btn active':'lang-btn';
+    for(let k in T[lang]){const e=document.getElementById(k);if(e)e.innerText=T[lang][k];}
+    updateUI(); updateLastUpdate(); updateModalLang();
+}
+function filter(t,v){filters[t]=v; updateUI();}
+
+function renderProdChartBtns(){
+    const c=document.getElementById('prodChartFilter'); if(!c)return; c.innerHTML='';
+    ['전체','RDIMM','SODIMM','UDIMM'].forEach(p=>{
+        const b=document.createElement('button'); b.className='mini-btn'+(prodChartFilter===p?' active':'');
+        b.innerText=p==='전체'?T[lang].all:p; b.onclick=()=>setPCF(p); c.appendChild(b);
+    });
+}
+function setPCF(v){
+    prodChartFilter=v;
+    if(charts.prodYield){charts.prodYield.data.datasets.forEach((ds,i)=>charts.prodYield.setDatasetVisibility(i,v==='전체'||ds.label===v));charts.prodYield.update();}
+    renderProdChartBtns();
+}
+function renderProcChartBtns(){
+    const c=document.getElementById('procChartFilter'); if(!c)return; c.innerHTML='';
+    ['전체','SMD','ROUTER','ATE','PCT','AVI'].forEach(p=>{
+        const b=document.createElement('button'); b.className='mini-btn'+(procChartFilter===p?' active':'');
+        b.innerText=p==='전체'?T[lang].all:p; b.onclick=()=>setRCF(p); c.appendChild(b);
+    });
+}
+function setRCF(v){
+    procChartFilter=v;
+    if(charts.procYield){charts.procYield.data.datasets.forEach((ds,i)=>charts.procYield.setDatasetVisibility(i,v==='전체'||ds.label===v));charts.procYield.update();}
+    renderProcChartBtns();
+}
+function renderDefectBtns(){
+    const c=document.getElementById('defectTypeFilters'); if(!c)return; c.innerHTML='';
+    const rs=[...new Set(defectTypeData.map(d=>d.reason))].sort();
+    ['전체',...rs].forEach(r=>{
+        const b=document.createElement('button'); b.className='mini-btn'+(filters.defectType===r?' active':'');
+        b.innerText=r==='전체'?T[lang].all:r; b.onclick=()=>filter('defectType',r); c.appendChild(b);
+    });
+}
+
+function updateDefectTable(){
+    const tbl=document.getElementById('tblDefectType'); if(!tbl)return;
+    const thead=tbl.querySelector('thead'), tbody=tbl.querySelector('tbody');
+    const months=getDM(), reasons=[...new Set(defectTypeData.map(d=>d.reason))].sort();
+    thead.innerHTML=`<tr><th>${lang==='ko'?'기간':'Period'}</th>${reasons.map(r=>`<th>${r}</th>`).join('')}<th>${lang==='ko'?'합계':'Total'}</th></tr>`;
+    if(!months.length||!reasons.length){tbody.innerHTML=`<tr><td colspan="${reasons.length+2}" style="text-align:center;color:#94a3b8;padding:30px;">${lang==='ko'?'데이터 없음':'No data'}</td></tr>`;return;}
+    const rt={};reasons.forEach(r=>rt[r]=defectTypeData.filter(d=>d.reason===r).reduce((a,b)=>a+b.qty,0));
+    tbody.innerHTML=''; let grand=0;
+    months.forEach(m=>{
+        let rt2=0,row=`<tr><td><strong>${fmtPeriod(m)}</strong></td>`;
+        reasons.forEach(r=>{
+            const item=defectTypeData.find(d=>d.month===m&&d.reason===r), q=item?item.qty:0; rt2+=q;
+            let cls='',dsp='';
+            if(q===0){cls='d-zero';dsp='-';}else if(q<=2){cls='d-low';dsp=q.toLocaleString();}else if(q<=5){cls='d-med';dsp=q.toLocaleString();}else{cls='d-high';dsp=q.toLocaleString();}
+            row+=`<td class="${cls}">${dsp}</td>`;
         });
+        row+=`<td>${rt2.toLocaleString()}</td></tr>`;
+        tbody.innerHTML+=row; grand+=rt2;
+    });
+    tbody.innerHTML+=`<tr class="grand-row"><td>${lang==='ko'?'전체 합계':'Grand Total'}</td>${reasons.map(r=>`<td>${rt[r].toLocaleString()}</td>`).join('')}<td>${grand.toLocaleString()}</td></tr>`;
+}
 
-        db.ref('shipData').on('value', snap => {
-            shipData = snap.val() ? Object.values(snap.val()) : getDefaultShipData();
-            dataLoaded.ship = true;
-            checkAllLoaded();
-        });
+function renderFilterButtons(){
+    const pc=document.getElementById('filterProduct'); pc.innerHTML='';
+    ['전체','RDIMM','SODIMM','UDIMM'].forEach(p=>{const b=document.createElement('button');b.className='filter-btn'+(filters.product===p?' active':'');b.innerText=p==='전체'?T[lang].all:p;b.onclick=()=>filter('product',p);pc.appendChild(b);});
+    const mc=document.getElementById('filterMonth'); mc.innerHTML='';
+    ['',...getAM()].forEach((m,i)=>{const b=document.createElement('button');const v=i===0?'전체':m;b.className='filter-btn'+(filters.month===v?' active':'');b.innerText=i===0?T[lang].all:fmtPeriod(m);b.onclick=()=>filter('month',v);mc.appendChild(b);});
+    const proc=document.getElementById('filterProcess'); proc.innerHTML='';
+    ['전체','SMD','ROUTER','ATE','PCT','AVI'].forEach(p=>{const b=document.createElement('button');b.className='filter-btn'+(filters.process===p?' active':'');b.innerText=p==='전체'?T[lang].all:p;b.onclick=()=>filter('process',p);proc.appendChild(b);});
+}
 
-        db.ref('defectTypeData').on('value', snap => {
-            defectTypeData = snap.val() ? Object.values(snap.val()) : getDefaultDefectData();
-            dataLoaded.defect = true;
-            checkAllLoaded();
-        });
+function updateUI(){
+    renderFilterButtons(); renderProdChartBtns(); renderProcChartBtns(); renderDefectBtns();
+    const data=getFD();
+    let tI=0,tO=0,tF=0,cF=0;
+    if(filters.process!=='전체'){tI=data.reduce((a,b)=>a+b.in,0);tO=data.reduce((a,b)=>a+b.out,0);}
+    else{tI=data.filter(d=>d.proc==='SMD').reduce((a,b)=>a+b.in,0);tO=data.filter(d=>d.proc==='AVI').reduce((a,b)=>a+b.out,0);}
+    tF=data.reduce((a,b)=>a+b.fail,0);
+    cF=data.filter(d=>['SMD','ROUTER','AVI'].includes(d.proc)).reduce((a,b)=>a+b.fail,0);
+    const yv=tI>0?tO/tI*100:0, ppm=tI>0?cF/tI*1000000:0;
+    document.getElementById('kpiYield').innerText=yv.toFixed(2)+'%';
+    document.getElementById('kpiPPM').innerText=Math.round(ppm).toLocaleString()+' PPM';
+    document.getElementById('kpiInput').innerText=tI.toLocaleString();
+    document.getElementById('kpiOutput').innerText=tO.toLocaleString();
+    document.getElementById('kpiDefect').innerText=tF.toLocaleString();
+    document.getElementById('kpiCompDefect').innerText=cF.toLocaleString();
+    updateTables(data); updateDefectTable(); drawCharts(data);
+}
 
-        // 연결 상태 모니터링
-        firebase.database().ref('.info/connected').on('value', snap => {
-            if (snap.val()) {
-                setSyncStatus('online', '실시간 연결됨');
-            } else {
-                setSyncStatus('offline', '오프라인');
-            }
-        });
-    }
-
-    function checkAllLoaded() {
-        if (dataLoaded.prod && dataLoaded.ship && dataLoaded.defect) {
-            document.getElementById('loadingOverlay').style.display = 'none';
-            initUI();
-        }
-    }
-
-    function initUI() {
-        updateSmartLists();
-        renderFilterButtons();
-        updateUI();
-        updateLastUpdate();
-    }
-
-    function setSyncStatus(type, text) {
-        const el = document.getElementById('syncStatus');
-        const textEl = document.getElementById('syncText');
-        el.className = `sync-${type}`;
-        textEl.textContent = text;
-    }
-
-    // ===== Firebase 저장 =====
-    function saveToFirebase(type, data) {
-        if (!db) return Promise.resolve(); // Firebase 미설정 시 스킵
-        setSyncStatus('saving', '저장 중...');
-        const key = type === 'prod' ? 'prodData' : type === 'ship' ? 'shipData' : 'defectTypeData';
-        return db.ref(key).set(data).then(() => {
-            setSyncStatus('online', '실시간 연결됨');
-        }).catch(err => {
-            setSyncStatus('offline', '저장 실패');
-            console.error('Firebase 저장 오류:', err);
-        });
-    }
-
-    // ===== 기본 샘플 데이터 =====
-    function getDefaultProdData() {
-        return [
-            {"prod":"RDIMM","month":"10월","proc":"SMD","in":3450,"out":3450,"fail":0},
-            {"prod":"RDIMM","month":"10월","proc":"ROUTER","in":3450,"out":3450,"fail":0},
-            {"prod":"RDIMM","month":"10월","proc":"ATE","in":3450,"out":3448,"fail":2},
-            {"prod":"RDIMM","month":"10월","proc":"PCT","in":3448,"out":3418,"fail":30},
-            {"prod":"RDIMM","month":"10월","proc":"AVI","in":3418,"out":3413,"fail":5},
-            {"prod":"RDIMM","month":"11월","proc":"SMD","in":1410,"out":1410,"fail":0},
-            {"prod":"RDIMM","month":"11월","proc":"ROUTER","in":1410,"out":1409,"fail":1},
-            {"prod":"RDIMM","month":"11월","proc":"ATE","in":1409,"out":1407,"fail":2},
-            {"prod":"RDIMM","month":"11월","proc":"PCT","in":1407,"out":1386,"fail":21},
-            {"prod":"RDIMM","month":"11월","proc":"AVI","in":1386,"out":1384,"fail":2},
-            {"prod":"RDIMM","month":"12월","proc":"SMD","in":7632,"out":7630,"fail":2},
-            {"prod":"RDIMM","month":"12월","proc":"ROUTER","in":7630,"out":7628,"fail":2},
-            {"prod":"RDIMM","month":"12월","proc":"ATE","in":7628,"out":7622,"fail":6},
-            {"prod":"RDIMM","month":"12월","proc":"PCT","in":7622,"out":7581,"fail":41},
-            {"prod":"RDIMM","month":"12월","proc":"AVI","in":7581,"out":7576,"fail":5},
-            {"prod":"RDIMM","month":"1월","proc":"SMD","in":3204,"out":3204,"fail":0},
-            {"prod":"RDIMM","month":"1월","proc":"ROUTER","in":3204,"out":3204,"fail":0},
-            {"prod":"RDIMM","month":"1월","proc":"ATE","in":3204,"out":3201,"fail":3},
-            {"prod":"RDIMM","month":"1월","proc":"PCT","in":3201,"out":3179,"fail":22},
-            {"prod":"RDIMM","month":"1월","proc":"AVI","in":3179,"out":3179,"fail":0},
-            {"prod":"SODIMM","month":"11월","proc":"SMD","in":2574,"out":2574,"fail":0},
-            {"prod":"SODIMM","month":"11월","proc":"ROUTER","in":2574,"out":2574,"fail":0},
-            {"prod":"SODIMM","month":"11월","proc":"ATE","in":2574,"out":2574,"fail":0},
-            {"prod":"SODIMM","month":"11월","proc":"PCT","in":2574,"out":2562,"fail":12},
-            {"prod":"SODIMM","month":"11월","proc":"AVI","in":2562,"out":2559,"fail":3},
-            {"prod":"SODIMM","month":"12월","proc":"SMD","in":1404,"out":1404,"fail":0},
-            {"prod":"SODIMM","month":"12월","proc":"ROUTER","in":1404,"out":1404,"fail":0},
-            {"prod":"SODIMM","month":"12월","proc":"ATE","in":1404,"out":1404,"fail":0},
-            {"prod":"SODIMM","month":"12월","proc":"PCT","in":1404,"out":1399,"fail":5},
-            {"prod":"SODIMM","month":"12월","proc":"AVI","in":1399,"out":1398,"fail":1},
-            {"prod":"UDIMM","month":"12월","proc":"SMD","in":4212,"out":4212,"fail":0},
-            {"prod":"UDIMM","month":"12월","proc":"ROUTER","in":4212,"out":4212,"fail":0},
-            {"prod":"UDIMM","month":"12월","proc":"ATE","in":4212,"out":4212,"fail":0},
-            {"prod":"UDIMM","month":"12월","proc":"PCT","in":4212,"out":4198,"fail":14},
-            {"prod":"UDIMM","month":"12월","proc":"AVI","in":4198,"out":4198,"fail":0},
-            {"prod":"UDIMM","month":"1월","proc":"SMD","in":2046,"out":2046,"fail":0},
-            {"prod":"UDIMM","month":"1월","proc":"ROUTER","in":2046,"out":2046,"fail":0},
-            {"prod":"UDIMM","month":"1월","proc":"ATE","in":2046,"out":2045,"fail":1},
-            {"prod":"UDIMM","month":"1월","proc":"PCT","in":2045,"out":2042,"fail":3},
-            {"prod":"UDIMM","month":"1월","proc":"AVI","in":2042,"out":2042,"fail":0}
-        ];
-    }
-    function getDefaultShipData() {
-        return [
-            {"model":"RDIMM","name":"M321R8GA0EB2-CWMXJ-IRB","date":"2025-10-28","qty":1026,"reason":"Mass Production","month":"25.10"},
-            {"model":"RDIMM","name":"M321R8GA0EB2-CWMXJ-IRB","date":"2025-11-06","qty":4304,"reason":"Mass Production","month":"25.11"},
-            {"model":"UDIMM","name":"M323R2GA3EB0-CWMOL-IYB","date":"2025-11-25","qty":2000,"reason":"Mass Production","month":"25.11"},
-            {"model":"RDIMM","name":"M321R8GA0EB2-CWMXJ-IRB","date":"2025-12-16","qty":2344,"reason":"Mass Production","month":"25.12"},
-            {"model":"SODIMM","name":"M425R2GA3EB0-CWMOL-IYB","date":"2025-12-16","qty":1935,"reason":"Mass Production","month":"25.12"}
-        ];
-    }
-    function getDefaultDefectData() {
-        return [
-            {"reason":"Human Error","month":"25.10","qty":0},
-            {"reason":"Human Error","month":"25.11","qty":3},
-            {"reason":"Human Error","month":"25.12","qty":1},
-            {"reason":"Human Error","month":"26.01","qty":0},
-            {"reason":"Handling Damage","month":"25.10","qty":5},
-            {"reason":"Handling Damage","month":"25.11","qty":3},
-            {"reason":"Handling Damage","month":"25.12","qty":8},
-            {"reason":"Handling Damage","month":"26.01","qty":0},
-            {"reason":"Component Lifting","month":"25.10","qty":0},
-            {"reason":"Component Lifting","month":"25.11","qty":0},
-            {"reason":"Component Lifting","month":"25.12","qty":1},
-            {"reason":"Component Lifting","month":"26.01","qty":0}
-        ];
-    }
-
-    // ===== 번역 =====
-    const translations = {
-        ko: {
-            mainTitle:'📊 DS Quality Performance', lblProd:'제품', lblPeriod:'기간', lblProcess:'공정',
-            btnProd:'✏️ 생산 입력', btnShip:'📦 출하 입력', btnDefect:'🛠️ 불량 유형 입력',
-            lblKpiYield:'종합 수율', lblKpiPPM:'당사 귀책 불량률',
-            lblKpiInput:'총 투입 수량', lblKpiOutput:'총 산출 수량',
-            lblKpiDefect:'총 불량 수량', lblKpiCompDefect:'당사 귀책 불량 수량',
-            titProcYield:'공정별 수율 현황', titMonthYield:'공정별 월별 수율 추이',
-            titProdYield:'제품별 수율 현황', titTotalTrend:'종합 수율 월별 트렌드 (%)',
-            titProdTrend:'제품별 월별 수율 추이 (%)', titProcTrend:'공정별 월별 수율 추이 (%)',
-            titProdVol:'DS 생산 실적', titTotalDefect:'월별 불량 수 트렌드',
-            titCompDefect:'당사 귀책 불량 수 트렌드', titDefectType:'불량 유형 차트',
-            titDefectTable:'불량 유형 상세 현황', titDefectSection:'📉 불량 분석 및 상세 현황',
-            titShipSection:'📦 출하 실적', titShipTable:'월별 출하 수량', titShipChart:'월별 출하 실적 추이',
-            thProc:'공정', thIn:'투입', thOut:'산출', thFail:'불량', thYld:'수율', thStat:'판정',
-            thMonth:'기간', thProd:'제품', thIn2:'투입', thOut2:'산출', thFail2:'불량',
-            thYld2:'수율', thStat2:'판정', thShipMonth:'기간', thTotal:'합계',
-            moTitProd:'✏️ 생산 데이터 입력', moTitShip:'📦 출하 데이터 입력', moTitDefect:'🛠️ 불량 유형 데이터 입력',
-            all:'전체', good:'양호', warn:'경고',
-        },
-        en: {
-            mainTitle:'📊 DS Quality Performance', lblProd:'Product', lblPeriod:'Period', lblProcess:'Process',
-            btnProd:'✏️ Production', btnShip:'📦 Shipment', btnDefect:'🛠️ Defect Types',
-            lblKpiYield:'Overall Yield', lblKpiPPM:'Defect Rate (PPM)',
-            lblKpiInput:'Total Input', lblKpiOutput:'Total Output',
-            lblKpiDefect:'Total Defects', lblKpiCompDefect:'Company Defects',
-            titProcYield:'Process Yield Status', titMonthYield:'Monthly Process Yield',
-            titProdYield:'Product Yield Status', titTotalTrend:'Overall Yield Trend (%)',
-            titProdTrend:'Product Yield Trend (%)', titProcTrend:'Process Yield Trend (%)',
-            titProdVol:'Production Volume', titTotalDefect:'Total Defect Trend',
-            titCompDefect:'Company Defect Count Trend', titDefectType:'Defect Type Chart',
-            titDefectTable:'Defect Type Details', titDefectSection:'📉 Defect Analysis & Details',
-            titShipSection:'📦 Shipment Performance', titShipTable:'Monthly Shipment', titShipChart:'Shipment Trend',
-            thProc:'Process', thIn:'Input', thOut:'Output', thFail:'Defect', thYld:'Yield', thStat:'Status',
-            thMonth:'Period', thProd:'Product', thIn2:'Input', thOut2:'Output', thFail2:'Defect',
-            thYld2:'Yield', thStat2:'Status', thShipMonth:'Period', thTotal:'Total',
-            moTitProd:'✏️ Production Data Entry', moTitShip:'📦 Shipment Data Entry', moTitDefect:'🛠️ Defect Type Data Entry',
-            all:'All', good:'Good', warn:'Warning',
-        }
-    };
-
-    function getUniqueValues(arr, key) {
-        return [...new Set(arr.map(d => d[key]))].filter(v => v && v.toString().trim()).sort();
-    }
-
-    function updateSmartLists() {
-        document.querySelectorAll('datalist').forEach(dl => dl.remove());
-        const months = [...new Set([...prodData.map(d=>d.month),...shipData.map(d=>d.month),...defectTypeData.map(d=>d.month)])];
-        const modelNames = getUniqueValues(shipData, 'name');
-        const defectReasons = [...new Set([...getUniqueValues(defectTypeData,'reason'),'Human Error','Handling Damage','Component Lifting'])];
-        const shipReasons = [...new Set([...getUniqueValues(shipData,'reason'),'Mass Production','Sample','RMA'])];
-        document.body.insertAdjacentHTML('beforeend', `
-            <datalist id="list-products"><option value="RDIMM"><option value="SODIMM"><option value="UDIMM"></datalist>
-            <datalist id="list-processes"><option value="SMD"><option value="ROUTER"><option value="ATE"><option value="PCT"><option value="AVI"></datalist>
-            <datalist id="list-months">${months.map(m=>`<option value="${m}">`).join('')}</datalist>
-            <datalist id="list-model-names">${modelNames.map(n=>`<option value="${n}">`).join('')}</datalist>
-            <datalist id="list-ship-reasons">${shipReasons.map(r=>`<option value="${r}">`).join('')}</datalist>
-            <datalist id="list-defect-reasons">${defectReasons.map(r=>`<option value="${r}">`).join('')}</datalist>
-        `);
-    }
-
-    function updateLastUpdate() {
-        const el = document.getElementById('lastUpdate');
-        if (!el) return;
-        const now = new Date();
-        const pad = n => String(n).padStart(2,'0');
-        const str = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
-        el.innerText = lang === 'ko' ? `최종 업데이트: ${str}` : `Last Update: ${str}`;
-    }
-
-    window.onload = initFirebase;
-
-    function extractYearMonth(dateStr) {
-        if (!dateStr) return '';
-        const c = dateStr.toString().trim();
-        if (/^\d{2}\.\d{2}$/.test(c)) return c;
-        const km = c.match(/(\d{2,4})\s*년\s*(\d{1,2})\s*월?/);
-        if (km) { let y=km[1]; const m=km[2].padStart(2,'0'); if(y.length===4)y=y.slice(2); return `${y}.${m}`; }
-        const dm = c.match(/(\d{4})[-/](\d{1,2})/);
-        if (dm) return `${dm[1].slice(2)}.${dm[2].padStart(2,'0')}`;
-        return c;
-    }
-
-    function formatPeriod(period) {
-        if (!/^\d{2}\.\d{2}$/.test(period)) return period;
-        const [year, month] = period.split('.');
-        const mn = parseInt(month);
-        if (lang === 'en') {
-            const names = ["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-            return `${names[mn]} ${year}`;
-        }
-        return `${year}년 ${mn}월`;
-    }
-
-    function getProdMonths() { return [...new Set(prodData.map(d=>d.month))].sort(); }
-    function getShipMonths() { return [...new Set(shipData.map(d=>d.month))].sort(); }
-    function getDefectMonths() { return [...new Set(defectTypeData.map(d=>d.month))].sort(); }
-    function getAllMonths() {
-        return [...new Set([...prodData.map(d=>d.month),...shipData.map(d=>d.month),...defectTypeData.map(d=>d.month)])].sort();
-    }
-
-    function getFilteredData() {
-        return prodData.filter(d =>
-            (filters.product==='전체'||d.prod===filters.product) &&
-            (filters.month==='전체'||d.month===filters.month) &&
-            (filters.process==='전체'||d.proc===filters.process)
-        );
-    }
-
-    function cleanNumber(v) { return Number((v||'').toString().replace(/[,\s]/g,''))||0; }
-
-    function saveData(type) {
-        const tid = type==='prod'?'tblEntryProd':type==='ship'?'tblEntryShip':'tblEntryDefect';
-        const rows = document.querySelector(`#${tid} tbody`).querySelectorAll('tr');
-        const newData = [];
-        rows.forEach(tr => {
-            const inp = tr.querySelectorAll('input, select');
-            if (type==='prod' && inp[0].value) {
-                newData.push({prod:inp[0].value,month:inp[1].value.trim(),proc:inp[2].value,in:cleanNumber(inp[3].value),out:cleanNumber(inp[4].value),fail:cleanNumber(inp[5].value)});
-            } else if (type==='ship' && inp[0].value.trim()) {
-                newData.push({model:inp[0].value.trim(),name:inp[1].value.trim(),date:inp[2].value.trim(),qty:cleanNumber(inp[3].value),reason:inp[4].value.trim(),month:inp[5].value.trim()});
-            } else if (type==='defect' && inp[0].value.trim()) {
-                newData.push({reason:inp[0].value.trim(),month:inp[1].value.trim(),qty:cleanNumber(inp[2].value)});
-            }
-        });
-        if (newData.length===0) { alert('⚠️ 데이터가 없습니다.'); return; }
-        if (type==='prod') prodData=newData;
-        else if (type==='ship') shipData=newData;
-        else defectTypeData=newData;
-
-        saveToFirebase(type, newData).then(() => {
-            closeModal(type);
-            updateSmartLists();
-            updateUI();
-            updateLastUpdate();
-            const s = document.getElementById('saveSuccess');
-            s.style.display='block';
-            setTimeout(()=>s.style.display='none', 3000);
-        });
-    }
-
-    function setLang(l) {
-        lang = l;
-        document.getElementById('btnKo').className = l==='ko'?'lang-btn active':'lang-btn';
-        document.getElementById('btnEn').className = l==='en'?'lang-btn active':'lang-btn';
-        for (let key in translations[lang]) {
-            const el = document.getElementById(key);
-            if (el) el.innerText = translations[lang][key];
-        }
-        updateUI(); updateLastUpdate();
-    }
-
-    function filter(type, val) { filters[type]=val; updateUI(); }
-
-    function renderProdChartButtons() {
-        const c = document.getElementById('prodChartFilter'); if(!c)return;
-        c.innerHTML='';
-        ['전체','RDIMM','SODIMM','UDIMM'].forEach(p => {
-            const b=document.createElement('button');
-            b.className=`filter-btn ${prodChartFilter===p?'active':''}`;
-            b.innerText=p==='전체'?translations[lang].all:p;
-            b.onclick=()=>setProdChartFilter(p);
-            c.appendChild(b);
-        });
-    }
-    function setProdChartFilter(v) {
-        prodChartFilter=v;
-        if(charts.prodYield) {
-            charts.prodYield.data.datasets.forEach((ds,i)=>{
-                charts.prodYield.setDatasetVisibility(i, v==='전체'||ds.label===v);
-            });
-            charts.prodYield.update();
-        }
-        renderProdChartButtons();
-    }
-    function renderProcChartButtons() {
-        const c = document.getElementById('procChartFilter'); if(!c)return;
-        c.innerHTML='';
-        ['전체','SMD','ROUTER','ATE','PCT','AVI'].forEach(p => {
-            const b=document.createElement('button');
-            b.className=`filter-btn ${procChartFilter===p?'active':''}`;
-            b.innerText=p==='전체'?translations[lang].all:p;
-            b.onclick=()=>setProcChartFilter(p);
-            c.appendChild(b);
-        });
-    }
-    function setProcChartFilter(v) {
-        procChartFilter=v;
-        if(charts.procYield) {
-            charts.procYield.data.datasets.forEach((ds,i)=>{
-                charts.procYield.setDatasetVisibility(i, v==='전체'||ds.label===v);
-            });
-            charts.procYield.update();
-        }
-        renderProcChartButtons();
-    }
-    function renderDefectTypeButtons() {
-        const c = document.getElementById('defectTypeFilters'); if(!c)return;
-        c.innerHTML='';
-        const reasons=[...new Set(defectTypeData.map(d=>d.reason))].sort();
-        ['전체',...reasons].forEach(r => {
-            const b=document.createElement('button');
-            b.className=`filter-btn ${filters.defectType===r?'active':''}`;
-            b.innerText=r==='전체'?translations[lang].all:r;
-            b.onclick=()=>filter('defectType',r);
-            c.appendChild(b);
-        });
-    }
-
-    function updateDefectTypeTable() {
-        const table=document.getElementById('tblDefectType'); if(!table)return;
-        const thead=table.querySelector('thead'), tbody=table.querySelector('tbody');
-        const months=getDefectMonths();
-        const reasons=[...new Set(defectTypeData.map(d=>d.reason))].sort();
-        thead.innerHTML=`<tr><th>${lang==='ko'?'기간':'Period'}</th>${reasons.map(r=>`<th>${r}</th>`).join('')}<th>${lang==='ko'?'합계':'Total'}</th></tr>`;
-        if(!months.length||!reasons.length){tbody.innerHTML=`<tr><td colspan="${reasons.length+2}" class="no-data-message">${lang==='ko'?'데이터 없음':'No data'}</td></tr>`;return;}
-        const rt={};reasons.forEach(r=>rt[r]=defectTypeData.filter(d=>d.reason===r).reduce((a,b)=>a+b.qty,0));
-        tbody.innerHTML='';
-        let grand=0;
-        months.forEach(m=>{
-            let rt2=0, row=`<tr><td><strong>${formatPeriod(m)}</strong></td>`;
-            reasons.forEach(r=>{
-                const item=defectTypeData.find(d=>d.month===m&&d.reason===r);
-                const q=item?item.qty:0; rt2+=q;
-                let cls='',disp='';
-                if(q===0){cls='defect-zero';disp='-';}
-                else if(q<=2){cls='defect-low';disp=q.toLocaleString();}
-                else if(q<=5){cls='defect-medium';disp=q.toLocaleString();}
-                else{cls='defect-high';disp=q.toLocaleString();}
-                row+=`<td class="${cls}">${disp}</td>`;
-            });
-            row+=`<td>${rt2.toLocaleString()}</td></tr>`;
-            tbody.innerHTML+=row; grand+=rt2;
-        });
-        tbody.innerHTML+=`<tr class="grand-total-row"><td>${lang==='ko'?'전체 합계':'Grand Total'}</td>${reasons.map(r=>`<td>${rt[r].toLocaleString()}</td>`).join('')}<td>${grand.toLocaleString()}</td></tr>`;
-    }
-
-    function renderFilterButtons() {
-        // 제품
-        const pc=document.getElementById('filterProduct'); pc.innerHTML='';
-        ['전체','RDIMM','SODIMM','UDIMM'].forEach(p=>{
-            const b=document.createElement('button');
-            b.className=`filter-btn ${filters.product===p?'active':''}`;
-            b.innerText=p==='전체'?translations[lang].all:p;
-            b.onclick=()=>filter('product',p); pc.appendChild(b);
-        });
-        // 기간
-        const mc=document.getElementById('filterMonth'); mc.innerHTML='';
-        ['',...getAllMonths()].forEach((m,i)=>{
-            const b=document.createElement('button');
-            const val=i===0?'전체':m;
-            b.className=`filter-btn ${filters.month===val?'active':''}`;
-            b.innerText=i===0?translations[lang].all:formatPeriod(m);
-            b.onclick=()=>filter('month',val); mc.appendChild(b);
-        });
-        // 공정
-        const proc=document.getElementById('filterProcess'); proc.innerHTML='';
-        ['전체','SMD','ROUTER','ATE','PCT','AVI'].forEach(p=>{
-            const b=document.createElement('button');
-            b.className=`filter-btn ${filters.process===p?'active':''}`;
-            b.innerText=p==='전체'?translations[lang].all:p;
-            b.onclick=()=>filter('process',p); proc.appendChild(b);
-        });
-    }
-
-    function updateUI() {
-        renderFilterButtons(); renderProdChartButtons(); renderProcChartButtons(); renderDefectTypeButtons();
-        const data=getFilteredData();
-        let totalIn=0,totalOut=0,totalFail=0,compFail=0;
-        if(filters.process!=='전체'){totalIn=data.reduce((a,b)=>a+b.in,0);totalOut=data.reduce((a,b)=>a+b.out,0);}
-        else{totalIn=data.filter(d=>d.proc==='SMD').reduce((a,b)=>a+b.in,0);totalOut=data.filter(d=>d.proc==='AVI').reduce((a,b)=>a+b.out,0);}
-        totalFail=data.reduce((a,b)=>a+b.fail,0);
-        compFail=data.filter(d=>['SMD','ROUTER','AVI'].includes(d.proc)).reduce((a,b)=>a+b.fail,0);
-        const yv=totalIn>0?totalOut/totalIn*100:0;
-        const ppm=totalIn>0?compFail/totalIn*1000000:0;
-        document.getElementById('kpiYield').innerText=yv.toFixed(2)+'%';
-        document.getElementById('kpiPPM').innerText=Math.round(ppm).toLocaleString()+' PPM';
-        document.getElementById('kpiInput').innerText=totalIn.toLocaleString();
-        document.getElementById('kpiOutput').innerText=totalOut.toLocaleString();
-        document.getElementById('kpiDefect').innerText=totalFail.toLocaleString();
-        document.getElementById('kpiCompDefect').innerText=compFail.toLocaleString();
-        updateTables(data); updateDefectTypeTable(); drawCharts(data);
-    }
-
-    function updateTables(data) {
-        const t=translations[lang];
-        // 공정별 수율
-        const pb=document.querySelector('#tblProcYield tbody'); pb.innerHTML='';
+function updateTables(data){
+    const t=T[lang];
+    const pb=document.querySelector('#tblProcYield tbody'); pb.innerHTML='';
+    ['SMD','ROUTER','ATE','PCT','AVI'].forEach(p=>{
+        const d=data.filter(r=>r.proc===p);
+        const ti=d.reduce((a,b)=>a+b.in,0),to=d.reduce((a,b)=>a+b.out,0),tf=d.reduce((a,b)=>a+b.fail,0);
+        const y=ti>0?to/ti*100:0, ok=y>=99.5;
+        pb.innerHTML+=`<tr><td><strong>${p}</strong></td><td>${ti.toLocaleString()}</td><td>${to.toLocaleString()}</td><td>${tf.toLocaleString()}</td><td class="${ok?'yield-good':'yield-bad'}">${y.toFixed(2)}%</td><td><span class="badge ${ok?'badge-ok':'badge-ng'}">${ok?t.good:t.warn}</span></td></tr>`;
+    });
+    const mb=document.querySelector('#tblMonthYield tbody'); mb.innerHTML='';
+    getPM().forEach(m=>{
+        const d=data.filter(r=>r.month===m); if(!d.length)return;
+        let row=`<tr><td><strong>${fmtPeriod(m)}</strong></td>`;
         ['SMD','ROUTER','ATE','PCT','AVI'].forEach(p=>{
-            const d=data.filter(r=>r.proc===p);
-            const ti=d.reduce((a,b)=>a+b.in,0),to=d.reduce((a,b)=>a+b.out,0),tf=d.reduce((a,b)=>a+b.fail,0);
-            const y=ti>0?to/ti*100:0; const ok=y>=99.5;
-            pb.innerHTML+=`<tr><td><strong>${p}</strong></td><td>${ti.toLocaleString()}</td><td>${to.toLocaleString()}</td><td>${tf.toLocaleString()}</td><td style="color:${ok?'var(--success)':'var(--danger)'};font-weight:bold">${y.toFixed(2)}%</td><td><span class="badge ${ok?'badge-good':'badge-warn'}">${ok?t.good:t.warn}</span></td></tr>`;
+            const pd=d.filter(r=>r.proc===p);
+            const ti=pd.reduce((a,b)=>a+b.in,0),to=pd.reduce((a,b)=>a+b.out,0);
+            row+=`<td class="${ti>0&&to/ti*100>=99.5?'yield-good':'yield-bad'}">${ti>0?(to/ti*100).toFixed(2)+'%':'-'}</td>`;
         });
-        // 월별 수율
-        const mb=document.querySelector('#tblMonthYield tbody'); mb.innerHTML='';
-        getProdMonths().forEach(m=>{
-            const d=data.filter(r=>r.month===m); if(!d.length)return;
-            let row=`<tr><td><strong>${formatPeriod(m)}</strong></td>`;
-            ['SMD','ROUTER','ATE','PCT','AVI'].forEach(p=>{
-                const pd=d.filter(r=>r.proc===p);
-                const ti=pd.reduce((a,b)=>a+b.in,0),to=pd.reduce((a,b)=>a+b.out,0);
-                row+=`<td>${ti>0?(to/ti*100).toFixed(2)+'%':'-'}</td>`;
-            });
-            mb.innerHTML+=row+'</tr>';
-        });
-        // 제품별 수율
-        const prb=document.querySelector('#tblProdYield tbody'); prb.innerHTML='';
-        ['RDIMM','SODIMM','UDIMM'].forEach(p=>{
-            const d=data.filter(r=>r.prod===p);
-            const ti=d.filter(r=>r.proc==='SMD').reduce((a,b)=>a+b.in,0),to=d.filter(r=>r.proc==='AVI').reduce((a,b)=>a+b.out,0),tf=d.reduce((a,b)=>a+b.fail,0);
-            const y=ti>0?to/ti*100:0; const ok=y>=99.5;
-            prb.innerHTML+=`<tr><td><strong>${p}</strong></td><td>${ti.toLocaleString()}</td><td>${to.toLocaleString()}</td><td>${tf.toLocaleString()}</td><td style="color:${ok?'var(--success)':'var(--danger)'};font-weight:bold">${y.toFixed(2)}%</td><td><span class="badge ${ok?'badge-good':'badge-warn'}">${ok?t.good:t.warn}</span></td></tr>`;
-        });
-        // 출하
-        const sb=document.querySelector('#tblShipment tbody'); sb.innerHTML='';
-        getShipMonths().forEach(m=>{
-            const d=shipData.filter(r=>r.month===m); if(!d.length)return;
-            const r=d.filter(r=>r.model.toUpperCase()==='RDIMM').reduce((a,b)=>a+b.qty,0);
-            const s=d.filter(r=>r.model.toUpperCase()==='SODIMM').reduce((a,b)=>a+b.qty,0);
-            const u=d.filter(r=>r.model.toUpperCase()==='UDIMM').reduce((a,b)=>a+b.qty,0);
-            sb.innerHTML+=`<tr><td><strong>${formatPeriod(m)}</strong></td><td>${r.toLocaleString()}</td><td>${s.toLocaleString()}</td><td>${u.toLocaleString()}</td><td style="font-weight:bold;color:var(--primary)">${(r+s+u).toLocaleString()}</td></tr>`;
-        });
-    }
+        mb.innerHTML+=row+'</tr>';
+    });
+    const prb=document.querySelector('#tblProdYield tbody'); prb.innerHTML='';
+    ['RDIMM','SODIMM','UDIMM'].forEach(p=>{
+        const d=data.filter(r=>r.prod===p);
+        const ti=d.filter(r=>r.proc==='SMD').reduce((a,b)=>a+b.in,0),to=d.filter(r=>r.proc==='AVI').reduce((a,b)=>a+b.out,0),tf=d.reduce((a,b)=>a+b.fail,0);
+        const y=ti>0?to/ti*100:0, ok=y>=99.5;
+        prb.innerHTML+=`<tr><td><strong>${p}</strong></td><td>${ti.toLocaleString()}</td><td>${to.toLocaleString()}</td><td>${tf.toLocaleString()}</td><td class="${ok?'yield-good':'yield-bad'}">${y.toFixed(2)}%</td><td><span class="badge ${ok?'badge-ok':'badge-ng'}">${ok?t.good:t.warn}</span></td></tr>`;
+    });
+    const sb=document.querySelector('#tblShipment tbody'); sb.innerHTML='';
+    getSM().forEach(m=>{
+        const d=shipData.filter(r=>r.month===m); if(!d.length)return;
+        const r=d.filter(x=>x.model.toUpperCase()==='RDIMM').reduce((a,b)=>a+b.qty,0);
+        const s=d.filter(x=>x.model.toUpperCase()==='SODIMM').reduce((a,b)=>a+b.qty,0);
+        const u=d.filter(x=>x.model.toUpperCase()==='UDIMM').reduce((a,b)=>a+b.qty,0);
+        sb.innerHTML+=`<tr><td><strong>${fmtPeriod(m)}</strong></td><td>${r.toLocaleString()}</td><td>${s.toLocaleString()}</td><td>${u.toLocaleString()}</td><td style="font-weight:800;color:#4f46e5;font-family:'DM Mono',monospace">${(r+s+u).toLocaleString()}</td></tr>`;
+    });
+}
 
-    function drawCharts(data) {
-        const pm=getProdMonths(), pl=pm.map(m=>formatPeriod(m));
-        const sm=getShipMonths(), sl=sm.map(m=>formatPeriod(m));
-        const dm=getDefectMonths(), dl=dm.map(m=>formatPeriod(m));
-        const reasons=[...new Set(defectTypeData.map(d=>d.reason))];
-        Object.values(charts).forEach(c=>c&&c.destroy()); charts={};
+function drawCharts(data){
+    const pm=getPM(), pl=pm.map(m=>fmtPeriod(m));
+    const sm=getSM(), sl=sm.map(m=>fmtPeriod(m));
+    const dm=getDM(), dl=dm.map(m=>fmtPeriod(m));
+    const reasons=[...new Set(defectTypeData.map(d=>d.reason))];
+    Object.values(charts).forEach(c=>c&&c.destroy()); charts={};
 
-        const co={
-            responsive:true, maintainAspectRatio:false,
-            layout:{padding:{top:60}},
-            plugins:{
-                legend:{position:'bottom',labels:{boxWidth:14,boxHeight:10,padding:16,font:{size:13,weight:'600'}}},
-                datalabels:{color:'#1f2937',backgroundColor:'rgba(255,255,255,0.8)',borderRadius:4,padding:{top:3,right:5,bottom:3,left:5},font:{weight:'bold',size:14},anchor:'end',align:'end',offset:10,clip:false,display:ctx=>ctx.dataset.data[ctx.dataIndex]>0,formatter:v=>v?v.toLocaleString():''}
-            },
-            scales:{x:{grid:{display:false},ticks:{font:{size:11}}},y:{border:{display:false},grid:{color:'#f1f5f9'},ticks:{font:{size:11}},grace:'15%'}}
-        };
-
-        try {
-            // 종합 수율
-            charts.totalYield=new Chart(document.getElementById('chartTotalYield'),{
-                type:'line',
-                data:{labels:pl,datasets:[{label:translations[lang].lblKpiYield,data:pm.map(m=>{const d=data.filter(r=>r.month===m);const i=d.filter(r=>r.proc==='SMD').reduce((a,b)=>a+b.in,0);const o=d.filter(r=>r.proc==='AVI').reduce((a,b)=>a+b.out,0);return i>0?o/i*100:null;}),borderColor:'#4f46e5',backgroundColor:'rgba(79,70,229,0.1)',fill:true,tension:0.4,pointBackgroundColor:'#ffffff',pointBorderColor:'#4f46e5',pointBorderWidth:2,pointRadius:5,borderWidth:3}]},
-                options:{...co,layout:{padding:{left:25,right:25,top:20,bottom:20}},plugins:{...co.plugins,datalabels:{...co.plugins.datalabels,formatter:v=>v?v.toFixed(2)+'%':'',color:'#4f46e5'}},scales:{...co.scales,y:{...co.scales.y,min:95,max:101}}}
-            });
-            // 제품별 수율
-            charts.prodYield=new Chart(document.getElementById('chartProdYield'),{
-                type:'line',
-                data:{labels:pl,datasets:['RDIMM','SODIMM','UDIMM'].map((p,i)=>({label:p,borderColor:['#ef4444','#10b981','#f59e0b'][i],tension:0.4,borderWidth:2,pointRadius:4,data:pm.map(m=>{const d=data.filter(r=>r.month===m&&r.prod===p);const ti=d.filter(r=>r.proc==='SMD').reduce((a,b)=>a+b.in,0);const to=d.filter(r=>r.proc==='AVI').reduce((a,b)=>a+b.out,0);return ti>0?to/ti*100:null;})}))},
-                options:{...co,plugins:{...co.plugins,legend:{display:false},datalabels:{display:false}},scales:{...co.scales,y:{...co.scales.y,min:95,max:101}}}
-            });
-            // 공정별 수율
-            charts.procYield=new Chart(document.getElementById('chartProcYield'),{
-                type:'line',
-                data:{labels:pl,datasets:['SMD','ROUTER','ATE','PCT','AVI'].map((p,i)=>({label:p,borderColor:['#8b5cf6','#ec4899','#6366f1','#f59e0b','#10b981'][i],tension:0.4,borderWidth:2,pointRadius:4,data:pm.map(m=>{const d=data.filter(r=>r.month===m&&r.proc===p);const ti=d.reduce((a,b)=>a+b.in,0);const to=d.reduce((a,b)=>a+b.out,0);return ti>0?to/ti*100:null;})}))},
-                options:{...co,plugins:{...co.plugins,legend:{display:false},datalabels:{display:false}},scales:{...co.scales,y:{...co.scales.y,min:95,max:101}}}
-            });
-            // 생산 실적
-            charts.prodVol=new Chart(document.getElementById('chartProdVol'),{
-                type:'bar',
-                data:{labels:pl,datasets:[{label:translations[lang].lblKpiInput,data:pm.map(m=>data.filter(r=>r.month===m&&r.proc==='SMD').reduce((a,b)=>a+b.in,0)),backgroundColor:'rgba(79,70,229,0.6)',borderRadius:6,borderSkipped:false}]},
-                options:{...co,plugins:{...co.plugins,datalabels:{...co.plugins.datalabels,color:'#4f46e5'}}}
-            });
-            // 총 불량 트렌드
-            charts.totalDefect=new Chart(document.getElementById('chartTotalDefect'),{
-                type:'line',
-                data:{labels:pl,datasets:[{label:translations[lang].lblKpiDefect,data:pm.map(m=>data.filter(r=>r.month===m).reduce((a,b)=>a+b.fail,0)),borderColor:'#ef4444',backgroundColor:'rgba(239,68,68,0.1)',fill:true,tension:0.4,borderWidth:3,pointRadius:5}]},
-                options:{...co,plugins:{...co.plugins,datalabels:{...co.plugins.datalabels,color:'#ef4444',offset:12}}}
-            });
-            // 당사 귀책 불량
-            charts.compDefect=new Chart(document.getElementById('chartCompDefect'),{
-                type:'line',
-                data:{labels:pl,datasets:[{label:translations[lang].lblKpiCompDefect,data:pm.map(m=>data.filter(r=>r.month===m&&['SMD','ROUTER','AVI'].includes(r.proc)).reduce((a,b)=>a+b.fail,0)),borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.1)',fill:true,tension:0.4,borderWidth:3,pointRadius:5}]},
-                options:{...co,plugins:{...co.plugins,datalabels:{...co.plugins.datalabels,color:'#f59e0b',offset:12}}}
-            });
-            // 출하 차트
-            const sColors=['#3b82f6','#10b981','#f59e0b'];
-            const sDatasets=['RDIMM','SODIMM','UDIMM'].map((m,i)=>({label:m,data:sm.map(mo=>shipData.filter(r=>r.month===mo&&r.model===m).reduce((a,b)=>a+b.qty,0)),backgroundColor:sColors[i],borderRadius:4,stack:'s0',datalabels:{display:true,color:'white',font:{weight:'bold',size:12},anchor:'center',align:'center',formatter:v=>v>0?v.toLocaleString():''}}));
-            const sTotals=sm.map(mo=>shipData.filter(r=>r.month===mo).reduce((a,b)=>a+b.qty,0));
-            charts.shipment=new Chart(document.getElementById('chartShipment'),{
-                type:'bar',
-                data:{labels:sl,datasets:[...sDatasets,{type:'line',label:'Total',data:sTotals,backgroundColor:'transparent',borderColor:'transparent',pointRadius:0,datalabels:{display:true,anchor:'end',align:'end',color:'#111827',backgroundColor:'rgba(255,255,255,0.95)',borderRadius:6,padding:{top:4,right:6,bottom:4,left:6},font:{weight:'bold',size:14},formatter:v=>v.toLocaleString(),offset:15},order:-1}]},
-                options:{...co,layout:{padding:{top:50}},plugins:{...co.plugins,legend:{...co.plugins.legend,labels:{...co.plugins.legend.labels,filter:item=>item.text!=='Total'}},datalabels:{display:false}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:{color:'#f1f5f9'}}}}
-            });
-            // 불량 유형 Bar
-            let dDS=reasons.map((r,i)=>({label:r,data:dm.map(m=>{const d=defectTypeData.find(x=>x.month===m&&x.reason===r);return d?d.qty:0;}),backgroundColor:['#4f46e5','#10b981','#f59e0b','#ef4444','#8b5cf6'][i%5],borderRadius:4,borderSkipped:false,stack:'s0'}));
-            if(filters.defectType!=='전체') dDS=dDS.filter(ds=>ds.label===filters.defectType);
-            charts.defectType=new Chart(document.getElementById('chartDefectType'),{
-                type:'bar',data:{labels:dl,datasets:dDS},
-                options:{...co,plugins:{...co.plugins,datalabels:{...co.plugins.datalabels,anchor:'center',align:'center',color:'white',backgroundColor:'transparent',font:{weight:'bold',size:12}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:{color:'#f1f5f9'},grace:'15%'}}}
-            });
-            // 불량 유형 Pie
-            charts.defectTypePie=new Chart(document.getElementById('chartDefectTypePie'),{
-                type:'pie',
-                data:{labels:reasons,datasets:[{data:reasons.map(r=>defectTypeData.filter(d=>d.reason===r).reduce((a,b)=>a+b.qty,0)),backgroundColor:['#4f46e5','#10b981','#f59e0b','#ef4444','#8b5cf6']}]},
-                options:{responsive:true,maintainAspectRatio:false,layout:{padding:20},plugins:{legend:{position:'right',labels:{font:{size:12}}},datalabels:{color:'white',font:{weight:'bold',size:12},formatter:(v,ctx)=>{let sum=0;ctx.chart.data.datasets[0].data.map(d=>{sum+=d;});return v>0?(v*100/sum).toFixed(1)+'%':';'}}}}
-            });
-        } catch(e) { console.error('차트 오류:',e); }
-    }
-
-    function openModal(type) {
-        document.getElementById(type==='prod'?'modalProd':type==='ship'?'modalShip':'modalDefect').style.display='block';
-        renderEntryTable(type);
-    }
-    function closeModal(type) {
-        document.getElementById(type==='prod'?'modalProd':type==='ship'?'modalShip':'modalDefect').style.display='none';
-    }
-    function clearTable(type) {
-        if(!confirm('⚠️ 초기화하시겠습니까?')) return;
-        document.querySelector(`#${type==='prod'?'tblEntryProd':type==='ship'?'tblEntryShip':'tblEntryDefect'} tbody`).innerHTML='';
-        const pid=type==='prod'?'pasteProd':type==='ship'?'pasteShip':'pasteDefect';
-        document.getElementById(pid).value='';
-    }
-
-    function renderEntryTable(type) {
-        const tid=type==='prod'?'tblEntryProd':type==='ship'?'tblEntryShip':'tblEntryDefect';
-        const tbody=document.querySelector(`#${tid} tbody`); tbody.innerHTML='';
-        const src=type==='prod'?prodData:type==='ship'?shipData:defectTypeData;
-        src.forEach(d=>{
-            const tr=document.createElement('tr');
-            if(type==='prod'){
-                tr.innerHTML=`<td><select><option value="">선택</option><option value="RDIMM" ${d.prod==='RDIMM'?'selected':''}>RDIMM</option><option value="SODIMM" ${d.prod==='SODIMM'?'selected':''}>SODIMM</option><option value="UDIMM" ${d.prod==='UDIMM'?'selected':''}>UDIMM</option></select></td><td><input list="list-months" value="${d.month}"></td><td><select><option value="">선택</option><option value="SMD" ${d.proc==='SMD'?'selected':''}>SMD</option><option value="ROUTER" ${d.proc==='ROUTER'?'selected':''}>ROUTER</option><option value="ATE" ${d.proc==='ATE'?'selected':''}>ATE</option><option value="PCT" ${d.proc==='PCT'?'selected':''}>PCT</option><option value="AVI" ${d.proc==='AVI'?'selected':''}>AVI</option></select></td><td><input type="number" value="${d.in}"></td><td><input type="number" value="${d.out}"></td><td><input type="number" value="${d.fail}"></td><td><button class="btn btn-danger" style="padding:6px 10px;font-size:11px;" onclick="this.closest('tr').remove()">삭제</button></td>`;
-            } else if(type==='ship'){
-                tr.innerHTML=`<td><input list="list-products" value="${d.model}"></td><td><input list="list-model-names" value="${d.name}"></td><td><input type="date" value="${d.date}"></td><td><input type="number" value="${d.qty}"></td><td><input list="list-ship-reasons" value="${d.reason}"></td><td><input list="list-months" value="${d.month}"></td><td><button class="btn btn-danger" style="padding:6px 10px;font-size:11px;" onclick="this.closest('tr').remove()">삭제</button></td>`;
-            } else {
-                tr.innerHTML=`<td><input list="list-defect-reasons" value="${d.reason||''}"></td><td><input list="list-months" value="${d.month||''}"></td><td><input type="number" value="${d.qty||0}"></td><td><button class="btn btn-danger" style="padding:6px 10px;font-size:11px;" onclick="this.closest('tr').remove()">삭제</button></td>`;
-            }
-            tbody.appendChild(tr);
-        });
-    }
-
-    function addRow(type) {
-        const tid=type==='prod'?'tblEntryProd':type==='ship'?'tblEntryShip':'tblEntryDefect';
-        const tbody=document.querySelector(`#${tid} tbody`);
-        const tr=document.createElement('tr');
-        if(type==='prod'){
-            tr.innerHTML=`<td><select><option value="">선택</option><option value="RDIMM">RDIMM</option><option value="SODIMM">SODIMM</option><option value="UDIMM">UDIMM</option></select></td><td><input list="list-months" placeholder="26.02" value="26.02"></td><td><select><option value="">선택</option><option value="SMD">SMD</option><option value="ROUTER">ROUTER</option><option value="ATE">ATE</option><option value="PCT">PCT</option><option value="AVI">AVI</option></select></td><td><input type="number" placeholder="1000"></td><td><input type="number" placeholder="995"></td><td><input type="number" value="0"></td><td><button class="btn btn-danger" style="padding:6px 10px;font-size:11px;" onclick="this.closest('tr').remove()">삭제</button></td>`;
-        } else if(type==='ship'){
-            tr.innerHTML=`<td><input list="list-products" placeholder="RDIMM"></td><td><input list="list-model-names" placeholder="모델명"></td><td><input type="date"></td><td><input type="number" placeholder="1000"></td><td><input list="list-ship-reasons" placeholder="Mass Production"></td><td><input list="list-months" placeholder="26.02" value="26.02"></td><td><button class="btn btn-danger" style="padding:6px 10px;font-size:11px;" onclick="this.closest('tr').remove()">삭제</button></td>`;
-        } else {
-            tr.innerHTML=`<td><input list="list-defect-reasons" placeholder="Human Error"></td><td><input list="list-months" placeholder="26.02" value="26.02"></td><td><input type="number" value="0"></td><td><button class="btn btn-danger" style="padding:6px 10px;font-size:11px;" onclick="this.closest('tr').remove()">삭제</button></td>`;
+    const baseOpts={
+        responsive:true, maintainAspectRatio:false,
+        layout:{padding:{top:40}},
+        plugins:{
+            legend:{position:'bottom',labels:{boxWidth:10,boxHeight:10,padding:14,font:{size:12,weight:'600',family:'Noto Sans KR, Inter, sans-serif'},usePointStyle:true,pointStyleWidth:10}},
+            datalabels:{color:'#0c1e3e',backgroundColor:'rgba(255,255,255,0.92)',borderRadius:5,padding:{top:3,right:7,bottom:3,left:7},font:{weight:'700',size:11,family:'JetBrains Mono, monospace'},anchor:'end',align:'end',offset:8,clip:false,display:ctx=>ctx.dataset.data[ctx.dataIndex]>0,formatter:v=>v?v.toLocaleString():''}
+        },
+        scales:{
+            x:{grid:{display:false},ticks:{font:{size:11,family:'Noto Sans KR, Inter, sans-serif',weight:'600'},color:'#94a3b8'},border:{display:false}},
+            y:{grid:{color:'#f1f5f9',drawBorder:false},ticks:{font:{size:11,family:'Noto Sans KR, Inter, sans-serif'},color:'#94a3b8'},border:{display:false},grace:'20%'}
         }
-        tbody.appendChild(tr);
-        tr.scrollIntoView({behavior:'smooth',block:'nearest'});
-    }
+    };
 
-    function parsePaste(type) {
-        const pid=type==='prod'?'pasteProd':type==='ship'?'pasteShip':'pasteDefect';
-        const txt=document.getElementById(pid).value.trim();
-        if(!txt){alert('붙여넣을 데이터가 없습니다.');return;}
-        const tid=type==='prod'?'tblEntryProd':type==='ship'?'tblEntryShip':'tblEntryDefect';
-        const tbody=document.querySelector(`#${tid} tbody`);
-        let cnt=0;
-        txt.split('\n').forEach(row=>{
-            const c=row.split(/\t/);
-            const tr=document.createElement('tr');
-            if(type==='prod'&&c.length>=6){
-                const mv=extractYearMonth(c[1].trim());
-                tr.innerHTML=`<td><select><option value="">선택</option><option value="RDIMM" ${c[0].trim()==='RDIMM'?'selected':''}>RDIMM</option><option value="SODIMM" ${c[0].trim()==='SODIMM'?'selected':''}>SODIMM</option><option value="UDIMM" ${c[0].trim()==='UDIMM'?'selected':''}>UDIMM</option></select></td><td><input list="list-months" value="${mv}"></td><td><select><option value="">선택</option><option value="SMD" ${c[2].trim()==='SMD'?'selected':''}>SMD</option><option value="ROUTER" ${c[2].trim()==='ROUTER'?'selected':''}>ROUTER</option><option value="ATE" ${c[2].trim()==='ATE'?'selected':''}>ATE</option><option value="PCT" ${c[2].trim()==='PCT'?'selected':''}>PCT</option><option value="AVI" ${c[2].trim()==='AVI'?'selected':''}>AVI</option></select></td><td><input type="number" value="${cleanNumber(c[3])}"></td><td><input type="number" value="${cleanNumber(c[4])}"></td><td><input type="number" value="${cleanNumber(c[5])}"></td><td><button class="btn btn-danger" style="padding:6px 10px;font-size:11px;" onclick="this.closest('tr').remove()">삭제</button></td>`;
-                tbody.appendChild(tr); cnt++;
-            } else if(type==='ship'&&c.length>=5){
-                const mv=c.length>=6&&c[5].trim()?extractYearMonth(c[5].trim()):extractYearMonth(c[2].trim());
-                tr.innerHTML=`<td><input list="list-products" value="${c[0].trim()}"></td><td><input list="list-model-names" value="${c[1].trim()}"></td><td><input type="date" value="${c[2].trim()}"></td><td><input type="number" value="${cleanNumber(c[3])}"></td><td><input list="list-ship-reasons" value="${c[4].trim()}"></td><td><input list="list-months" value="${mv}"></td><td><button class="btn btn-danger" style="padding:6px 10px;font-size:11px;" onclick="this.closest('tr').remove()">삭제</button></td>`;
-                tbody.appendChild(tr); cnt++;
-            } else if(type==='defect'&&c.length>=3){
-                const mv=extractYearMonth(c[1].trim());
-                tr.innerHTML=`<td><input list="list-defect-reasons" value="${c[0].trim()}"></td><td><input list="list-months" value="${mv}"></td><td><input type="number" value="${cleanNumber(c[2])}"></td><td><button class="btn btn-danger" style="padding:6px 10px;font-size:11px;" onclick="this.closest('tr').remove()">삭제</button></td>`;
-                tbody.appendChild(tr); cnt++;
+    try{
+        const totalY=pm.map(m=>{const d=data.filter(r=>r.month===m);const i=d.filter(r=>r.proc==='SMD').reduce((a,b)=>a+b.in,0);const o=d.filter(r=>r.proc==='AVI').reduce((a,b)=>a+b.out,0);return i>0?o/i*100:null;});
+        // Fix 1: Extra left/right padding so labels don't overlap Y axis
+        charts.totalYield=new Chart(document.getElementById('chartTotalYield'),{type:'line',data:{labels:pl,datasets:[{label:T[lang].lblKpiYield,data:totalY,borderColor:'#4f46e5',backgroundColor:'rgba(79,70,229,0.06)',fill:true,tension:0.4,pointBackgroundColor:'white',pointBorderColor:'#4f46e5',pointBorderWidth:2.5,pointRadius:5,borderWidth:2.5}]},options:{...baseOpts,layout:{padding:{left:10,right:30,top:36,bottom:6}},plugins:{...baseOpts.plugins,legend:{display:false},datalabels:{...baseOpts.plugins.datalabels,formatter:v=>v?v.toFixed(2)+'%':'',color:'#4f46e5',backgroundColor:'rgba(255,255,255,0.95)',borderRadius:6,padding:{top:4,right:8,bottom:4,left:8},font:{weight:'700',size:12,family:'JetBrains Mono, monospace'},offset:10}},scales:{...baseOpts.scales,y:{...baseOpts.scales.y,min:95,max:101}}}});
+
+        charts.prodYield=new Chart(document.getElementById('chartProdYield'),{type:'line',data:{labels:pl,datasets:['RDIMM','SODIMM','UDIMM'].map((p,i)=>({label:p,borderColor:['#f43f5e','#0891b2','#f59e0b'][i],backgroundColor:['rgba(244,63,94,0.05)','rgba(8,145,178,0.05)','rgba(245,158,11,0.05)'][i],fill:true,tension:0.4,borderWidth:2.5,pointRadius:4,pointBorderWidth:2,pointBackgroundColor:'white',data:pm.map(m=>{const d=data.filter(r=>r.month===m&&r.prod===p);const ti=d.filter(r=>r.proc==='SMD').reduce((a,b)=>a+b.in,0);const to=d.filter(r=>r.proc==='AVI').reduce((a,b)=>a+b.out,0);return ti>0?to/ti*100:null;})}))},options:{...baseOpts,plugins:{...baseOpts.plugins,legend:{display:false},datalabels:{display:false}},scales:{...baseOpts.scales,y:{...baseOpts.scales.y,min:95,max:101}}}});
+
+        charts.procYield=new Chart(document.getElementById('chartProcYield'),{type:'line',data:{labels:pl,datasets:['SMD','ROUTER','ATE','PCT','AVI'].map((p,i)=>({label:p,borderColor:['#8b5cf6','#ec4899','#6366f1','#f59e0b','#10b981'][i],tension:0.4,borderWidth:2.5,pointRadius:4,pointBorderWidth:2,pointBackgroundColor:'white',data:pm.map(m=>{const d=data.filter(r=>r.month===m&&r.proc===p);const ti=d.reduce((a,b)=>a+b.in,0);const to=d.reduce((a,b)=>a+b.out,0);return ti>0?to/ti*100:null;})}))},options:{...baseOpts,plugins:{...baseOpts.plugins,legend:{display:false},datalabels:{display:false}},scales:{...baseOpts.scales,y:{...baseOpts.scales.y,min:95,max:101}}}});
+
+        charts.prodVol=new Chart(document.getElementById('chartProdVol'),{type:'bar',data:{labels:pl,datasets:[{label:T[lang].lblKpiInput,data:pm.map(m=>data.filter(r=>r.month===m&&r.proc==='SMD').reduce((a,b)=>a+b.in,0)),backgroundColor:'rgba(79,70,229,0.7)',borderRadius:6,borderSkipped:false,hoverBackgroundColor:'rgba(79,70,229,0.9)'}]},options:{...baseOpts,plugins:{...baseOpts.plugins,datalabels:{...baseOpts.plugins.datalabels,color:'#4f46e5'}}}});
+
+        const defData=pm.map(m=>data.filter(r=>r.month===m).reduce((a,b)=>a+b.fail,0));
+        charts.totalDefect=new Chart(document.getElementById('chartTotalDefect'),{type:'line',data:{labels:pl,datasets:[{label:T[lang].lblKpiDefect,data:defData,borderColor:'#f43f5e',backgroundColor:'rgba(244,63,94,0.07)',fill:true,tension:0.4,borderWidth:2.5,pointRadius:5,pointBackgroundColor:'white',pointBorderColor:'#f43f5e',pointBorderWidth:2.5}]},options:{...baseOpts,plugins:{...baseOpts.plugins,datalabels:{...baseOpts.plugins.datalabels,color:'#f43f5e',offset:10}}}});
+
+        const compDef=pm.map(m=>data.filter(r=>r.month===m&&['SMD','ROUTER','AVI'].includes(r.proc)).reduce((a,b)=>a+b.fail,0));
+        charts.compDefect=new Chart(document.getElementById('chartCompDefect'),{type:'line',data:{labels:pl,datasets:[{label:T[lang].lblKpiCompDefect,data:compDef,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.07)',fill:true,tension:0.4,borderWidth:2.5,pointRadius:5,pointBackgroundColor:'white',pointBorderColor:'#f59e0b',pointBorderWidth:2.5}]},options:{...baseOpts,plugins:{...baseOpts.plugins,datalabels:{...baseOpts.plugins.datalabels,color:'#d97706',offset:10}}}});
+
+        const sColors=['#3b82f6','#10b981','#f59e0b'];
+        const sDS=['RDIMM','SODIMM','UDIMM'].map((m,i)=>({label:m,data:sm.map(mo=>shipData.filter(r=>r.month===mo&&r.model===m).reduce((a,b)=>a+b.qty,0)),backgroundColor:sColors[i],borderRadius:5,stack:'s0',datalabels:{display:true,color:'white',font:{weight:'bold',size:11,family:'DM Mono'},anchor:'center',align:'center',formatter:v=>v>0?v.toLocaleString():''}}));
+        const sTotals=sm.map(mo=>shipData.filter(r=>r.month===mo).reduce((a,b)=>a+b.qty,0));
+        charts.shipment=new Chart(document.getElementById('chartShipment'),{type:'bar',data:{labels:sl,datasets:[...sDS,{type:'line',label:'Total',data:sTotals,borderColor:'transparent',backgroundColor:'transparent',pointRadius:0,datalabels:{display:true,anchor:'end',align:'end',color:'#0c1e3e',backgroundColor:'rgba(255,255,255,0.95)',borderRadius:6,padding:{top:4,right:8,bottom:4,left:8},font:{weight:'bold',size:12,family:'DM Mono'},formatter:v=>v.toLocaleString(),offset:14},order:-1}]},options:{...baseOpts,layout:{padding:{top:50}},plugins:{...baseOpts.plugins,legend:{...baseOpts.plugins.legend,labels:{...baseOpts.plugins.legend.labels,filter:item=>item.text!=='Total'}},datalabels:{display:false}},scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:11,family:'Plus Jakarta Sans',weight:'600'},color:'#94a3b8'},border:{display:false}},y:{stacked:true,grid:{color:'#f1f5f9'},ticks:{font:{size:11,family:'Plus Jakarta Sans'},color:'#94a3b8'},border:{display:false}}}}});
+
+        const palCols=['#6366f1','#06b6d4','#f59e0b','#f43f5e','#10b981'];
+        let dDS=reasons.map((r,i)=>({label:r,data:dm.map(m=>{const d=defectTypeData.find(x=>x.month===m&&x.reason===r);return d?d.qty:0;}),backgroundColor:palCols[i%5],borderRadius:4,borderSkipped:false,stack:'s0'}));
+        if(filters.defectType!=='전체')dDS=dDS.filter(ds=>ds.label===filters.defectType);
+        charts.defectType=new Chart(document.getElementById('chartDefectType'),{type:'bar',data:{labels:dl,datasets:dDS},options:{...baseOpts,plugins:{...baseOpts.plugins,datalabels:{...baseOpts.plugins.datalabels,anchor:'center',align:'center',color:'white',backgroundColor:'transparent',font:{weight:'bold',size:11,family:'JetBrains Mono, monospace'}}},scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:11,family:'Noto Sans KR, Inter, sans-serif'},color:'#94a3b8'},border:{display:false}},y:{stacked:true,grid:{color:'#f1f5f9'},ticks:{font:{size:11,family:'Noto Sans KR, Inter, sans-serif'},color:'#94a3b8'},border:{display:false},grace:'20%'}}}});
+
+        // Pie chart
+        const pieVals=reasons.map(r=>defectTypeData.filter(d=>d.reason===r).reduce((a,b)=>a+b.qty,0));
+        charts.defectTypePie=new Chart(document.getElementById('chartDefectTypePie'),{
+            type:'doughnut',
+            data:{labels:reasons,datasets:[{data:pieVals,backgroundColor:palCols,borderWidth:3,borderColor:'white',hoverBorderWidth:5,hoverOffset:6}]},
+            options:{
+                responsive:true, maintainAspectRatio:false, cutout:'52%',
+                layout:{padding:{top:20,bottom:20,left:20,right:20}},
+                plugins:{
+                    legend:{
+                        position:'right',
+                        labels:{font:{size:12,family:'Noto Sans KR, Inter, sans-serif',weight:'600'},padding:14,usePointStyle:true,pointStyleWidth:10,color:'#334155'}
+                    },
+                    datalabels:{
+                        display:ctx=>ctx.dataset.data[ctx.dataIndex]>0,
+                        color:'white',
+                        backgroundColor:'rgba(0,0,0,0.0)',
+                        font:{weight:'800',size:13,family:'JetBrains Mono, monospace'},
+                        textStrokeColor:'rgba(0,0,0,0.4)',
+                        textStrokeWidth:3,
+                        formatter:(v,ctx)=>{
+                            const total=ctx.chart.data.datasets[0].data.reduce((a,b)=>a+b,0);
+                            const pct=(v*100/total).toFixed(1);
+                            return v>0?pct+'%':'';
+                        },
+                        anchor:'center', align:'center', offset:0
+                    }
+                }
             }
         });
-        if(cnt>0){alert(`✅ ${cnt}개 데이터 추가됨. 저장 버튼을 눌러주세요.`);document.getElementById(pid).value='';}
-        else alert('⚠️ 유효한 데이터가 없습니다.');
-    }
+    }catch(e){console.error('차트 오류:',e);}
+}
 
-    function exportExcel() {
-        try {
-            const wb=XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(prodData.map(d=>({'제품':d.prod,'기간':formatPeriod(d.month),'공정':d.proc,'투입':d.in,'산출':d.out,'불량':d.fail}))),"생산데이터");
-            XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(shipData.map(d=>({'모델':d.model,'모델명':d.name,'출하일':d.date,'수량':d.qty,'사유':d.reason,'기간':formatPeriod(d.month)}))),"출하데이터");
-            XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(defectTypeData.map(d=>({'불량명':d.reason,'기간':formatPeriod(d.month),'수량':d.qty}))),"불량유형데이터");
-            const today=new Date().toISOString().slice(0,10).replace(/-/g,'');
-            XLSX.writeFile(wb,`DS_Quality_Performance_${today}.xlsx`);
-            alert('✅ Excel 파일이 다운로드되었습니다!');
-        } catch(e) { alert('Excel 오류: '+e.message); }
-    }
+function openModal(t){
+    requirePassword(()=>{
+        document.getElementById(t==='prod'?'modalProd':t==='ship'?'modalShip':'modalDefect').style.display='block';
+        renderEntryTable(t);
+        updateModalLang();
+    });
+}
+function closeModal(t){document.getElementById(t==='prod'?'modalProd':t==='ship'?'modalShip':'modalDefect').style.display='none';}
+function clearTable(t){if(!confirm(lang==='ko'?'⚠️ 초기화하시겠습니까?':'⚠️ Reset all data?'))return;document.querySelector(`#${t==='prod'?'tblEntryProd':t==='ship'?'tblEntryShip':'tblEntryDefect'} tbody`).innerHTML='';document.getElementById(t==='prod'?'pasteProd':t==='ship'?'pasteShip':'pasteDefect').value='';}
 
-    window.onclick=e=>{if(e.target.classList.contains('modal'))e.target.style.display='none';};
-    </script>
+function updateModalLang(){
+    const t=T[lang];
+    // Password modal
+    document.getElementById('pwTitle').innerText=lang==='ko'?'데이터 입력 비밀번호':'Password Required';
+    document.getElementById('pwSub').innerText=lang==='ko'?'데이터를 수정하려면 비밀번호를 입력하세요':'Enter password to edit data';
+    document.getElementById('pwOkBtn').innerText=lang==='ko'?'확인':'Confirm';
+    document.getElementById('pwCancelBtn').innerText=lang==='ko'?'취소':'Cancel';
+    // Prod modal
+    document.getElementById('moTitProd').innerText=t.moTitProd;
+    document.querySelector('#modalProd .modal-desc').innerHTML=lang==='ko'?'Excel에서 <strong>[제품 | 기간 | 공정 | 투입 | 산출 | 불량]</strong> 순서로 복사하여 붙여넣을 수 있습니다.':'Paste from Excel in order: <strong>[Product | Period | Process | Input | Output | Defect]</strong>';
+    document.getElementById('pasteProd').placeholder=lang==='ko'?'Excel 데이터를 여기에 붙여넣기 (Ctrl+V)':'Paste Excel data here (Ctrl+V)';
+    document.querySelector('#modalProd .btn-parse').innerText=lang==='ko'?'📋 데이터 적용':'📋 Apply Data';
+    document.querySelector('#modalProd .btn-clr').innerText=lang==='ko'?'🗑️ 초기화':'🗑️ Reset';
+    document.querySelector('#tblEntryProd thead tr').innerHTML=`<th>${lang==='ko'?'제품':'Product'}</th><th>${lang==='ko'?'기간':'Period'}</th><th>${lang==='ko'?'공정':'Process'}</th><th>${lang==='ko'?'투입':'Input'}</th><th>${lang==='ko'?'산출':'Output'}</th><th>${lang==='ko'?'불량':'Defect'}</th><th>${lang==='ko'?'삭제':'Del'}</th>`;
+    document.querySelector('#modalProd .btn-addrow').innerText=lang==='ko'?'+ 행 추가':'+ Add Row';
+    document.querySelector('#modalProd .btn-save').innerText=lang==='ko'?'💾 저장 (즉시 반영)':'💾 Save (Sync Now)';
+    document.querySelector('#modalProd .btn-cancel').innerText=lang==='ko'?'취소':'Cancel';
+    // Ship modal
+    document.getElementById('moTitShip').innerText=t.moTitShip;
+    document.querySelector('#modalShip .modal-desc').innerHTML=lang==='ko'?'Excel에서 <strong>[모델 | 모델명 | 날짜 | 수량 | 사유]</strong> 순서로 복사하여 붙여넣을 수 있습니다.':'Paste from Excel: <strong>[Model | Name | Date | Qty | Reason]</strong>';
+    document.getElementById('pasteShip').placeholder=lang==='ko'?'Excel 데이터를 여기에 붙여넣기 (Ctrl+V)':'Paste Excel data here (Ctrl+V)';
+    document.querySelector('#modalShip .btn-parse').innerText=lang==='ko'?'📋 데이터 적용':'📋 Apply Data';
+    document.querySelector('#modalShip .btn-clr').innerText=lang==='ko'?'🗑️ 초기화':'🗑️ Reset';
+    document.querySelector('#tblEntryShip thead tr').innerHTML=`<th>${lang==='ko'?'모델':'Model'}</th><th>${lang==='ko'?'모델명':'Name'}</th><th>${lang==='ko'?'날짜':'Date'}</th><th>${lang==='ko'?'수량':'Qty'}</th><th>${lang==='ko'?'사유':'Reason'}</th><th>${lang==='ko'?'기간(자동)':'Period(auto)'}</th><th>${lang==='ko'?'삭제':'Del'}</th>`;
+    document.querySelector('#modalShip .btn-addrow').innerText=lang==='ko'?'+ 행 추가':'+ Add Row';
+    document.querySelector('#modalShip .btn-save').innerText=lang==='ko'?'💾 저장 (즉시 반영)':'💾 Save (Sync Now)';
+    document.querySelector('#modalShip .btn-cancel').innerText=lang==='ko'?'취소':'Cancel';
+    // Defect modal
+    document.getElementById('moTitDefect').innerText=t.moTitDefect;
+    document.querySelector('#modalDefect .modal-desc').innerHTML=lang==='ko'?'Excel에서 <strong>[불량명 | 기간(YY.MM) | 수량]</strong> 순서로 복사하여 붙여넣을 수 있습니다.':'Paste from Excel: <strong>[Defect Name | Period(YY.MM) | Qty]</strong>';
+    document.getElementById('pasteDefect').placeholder=lang==='ko'?'예시: Human Error\t26.02\t5':'Example: Human Error\t26.02\t5';
+    document.querySelector('#modalDefect .btn-parse').innerText=lang==='ko'?'📋 데이터 적용':'📋 Apply Data';
+    document.querySelector('#modalDefect .btn-clr').innerText=lang==='ko'?'🗑️ 초기화':'🗑️ Reset';
+    document.querySelector('#tblEntryDefect thead tr').innerHTML=`<th>${lang==='ko'?'불량명':'Defect Name'}</th><th>${lang==='ko'?'기간 (YY.MM)':'Period (YY.MM)'}</th><th>${lang==='ko'?'수량':'Qty'}</th><th>${lang==='ko'?'삭제':'Del'}</th>`;
+    document.querySelector('#modalDefect .btn-addrow').innerText=lang==='ko'?'+ 행 추가':'+ Add Row';
+    document.querySelector('#modalDefect .btn-save').innerText=lang==='ko'?'💾 저장 (즉시 반영)':'💾 Save (Sync Now)';
+    document.querySelector('#modalDefect .btn-cancel').innerText=lang==='ko'?'취소':'Cancel';
+    // Backup modal
+    document.getElementById('backupTitle').innerText=lang==='ko'?'💾 데이터 백업 관리':'💾 Backup Manager';
+    document.getElementById('backupSubTitle').innerText=lang==='ko'?'최대 10개 백업 저장 · 잘못 입력 시 복원 가능':'Up to 10 backups · Restore anytime';
+    document.getElementById('backupNowBtn').innerText=lang==='ko'?'📸 지금 백업 생성':'📸 Create Backup Now';
+}
+
+function renderEntryTable(type){
+    const tid=type==='prod'?'tblEntryProd':type==='ship'?'tblEntryShip':'tblEntryDefect';
+    const tbody=document.querySelector(`#${tid} tbody`); tbody.innerHTML='';
+    const src=type==='prod'?prodData:type==='ship'?shipData:defectTypeData;
+    src.forEach(d=>{
+        const tr=document.createElement('tr');
+        if(type==='prod'){tr.innerHTML=`<td><select><option value="">선택</option><option value="RDIMM"${d.prod==='RDIMM'?' selected':''}>RDIMM</option><option value="SODIMM"${d.prod==='SODIMM'?' selected':''}>SODIMM</option><option value="UDIMM"${d.prod==='UDIMM'?' selected':''}>UDIMM</option></select></td><td><input list="list-months" value="${d.month}"></td><td><select><option value="">선택</option><option value="SMD"${d.proc==='SMD'?' selected':''}>SMD</option><option value="ROUTER"${d.proc==='ROUTER'?' selected':''}>ROUTER</option><option value="ATE"${d.proc==='ATE'?' selected':''}>ATE</option><option value="PCT"${d.proc==='PCT'?' selected':''}>PCT</option><option value="AVI"${d.proc==='AVI'?' selected':''}>AVI</option></select></td><td><input type="number" value="${d.in}"></td><td><input type="number" value="${d.out}"></td><td><input type="number" value="${d.fail}"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">삭제</button></td>`;}
+        else if(type==='ship'){tr.innerHTML=`<td><input list="list-products" value="${d.model}"></td><td><input list="list-model-names" value="${d.name}"></td><td><input type="date" value="${d.date}"></td><td><input type="number" value="${d.qty}"></td><td><input list="list-ship-reasons" value="${d.reason}"></td><td><input list="list-months" value="${d.month}"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">삭제</button></td>`;}
+        else{tr.innerHTML=`<td><input list="list-defect-reasons" value="${d.reason||''}"></td><td><input list="list-months" value="${d.month||''}"></td><td><input type="number" value="${d.qty||0}"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">삭제</button></td>`;}
+        tbody.appendChild(tr);
+    });
+}
+
+function addRow(type){
+    const tid=type==='prod'?'tblEntryProd':type==='ship'?'tblEntryShip':'tblEntryDefect';
+    const tbody=document.querySelector(`#${tid} tbody`);
+    const tr=document.createElement('tr');
+    if(type==='prod'){tr.innerHTML=`<td><select><option value="">선택</option><option value="RDIMM">RDIMM</option><option value="SODIMM">SODIMM</option><option value="UDIMM">UDIMM</option></select></td><td><input list="list-months" placeholder="26.02" value="26.02"></td><td><select><option value="">선택</option><option value="SMD">SMD</option><option value="ROUTER">ROUTER</option><option value="ATE">ATE</option><option value="PCT">PCT</option><option value="AVI">AVI</option></select></td><td><input type="number" placeholder="1000"></td><td><input type="number" placeholder="995"></td><td><input type="number" value="0"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">삭제</button></td>`;}
+    else if(type==='ship'){tr.innerHTML=`<td><input list="list-products" placeholder="RDIMM"></td><td><input list="list-model-names" placeholder="모델명"></td><td><input type="date"></td><td><input type="number" placeholder="1000"></td><td><input list="list-ship-reasons" placeholder="Mass Production"></td><td><input list="list-months" placeholder="26.02" value="26.02"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">삭제</button></td>`;}
+    else{tr.innerHTML=`<td><input list="list-defect-reasons" placeholder="Human Error"></td><td><input list="list-months" placeholder="26.02" value="26.02"></td><td><input type="number" value="0"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">삭제</button></td>`;}
+    tbody.appendChild(tr); tr.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function parsePaste(type){
+    const pid=type==='prod'?'pasteProd':type==='ship'?'pasteShip':'pasteDefect';
+    const txt=document.getElementById(pid).value.trim();
+    if(!txt){alert('붙여넣을 데이터가 없습니다.');return;}
+    const tid=type==='prod'?'tblEntryProd':type==='ship'?'tblEntryShip':'tblEntryDefect';
+    const tbody=document.querySelector(`#${tid} tbody`); let cnt=0;
+    txt.split('\n').forEach(row=>{
+        const c=row.split(/\t/); const tr=document.createElement('tr');
+        if(type==='prod'&&c.length>=6){const mv=extractYM(c[1].trim());tr.innerHTML=`<td><select><option value="">선택</option><option value="RDIMM"${c[0].trim()==='RDIMM'?' selected':''}>RDIMM</option><option value="SODIMM"${c[0].trim()==='SODIMM'?' selected':''}>SODIMM</option><option value="UDIMM"${c[0].trim()==='UDIMM'?' selected':''}>UDIMM</option></select></td><td><input list="list-months" value="${mv}"></td><td><select><option value="">선택</option><option value="SMD"${c[2].trim()==='SMD'?' selected':''}>SMD</option><option value="ROUTER"${c[2].trim()==='ROUTER'?' selected':''}>ROUTER</option><option value="ATE"${c[2].trim()==='ATE'?' selected':''}>ATE</option><option value="PCT"${c[2].trim()==='PCT'?' selected':''}>PCT</option><option value="AVI"${c[2].trim()==='AVI'?' selected':''}>AVI</option></select></td><td><input type="number" value="${cleanNum(c[3])}"></td><td><input type="number" value="${cleanNum(c[4])}"></td><td><input type="number" value="${cleanNum(c[5])}"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">삭제</button></td>`;tbody.appendChild(tr);cnt++;}
+        else if(type==='ship'&&c.length>=5){const mv=c.length>=6&&c[5].trim()?extractYM(c[5].trim()):extractYM(c[2].trim());tr.innerHTML=`<td><input list="list-products" value="${c[0].trim()}"></td><td><input list="list-model-names" value="${c[1].trim()}"></td><td><input type="date" value="${c[2].trim()}"></td><td><input type="number" value="${cleanNum(c[3])}"></td><td><input list="list-ship-reasons" value="${c[4].trim()}"></td><td><input list="list-months" value="${mv}"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">삭제</button></td>`;tbody.appendChild(tr);cnt++;}
+        else if(type==='defect'&&c.length>=3){const mv=extractYM(c[1].trim());tr.innerHTML=`<td><input list="list-defect-reasons" value="${c[0].trim()}"></td><td><input list="list-months" value="${mv}"></td><td><input type="number" value="${cleanNum(c[2])}"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">삭제</button></td>`;tbody.appendChild(tr);cnt++;}
+    });
+    if(cnt>0){alert(`✅ ${cnt}개 데이터 추가됨. 저장 버튼을 눌러주세요.`);document.getElementById(pid).value='';}
+    else alert('⚠️ 유효한 데이터가 없습니다.');
+}
+
+function exportExcel(){
+    try{
+        const wb=XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(prodData.map(d=>({'제품':d.prod,'기간':fmtPeriod(d.month),'공정':d.proc,'투입':d.in,'산출':d.out,'불량':d.fail}))),"생산데이터");
+        XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(shipData.map(d=>({'모델':d.model,'모델명':d.name,'출하일':d.date,'수량':d.qty,'사유':d.reason,'기간':fmtPeriod(d.month)}))),"출하데이터");
+        XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(defectTypeData.map(d=>({'불량명':d.reason,'기간':fmtPeriod(d.month),'수량':d.qty}))),"불량유형데이터");
+        XLSX.writeFile(wb,`DS_Quality_Performance_${new Date().toISOString().slice(0,10).replace(/-/g,'')}.xlsx`);
+        alert('✅ Excel 파일이 다운로드되었습니다!');
+    }catch(e){alert('Excel 오류: '+e.message);}
+}
+window.onclick=e=>{
+    if(e.target.classList.contains('modal'))e.target.style.display='none';
+    if(e.target.id==='backupModal')closeBackupModal();
+};
+</script>
 </body>
 </html>
