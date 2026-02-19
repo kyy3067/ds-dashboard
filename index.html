@@ -555,17 +555,19 @@
 
 
         /* ─── Login Modal ─── */
-        #loginModal{display:flex;position:fixed;inset:0;z-index:99998;background:linear-gradient(135deg,#0c1e3e 0%,#152d56 100%);align-items:center;justify-content:center;}
-        .login-box{background:white;border-radius:24px;padding:48px 52px;width:400px;text-align:center;box-shadow:0 40px 80px rgba(0,0,0,0.4);animation:modalUp .5s cubic-bezier(.34,1.56,.64,1);}
-        .login-logo{font-family:'Inter',sans-serif;font-weight:800;font-size:32px;color:var(--navy);letter-spacing:-1px;margin-bottom:4px;}.login-logo span{color:var(--gold);}
-        .login-sub{font-size:12px;color:var(--text-muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:32px;font-family:'Inter',sans-serif;}
-        .login-title{font-size:18px;font-weight:700;color:var(--navy);margin-bottom:8px;font-family:'Noto Sans KR',sans-serif;}
+        #loginModal{display:flex;position:fixed;inset:0;z-index:99998;background:linear-gradient(135deg,#00234d 0%,#003470 50%,#004B87 100%);align-items:center;justify-content:center;}
+        .login-box{background:white;border-radius:24px;padding:48px 52px;width:420px;text-align:center;box-shadow:0 40px 80px rgba(0,0,0,0.4);animation:modalUp .5s cubic-bezier(.34,1.56,.64,1);}
+        .login-logo{font-family:'Inter',sans-serif;font-weight:900;font-size:34px;color:#00234d;letter-spacing:2px;margin-bottom:6px;text-transform:uppercase;}.login-logo span{color:#0074d9;}
+        .login-sub{font-size:10px;color:var(--text-muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:36px;font-family:'Inter',sans-serif;line-height:1.6;}
+        .login-divider{width:40px;height:3px;background:linear-gradient(90deg,#0074d9,#5bb8ff);border-radius:2px;margin:0 auto 28px;}
+        .login-title{font-size:16px;font-weight:700;color:#00234d;margin-bottom:6px;font-family:'Noto Sans KR',sans-serif;}
+        .login-title-en{font-size:11px;font-weight:600;color:var(--text-muted);margin-bottom:20px;font-family:'Inter',sans-serif;letter-spacing:0.5px;}
         .login-desc{font-size:13px;color:var(--text-sub);margin-bottom:24px;font-family:'Noto Sans KR',sans-serif;}
         .login-input{width:100%;padding:15px 18px;border:2px solid var(--border);border-radius:12px;font-size:18px;text-align:center;font-family:'JetBrains Mono',monospace;letter-spacing:6px;transition:all .2s;margin-bottom:14px;}
-        .login-input:focus{outline:none;border-color:#6366f1;box-shadow:0 0 0 4px rgba(99,102,241,0.12);}
+        .login-input:focus{outline:none;border-color:#0074d9;box-shadow:0 0 0 4px rgba(0,116,217,0.12);}
         .login-err{font-size:12px;color:#e11d48;margin-bottom:14px;height:16px;font-family:'Noto Sans KR',sans-serif;transition:all .2s;}
-        .login-btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--navy),var(--navy-light));color:white;border:none;border-radius:12px;cursor:pointer;font-size:15px;font-weight:700;font-family:'Noto Sans KR',sans-serif;transition:all .2s;letter-spacing:.5px;}
-        .login-btn:hover{box-shadow:0 8px 20px rgba(12,30,62,0.35);transform:translateY(-2px);}
+        .login-btn{width:100%;padding:15px;background:linear-gradient(135deg,#004B87,#0074d9);color:white;border:none;border-radius:12px;cursor:pointer;font-size:15px;font-weight:700;font-family:'Noto Sans KR',sans-serif;transition:all .2s;letter-spacing:1px;}
+        .login-btn:hover{box-shadow:0 8px 20px rgba(0,75,135,0.4);transform:translateY(-2px);}
         .login-hint{font-size:11px;color:var(--text-muted);margin-top:16px;font-family:'Noto Sans KR',sans-serif;}
 
         @media(max-width:768px){
@@ -645,12 +647,14 @@
     <div class="login-box">
         <div class="login-logo">DREAM<span>TECH</span></div>
         <div class="login-sub">DS Division · Quality Dashboard</div>
-        <div class="login-title">🔐 로그인</div>
+        <div class="login-divider"></div>
+        <div class="login-title">🔐 로그인 Login</div>
+        <div class="login-title-en">Enter your access password</div>
         <div class="login-desc">접속 비밀번호를 입력하세요</div>
         <input type="password" class="login-input" id="loginInput" placeholder="••••" maxlength="20" onkeydown="if(event.key==='Enter')doLogin()">
         <div class="login-err" id="loginErr"></div>
-        <button class="login-btn" onclick="doLogin()">접속</button>
-        <div class="login-hint">🔑 접속: <code>LOGIN_PASSWORD</code> &nbsp;|&nbsp; 데이터입력: <code>DATA_PASSWORD</code></div>
+        <button class="login-btn" onclick="doLogin()">접속 Connect</button>
+        <div class="login-hint">🔑 접속 Access: <code>LOGIN_PASSWORD</code> &nbsp;|&nbsp; 데이터입력 Data: <code>DATA_PASSWORD</code></div>
     </div>
 </div>
 
