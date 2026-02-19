@@ -717,11 +717,6 @@
         <div class="kpi-value" id="kpiYield">—</div>
         <div class="kpi-label" id="lblKpiYield">종합 수율</div>
     </div>
-    <div class="kpi-card c-red">
-        <div class="kpi-icon">⚠️</div>
-        <div class="kpi-value" id="kpiPPM">—</div>
-        <div class="kpi-label" id="lblKpiPPM">당사 귀책 불량률</div>
-    </div>
     <div class="kpi-card c-slate">
         <div class="kpi-icon">📥</div>
         <div class="kpi-value" id="kpiInput">—</div>
@@ -737,10 +732,20 @@
         <div class="kpi-value" id="kpiDefect">—</div>
         <div class="kpi-label" id="lblKpiDefect">총 불량 수량</div>
     </div>
+    <div class="kpi-card c-red">
+        <div class="kpi-icon">📊</div>
+        <div class="kpi-value" id="kpiDefectPPM">—</div>
+        <div class="kpi-label" id="lblKpiDefectPPM">총 불량 PPM</div>
+    </div>
     <div class="kpi-card c-orange">
         <div class="kpi-icon">🏭</div>
         <div class="kpi-value" id="kpiCompDefect">—</div>
-        <div class="kpi-label" id="lblKpiCompDefect">당사 귀책 불량</div>
+        <div class="kpi-label" id="lblKpiCompDefect">당사 귀책 불량 수</div>
+    </div>
+    <div class="kpi-card c-orange">
+        <div class="kpi-icon">⚠️</div>
+        <div class="kpi-value" id="kpiPPM">—</div>
+        <div class="kpi-label" id="lblKpiPPM">당사 귀책 PPM</div>
     </div>
 </div>
 
@@ -786,6 +791,14 @@
     <div class="card">
         <div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="titTotalTrend">종합 수율 월별 트렌드 (%)</span></div></div>
         <div class="card-body"><div class="ch-sm"><canvas id="chartTotalYield"></canvas></div></div>
+    </div>
+</div>
+
+<!-- PPM Monthly Trend -->
+<div class="g-full">
+    <div class="card">
+        <div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="titPpmTrend">당사 귀책 PPM 월별 트렌드</span></div></div>
+        <div class="card-body"><div class="ch-sm"><canvas id="chartPpmTrend"></canvas></div></div>
     </div>
 </div>
 
@@ -923,13 +936,13 @@
     </div>
 
     <!-- Daily KPIs -->
-    <div class="kpi-grid" style="grid-template-columns:repeat(6,1fr)">
+    <div class="kpi-grid" style="grid-template-columns:repeat(auto-fit, minmax(190px, 1fr))">
         <div class="kpi-card c-blue"><div class="kpi-icon">📈</div><div class="kpi-value" id="dKpiYield">—</div><div class="kpi-label" id="dLblYield">종합 수율</div></div>
-        <div class="kpi-card c-smt"><div class="kpi-icon">🔵</div><div class="kpi-value" id="dKpiSmtYield">—</div><div class="kpi-label">SMT 수율</div></div>
-        <div class="kpi-card c-test"><div class="kpi-icon">🔬</div><div class="kpi-value" id="dKpiTestYield">—</div><div class="kpi-label">TEST 수율</div></div>
         <div class="kpi-card c-slate"><div class="kpi-icon">📥</div><div class="kpi-value" id="dKpiInput">—</div><div class="kpi-label" id="dLblInput">총 투입 수량</div></div>
-        <div class="kpi-card c-red"><div class="kpi-icon">❌</div><div class="kpi-value" id="dKpiDefect">—</div><div class="kpi-label" id="dLblDefect">총 불량</div></div>
-        <div class="kpi-card c-orange"><div class="kpi-icon">📉</div><div class="kpi-value" id="dKpiPpm">—</div><div class="kpi-label">PPM</div></div>
+        <div class="kpi-card c-red"><div class="kpi-icon">❌</div><div class="kpi-value" id="dKpiDefect">—</div><div class="kpi-label" id="dLblDefect">총 불량 수량</div></div>
+        <div class="kpi-card c-red"><div class="kpi-icon">📊</div><div class="kpi-value" id="dKpiDefectPPM">—</div><div class="kpi-label" id="dLblDefectPPM">총 불량 PPM</div></div>
+        <div class="kpi-card c-orange"><div class="kpi-icon">🏭</div><div class="kpi-value" id="dKpiCompDefect">—</div><div class="kpi-label" id="dLblCompDefect">당사 귀책 불량 수</div></div>
+        <div class="kpi-card c-orange"><div class="kpi-icon">⚠️</div><div class="kpi-value" id="dKpiPpm">—</div><div class="kpi-label" id="dLblPpm">당사 귀책 PPM</div></div>
     </div>
 
     <!-- SMT vs TEST Summary -->
@@ -1358,10 +1371,10 @@ function getDefaultProdData(){return[{"prod":"RDIMM","month":"10월","proc":"SMD
 function getDefaultShipData(){return[{"model":"RDIMM","name":"M321R8GA0EB2-CWMXJ-IRB","date":"2025-10-28","qty":1026,"reason":"Mass Production","month":"25.10"},{"model":"RDIMM","name":"M321R8GA0EB2-CWMXJ-IRB","date":"2025-11-06","qty":4304,"reason":"Mass Production","month":"25.11"},{"model":"UDIMM","name":"M323R2GA3EB0-CWMOL-IYB","date":"2025-11-25","qty":2000,"reason":"Mass Production","month":"25.11"},{"model":"RDIMM","name":"M321R8GA0EB2-CWMXJ-IRB","date":"2025-12-16","qty":2344,"reason":"Mass Production","month":"25.12"},{"model":"SODIMM","name":"M425R2GA3EB0-CWMOL-IYB","date":"2025-12-16","qty":1935,"reason":"Mass Production","month":"25.12"}];}
 function getDefaultDefectData(){return[{"reason":"Human Error","month":"25.10","qty":0},{"reason":"Human Error","month":"25.11","qty":3},{"reason":"Human Error","month":"25.12","qty":1},{"reason":"Human Error","month":"26.01","qty":0},{"reason":"Handling Damage","month":"25.10","qty":5},{"reason":"Handling Damage","month":"25.11","qty":3},{"reason":"Handling Damage","month":"25.12","qty":8},{"reason":"Handling Damage","month":"26.01","qty":0},{"reason":"Component Lifting","month":"25.10","qty":0},{"reason":"Component Lifting","month":"25.11","qty":0},{"reason":"Component Lifting","month":"25.12","qty":1},{"reason":"Component Lifting","month":"26.01","qty":0}];}
 
-const T={ko:{mainTitle:'📊 DS Quality Performance',lblProd:'제품',lblPeriod:'기간',lblProcess:'공정',btnProd:'✏️ 생산 입력',btnShip:'📦 출하 입력',btnDefect:'🛠️ 불량 유형 입력',lblKpiYield:'종합 수율',lblKpiPPM:'당사 귀책 불량률',lblKpiInput:'총 투입 수량',lblKpiOutput:'총 산출 수량',lblKpiDefect:'총 불량 수량',lblKpiCompDefect:'당사 귀책 불량',titProcYield:'공정별 수율 현황',titMonthYield:'공정별 월별 수율 추이',titProdYield:'제품별 수율 현황',titTotalTrend:'종합 수율 월별 트렌드 (%)',titProdTrend:'제품별 수율 추이 (%)',titProcTrend:'공정별 수율 추이 (%)',titProdVol:'DS 생산 실적',titTotalDefect:'월별 불량 수 트렌드',titCompDefect:'당사 귀책 불량 수 트렌드',titDefectType:'불량 유형 차트',titDefectTable:'불량 유형 상세 현황',titDefectSection:'📉 불량 분석 및 상세 현황',titShipSection:'📦 출하 실적',titShipTable:'월별 출하 수량',titShipChart:'월별 출하 실적 추이',thProc:'공정',thIn:'투입',thOut:'산출',thFail:'불량',thYld:'수율',thStat:'판정',thMonth:'기간',thProd:'제품',thIn2:'투입',thOut2:'산출',thFail2:'불량',thYld2:'수율',thStat2:'판정',thShipMonth:'기간',thTotal:'합계',moTitProd:'✏️ 생산 데이터 입력',moTitShip:'📦 출하 데이터 입력',moTitDefect:'🛠️ 불량 유형 데이터 입력',all:'전체',good:'양호',warn:'경고',
+const T={ko:{mainTitle:'📊 DS Quality Performance',lblProd:'제품',lblPeriod:'기간',lblProcess:'공정',btnProd:'✏️ 생산 입력',btnShip:'📦 출하 입력',btnDefect:'🛠️ 불량 유형 입력',lblKpiYield:'종합 수율',lblKpiPPM:'당사 귀책 PPM',lblKpiInput:'총 투입 수량',lblKpiOutput:'총 산출 수량',lblKpiDefect:'총 불량 수량',lblKpiDefectPPM:'총 불량 PPM',lblKpiCompDefect:'당사 귀책 불량 수',titProcYield:'공정별 수율 현황',titMonthYield:'공정별 월별 수율 추이',titProdYield:'제품별 수율 현황',titTotalTrend:'종합 수율 월별 트렌드 (%)',titPpmTrend:'당사 귀책 PPM 월별 트렌드',titProdTrend:'제품별 수율 추이 (%)',titProcTrend:'공정별 수율 추이 (%)',titProdVol:'DS 생산 실적',titTotalDefect:'월별 불량 수 트렌드',titCompDefect:'당사 귀책 불량 수 트렌드',titDefectType:'불량 유형 차트',titDefectTable:'불량 유형 상세 현황',titDefectSection:'📉 불량 분석 및 상세 현황',titShipSection:'📦 출하 실적',titShipTable:'월별 출하 수량',titShipChart:'월별 출하 실적 추이',thProc:'공정',thIn:'투입',thOut:'산출',thFail:'불량',thYld:'수율',thStat:'판정',thMonth:'기간',thProd:'제품',thIn2:'투입',thOut2:'산출',thFail2:'불량',thYld2:'수율',thStat2:'판정',thShipMonth:'기간',thTotal:'합계',moTitProd:'✏️ 생산 데이터 입력',moTitShip:'📦 출하 데이터 입력',moTitDefect:'🛠️ 불량 유형 데이터 입력',all:'전체',good:'양호',warn:'경고',
     btnViewMonthly:'📅 월별',btnViewDaily:'📆 일별',btnDailyProd:'📅 일별 생산 입력',btnDailyDef:'🔴 불량 코드 입력',
     dlblDate:'날짜',dlblProd:'제품',dlblTeam:'팀',dlblProcess:'공정',
-    dLblYield:'종합 수율',dLblSmtYield:'SMT 수율',dLblTestYield:'TEST 수율',dLblInput:'총 투입 수량',dLblDefect:'총 불량',
+    dLblYield:'종합 수율',dLblInput:'총 투입 수량',dLblDefect:'총 불량 수량',dLblDefectPPM:'총 불량 PPM',dLblCompDefect:'당사 귀책 불량 수',dLblPpm:'당사 귀책 PPM',
     dTitYieldTrend:'일별 수율 트렌드 (%)',dTitVolTrend:'일별 투입량 트렌드',
     dTitDefectSection:'📉 불량 코드 분석',dTitDefectBar:'불량 코드 TOP 10',dTitDefectPie:'불량 코드 비율',dTitDefectTable:'불량 코드 상세',
     dTitProdSection:'📋 일별 생산 데이터',dTitProcVolTrend:'공정별 일별 생산수량',dTitProdBarProc:'공정별 투입수량',dTitProdBarModel:'모델별 투입수량',dTitProdYieldDefect:'날짜별 수율 & 불량 추이',
@@ -1372,10 +1385,10 @@ const T={ko:{mainTitle:'📊 DS Quality Performance',lblProd:'제품',lblPeriod:
     btnToday:'오늘',btnYesterday:'어제',btnThisWeek:'이번주',btnThisMonth:'이번달',btnAllDate:'전체',lblWeekNum:'주차 검색:',
     smtLblYield:'수율',smtLblInput:'투입 수량',smtLblDefect:'불량',testLblYield:'수율',testLblInput:'투입 수량',testLblDefect:'불량',
     modalDailyProdTitle:'📅 일별 생산 데이터 입력',modalDailyProdDesc:'붙여넣기 순서: 모델 | 날짜(YYYY-MM-DD) | 공정 | 투입수량 | 양품수량 | 불량수량',
-    modalDailyDefTitle:'🔴 일별 불량 코드 입력',modalDailyDefDesc:'공정별 불량 수량 내에서만 코드를 입력할 수 있습니다'},en:{mainTitle:'📊 DS Quality Performance',lblProd:'Product',lblPeriod:'Period',lblProcess:'Process',btnProd:'✏️ Production',btnShip:'📦 Shipment',btnDefect:'🛠️ Defect Types',lblKpiYield:'Overall Yield',lblKpiPPM:'Defect Rate (PPM)',lblKpiInput:'Total Input',lblKpiOutput:'Total Output',lblKpiDefect:'Total Defects',lblKpiCompDefect:'Company Defects',titProcYield:'Process Yield',titMonthYield:'Monthly Process Yield',titProdYield:'Product Yield',titTotalTrend:'Overall Yield Trend (%)',titProdTrend:'Product Yield Trend (%)',titProcTrend:'Process Yield Trend (%)',titProdVol:'Production Volume',titTotalDefect:'Total Defect Trend',titCompDefect:'Company Defect Trend',titDefectType:'Defect Type Chart',titDefectTable:'Defect Type Details',titDefectSection:'📉 Defect Analysis',titShipSection:'📦 Shipment Performance',titShipTable:'Monthly Shipment',titShipChart:'Shipment Trend',thProc:'Process',thIn:'Input',thOut:'Output',thFail:'Defect',thYld:'Yield',thStat:'Status',thMonth:'Period',thProd:'Product',thIn2:'Input',thOut2:'Output',thFail2:'Defect',thYld2:'Yield',thStat2:'Status',thShipMonth:'Period',thTotal:'Total',moTitProd:'✏️ Production Data Entry',moTitShip:'📦 Shipment Data Entry',moTitDefect:'🛠️ Defect Type Data Entry',all:'All',good:'Good',warn:'Warning',
+    modalDailyDefTitle:'🔴 일별 불량 코드 입력',modalDailyDefDesc:'공정별 불량 수량 내에서만 코드를 입력할 수 있습니다'},en:{mainTitle:'📊 DS Quality Performance',lblProd:'Product',lblPeriod:'Period',lblProcess:'Process',btnProd:'✏️ Production',btnShip:'📦 Shipment',btnDefect:'🛠️ Defect Types',lblKpiYield:'Overall Yield',lblKpiPPM:'Company Defect PPM',lblKpiInput:'Total Input',lblKpiOutput:'Total Output',lblKpiDefect:'Total Defects',lblKpiDefectPPM:'Total Defect PPM',lblKpiCompDefect:'Company Defect Qty',titProcYield:'Process Yield',titMonthYield:'Monthly Process Yield',titProdYield:'Product Yield',titTotalTrend:'Overall Yield Trend (%)',titPpmTrend:'Company Defect PPM Trend',titProdTrend:'Product Yield Trend (%)',titProcTrend:'Process Yield Trend (%)',titProdVol:'Production Volume',titTotalDefect:'Total Defect Trend',titCompDefect:'Company Defect Trend',titDefectType:'Defect Type Chart',titDefectTable:'Defect Type Details',titDefectSection:'📉 Defect Analysis',titShipSection:'📦 Shipment Performance',titShipTable:'Monthly Shipment',titShipChart:'Shipment Trend',thProc:'Process',thIn:'Input',thOut:'Output',thFail:'Defect',thYld:'Yield',thStat:'Status',thMonth:'Period',thProd:'Product',thIn2:'Input',thOut2:'Output',thFail2:'Defect',thYld2:'Yield',thStat2:'Status',thShipMonth:'Period',thTotal:'Total',moTitProd:'✏️ Production Data Entry',moTitShip:'📦 Shipment Data Entry',moTitDefect:'🛠️ Defect Type Data Entry',all:'All',good:'Good',warn:'Warning',
     btnViewMonthly:'📅 Monthly',btnViewDaily:'📆 Daily',btnDailyProd:'📅 Daily Prod Entry',btnDailyDef:'🔴 Defect Code Entry',
     dlblDate:'Date',dlblProd:'Product',dlblTeam:'Team',dlblProcess:'Process',
-    dLblYield:'Overall Yield',dLblSmtYield:'SMT Yield',dLblTestYield:'TEST Yield',dLblInput:'Total Input Qty',dLblDefect:'Total Defects',
+    dLblYield:'Overall Yield',dLblInput:'Total Input Qty',dLblDefect:'Total Defects',dLblDefectPPM:'Total Defect PPM',dLblCompDefect:'Company Defect Qty',dLblPpm:'Company Defect PPM',
     dTitYieldTrend:'Daily Yield Trend (%)',dTitVolTrend:'Daily Input Volume Trend',
     dTitDefectSection:'📉 Defect Code Analysis',dTitDefectBar:'Top 10 Defect Codes',dTitDefectPie:'Defect Code Distribution',dTitDefectTable:'Defect Code Details',
     dTitProdSection:'📋 Daily Production Data',dTitProcVolTrend:'Daily Volume by Process',dTitProdBarProc:'Input Qty by Process',dTitProdBarModel:'Input Qty by Model',dTitProdYieldDefect:'Daily Yield & Defect Trend',
@@ -1575,6 +1588,8 @@ function updateUI(){
     document.getElementById('kpiInput').innerText=tI.toLocaleString();
     document.getElementById('kpiOutput').innerText=tO.toLocaleString();
     document.getElementById('kpiDefect').innerText=tF.toLocaleString();
+    const totalDefPpm=tI>0?tF/tI*1000000:0;
+    document.getElementById('kpiDefectPPM').innerText=Math.round(totalDefPpm).toLocaleString()+' PPM';
     document.getElementById('kpiCompDefect').innerText=cF.toLocaleString();
     updateTables(data); updateDefectTable(); drawCharts(data);
 }
@@ -1640,6 +1655,15 @@ function drawCharts(data){
         const totalY=pm.map(m=>{const d=data.filter(r=>r.month===m);const i=d.filter(r=>r.proc==='SMD').reduce((a,b)=>a+b.in,0);const o=d.filter(r=>r.proc==='AVI').reduce((a,b)=>a+b.out,0);return i>0?o/i*100:null;});
         // Fix 1: Much more padding so labels never overlap Y axis
         charts.totalYield=new Chart(document.getElementById('chartTotalYield'),{type:'line',data:{labels:pl,datasets:[{label:T[lang].lblKpiYield,data:totalY,borderColor:'#4f46e5',backgroundColor:'rgba(79,70,229,0.06)',fill:true,tension:0.4,pointBackgroundColor:'white',pointBorderColor:'#4f46e5',pointBorderWidth:2.5,pointRadius:5,borderWidth:2.5}]},options:{...baseOpts,layout:{padding:{left:14,right:50,top:38,bottom:6}},plugins:{...baseOpts.plugins,legend:{display:false},datalabels:{color:'#4f46e5',backgroundColor:'rgba(255,255,255,0.95)',borderRadius:6,padding:{top:4,right:9,bottom:4,left:9},font:{weight:'700',size:12,family:'JetBrains Mono, monospace'},anchor:'end',align:'end',offset:12,clip:false,display:true,formatter:v=>v?v.toFixed(2)+'%':''}},scales:{...baseOpts.scales,y:{...baseOpts.scales.y,min:95,max:101}}}});
+
+        // PPM Monthly Trend Chart
+        const ppmTrendData=pm.map(m=>{
+            const d=data.filter(r=>r.month===m);
+            const ti=d.filter(r=>r.proc==='SMD').reduce((a,b)=>a+b.in,0);
+            const cf=d.filter(r=>['SMD','ROUTER','AVI'].includes(r.proc)).reduce((a,b)=>a+b.fail,0);
+            return ti>0?Math.round(cf/ti*1000000):null;
+        });
+        charts.ppmTrend=new Chart(document.getElementById('chartPpmTrend'),{type:'line',data:{labels:pl,datasets:[{label:T[lang].titPpmTrend||'당사 귀책 PPM',data:ppmTrendData,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.07)',fill:true,tension:0.4,pointBackgroundColor:'white',pointBorderColor:'#f59e0b',pointBorderWidth:2.5,pointRadius:5,borderWidth:2.5}]},options:{...baseOpts,layout:{padding:{left:14,right:50,top:38,bottom:6}},plugins:{...baseOpts.plugins,legend:{display:false},datalabels:{color:'#d97706',backgroundColor:'rgba(255,255,255,0.95)',borderRadius:6,padding:{top:4,right:9,bottom:4,left:9},font:{weight:'700',size:12,family:'JetBrains Mono, monospace'},anchor:'end',align:'end',offset:12,clip:false,display:true,formatter:v=>v!==null?v.toLocaleString()+' PPM':''}},scales:{...baseOpts.scales,y:{...baseOpts.scales.y,beginAtZero:true,grace:'20%'}}}});
 
         // Fix 2: legend ON, Fix 3: datalabels only when single filter
         const prodSingle = prodChartFilter!=='전체';
@@ -2138,10 +2162,12 @@ function updateDailyUI(){
 
     // KPI 카드
     document.getElementById('dKpiYield').innerText=overallYield.toFixed(2)+'%';
-    document.getElementById('dKpiSmtYield').innerText=smtIn>0?smtYield.toFixed(2)+'%':'—';
-    document.getElementById('dKpiTestYield').innerText=testIn>0?testYield.toFixed(2)+'%':'—';
     document.getElementById('dKpiInput').innerText=totalIn.toLocaleString();
     document.getElementById('dKpiDefect').innerText=totalDef.toLocaleString();
+    const dailyTotalDefPpm=totalIn>0?totalDef/totalIn*1000000:0;
+    document.getElementById('dKpiDefectPPM').innerText=Math.round(dailyTotalDefPpm).toLocaleString()+' PPM';
+    const companyDefQty=data.filter(d=>companyDefProcs.includes(d.proc)).reduce((a,b)=>a+(b.defectQty||0),0);
+    document.getElementById('dKpiCompDefect').innerText=companyDefQty.toLocaleString();
     document.getElementById('dKpiPpm').innerText=Math.round(ppm).toLocaleString()+' PPM';
     // 팀 카드
     document.getElementById('smtYield').innerText=smtIn>0?smtYield.toFixed(2)+'%':'—';
