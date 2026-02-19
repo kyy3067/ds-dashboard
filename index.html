@@ -486,6 +486,68 @@
         .mini-btn:hover { border-color: #6366f1; color: #4f46e5; background: #eef2ff; }
         .mini-btn.active { background: var(--navy); color: white; border-color: var(--navy); box-shadow: 0 2px 6px rgba(12,30,62,0.15); }
 
+
+        /* ─── View Switch ─── */
+        .view-switch{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:3px;display:flex;gap:2px;}
+        .btn-daily-prod{background:linear-gradient(135deg,#0891b2,#06b6d4);color:white;box-shadow:0 4px 12px rgba(8,145,178,0.35);}
+        .btn-daily-def{background:linear-gradient(135deg,#e11d48,#f43f5e);color:white;box-shadow:0 4px 12px rgba(225,29,72,0.35);}
+        /* ─── Team Badges ─── */
+        .team-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;font-family:'Inter',sans-serif;}
+        .team-smt{background:#eef2ff;color:#6366f1;}
+        .team-test{background:#e0f7fa;color:#0891b2;}
+        /* ─── Date range filter ─── */
+        .date-range{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+        .date-input{padding:7px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--text);background:white;cursor:pointer;transition:all .2s;}
+        .date-input:focus{outline:none;border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,0.1);}
+        .date-sep{color:var(--text-muted);font-size:12px;font-weight:600;}
+        .date-apply{padding:7px 14px;background:var(--navy);color:white;border:none;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;font-family:'Noto Sans KR',sans-serif;transition:all .2s;}
+        .date-apply:hover{background:var(--navy-light);}
+        /* ─── Daily Summary Cards ─── */
+        .kpi-grid-6{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;margin-bottom:24px;}
+        .c-smt::after{background:linear-gradient(90deg,#6366f1,#818cf8);}
+        .c-test::after{background:linear-gradient(90deg,#0891b2,#38bdf8);}
+        .c-smt .kpi-value{color:#6366f1;}
+        .c-test .kpi-value{color:#0891b2;}
+        .daily-summary-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+        .team-card{background:white;border-radius:var(--r-lg);padding:20px 24px;border:1px solid var(--border);box-shadow:var(--shadow-sm);}
+        .team-card-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+        .team-stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+        .team-stat{text-align:center;}
+        .team-stat-value{font-size:20px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1.1;}
+        .team-stat-label{font-size:10px;color:var(--text-muted);font-weight:600;margin-top:2px;}
+        /* ─── Searchable Dropdown ─── */
+        .search-select-wrap{position:relative;}
+        .search-select-input{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;font-family:'JetBrains Mono','Inter',sans-serif;background:white;transition:all .2s;color:var(--text);}
+        .search-select-input:focus{outline:none;border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,0.1);}
+        .search-dropdown{position:absolute;left:0;right:0;top:100%;margin-top:2px;background:white;border:1.5px solid #c7d2fe;border-radius:10px;box-shadow:var(--shadow-md);z-index:500;max-height:180px;overflow-y:auto;display:none;}
+        .search-dropdown.open{display:block;}
+        .search-option{padding:8px 12px;font-size:12px;cursor:pointer;font-family:'JetBrains Mono',monospace;color:var(--text);transition:all .15s;border-bottom:1px solid #f1f5f9;}
+        .search-option:last-child{border-bottom:none;}
+        .search-option:hover{background:#eef2ff;color:#4f46e5;}
+        .opt-code{font-weight:700;color:#4f46e5;}
+        .opt-name{color:var(--text-sub);margin-left:6px;font-size:11px;}
+        /* ─── Daily table ─── */
+        .daily-no-data{text-align:center;padding:48px;color:var(--text-muted);font-family:'Noto Sans KR',sans-serif;font-size:14px;}
+        .filter-btn.active-smt{background:#6366f1;color:white;border-color:#6366f1;}
+        .filter-btn-sm{padding:4px 10px;font-size:11px;}
+        .mini-btn-sep{display:inline-flex;align-items:center;font-size:9px;font-weight:700;letter-spacing:.5px;padding:0 4px;color:var(--text-muted);}
+        .filter-btn.active-test{background:#0891b2;color:white;border-color:#0891b2;}
+
+
+        /* ─── Login Modal ─── */
+        #loginModal{display:flex;position:fixed;inset:0;z-index:99998;background:linear-gradient(135deg,#0c1e3e 0%,#152d56 100%);align-items:center;justify-content:center;}
+        .login-box{background:white;border-radius:24px;padding:48px 52px;width:400px;text-align:center;box-shadow:0 40px 80px rgba(0,0,0,0.4);animation:modalUp .5s cubic-bezier(.34,1.56,.64,1);}
+        .login-logo{font-family:'Inter',sans-serif;font-weight:800;font-size:32px;color:var(--navy);letter-spacing:-1px;margin-bottom:4px;}.login-logo span{color:var(--gold);}
+        .login-sub{font-size:12px;color:var(--text-muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:32px;font-family:'Inter',sans-serif;}
+        .login-title{font-size:18px;font-weight:700;color:var(--navy);margin-bottom:8px;font-family:'Noto Sans KR',sans-serif;}
+        .login-desc{font-size:13px;color:var(--text-sub);margin-bottom:24px;font-family:'Noto Sans KR',sans-serif;}
+        .login-input{width:100%;padding:15px 18px;border:2px solid var(--border);border-radius:12px;font-size:18px;text-align:center;font-family:'JetBrains Mono',monospace;letter-spacing:6px;transition:all .2s;margin-bottom:14px;}
+        .login-input:focus{outline:none;border-color:#6366f1;box-shadow:0 0 0 4px rgba(99,102,241,0.12);}
+        .login-err{font-size:12px;color:#e11d48;margin-bottom:14px;height:16px;font-family:'Noto Sans KR',sans-serif;transition:all .2s;}
+        .login-btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--navy),var(--navy-light));color:white;border:none;border-radius:12px;cursor:pointer;font-size:15px;font-weight:700;font-family:'Noto Sans KR',sans-serif;transition:all .2s;letter-spacing:.5px;}
+        .login-btn:hover{box-shadow:0 8px 20px rgba(12,30,62,0.35);transform:translateY(-2px);}
+        .login-hint{font-size:11px;color:var(--text-muted);margin-top:16px;font-family:'Noto Sans KR',sans-serif;}
+
         @media(max-width:768px){
             body{padding:14px;}
             .header-grid{grid-template-columns:1fr;}
@@ -557,8 +619,23 @@
 </head>
 <body>
 
+
+<!-- ═══ LOGIN MODAL ═══ -->
+<div id="loginModal">
+    <div class="login-box">
+        <div class="login-logo">DREAM<span>TECH</span></div>
+        <div class="login-sub">DS Division · Quality Dashboard</div>
+        <div class="login-title">🔐 로그인</div>
+        <div class="login-desc">접속 비밀번호를 입력하세요</div>
+        <input type="password" class="login-input" id="loginInput" placeholder="••••" maxlength="20" onkeydown="if(event.key==='Enter')doLogin()">
+        <div class="login-err" id="loginErr"></div>
+        <button class="login-btn" onclick="doLogin()">접속</button>
+        <div class="login-hint">🔑 접속: <code>LOGIN_PASSWORD</code> &nbsp;|&nbsp; 데이터입력: <code>DATA_PASSWORD</code></div>
+    </div>
+</div>
+
 <!-- Loading -->
-<div id="loadingOverlay">
+<div id="loadingOverlay" style="display:none;">
     <div class="loading-logo">DREAM<span>TECH</span></div>
     <div class="loading-bar"><div class="loading-bar-inner"></div></div>
     <div class="loading-text">🔥 Firebase에서 데이터를 불러오는 중...</div>
@@ -597,14 +674,26 @@
             <button class="lang-btn active" onclick="setLang('ko')" id="btnKo">한글</button>
             <button class="lang-btn" onclick="setLang('en')" id="btnEn">English</button>
         </div>
-        <button class="btn btn-prod" onclick="openModal('prod')" id="btnProd">✏️ 생산 입력</button>
-        <button class="btn btn-ship" onclick="openModal('ship')" id="btnShip">📦 출하 입력</button>
-        <button class="btn btn-def"  onclick="openModal('defect')" id="btnDefect">🛠️ 불량 유형 입력</button>
+        <div class="view-switch">
+            <button class="lang-btn active" onclick="setView('monthly')" id="btnViewMonthly">📅 월별</button>
+            <button class="lang-btn" onclick="setView('daily')" id="btnViewDaily">📆 일별</button>
+        </div>
+        <span id="monthlyBtns" style="display:inline-flex;gap:8px;align-items:center;">
+            <button class="btn btn-prod" onclick="openModal('prod')" id="btnProd">✏️ 생산 입력</button>
+            <button class="btn btn-ship" onclick="openModal('ship')" id="btnShip">📦 출하 입력</button>
+            <button class="btn btn-def"  onclick="openModal('defect')" id="btnDefect">🛠️ 불량 유형 입력</button>
+        </span>
+        <span id="dailyBtns" style="display:none;gap:8px;align-items:center;">
+            <button class="btn btn-daily-prod" onclick="openDailyProdModal()" id="btnDailyProd">📅 일별 생산 입력</button>
+            <button class="btn btn-daily-def"  onclick="openDailyDefModal()" id="btnDailyDef">🔴 불량 코드 입력</button>
+        </span>
         <button class="btn btn-excel" onclick="exportExcel()">📊 Excel</button>
         <button class="btn btn-backup" onclick="openBackupModal()">💾 백업</button>
     </div>
 </div>
 
+<!-- ═══ MONTHLY VIEW ═══ -->
+<div id="viewMonthly">
 <!-- Filters -->
 <div class="filter-section">
     <div class="filter-row">
@@ -796,6 +885,134 @@
     </div>
 </div>
 
+
+</div><!-- /viewMonthly -->
+
+<!-- ═══ DAILY VIEW ═══ -->
+<div id="viewDaily" style="display:none;">
+    <!-- Daily Filters -->
+    <div class="filter-section">
+        <div class="filter-row">
+            <div class="filter-label" id="dlblDate">날짜</div>
+            <div class="date-range" style="flex-wrap:wrap;gap:6px;">
+                <input type="date" class="date-input" id="dFilterFrom" onchange="applyDailyFilters()">
+                <span class="date-sep">~</span>
+                <input type="date" class="date-input" id="dFilterTo" onchange="applyDailyFilters()">
+                <button class="date-apply" onclick="setDailyDatePreset('today')" id="btnToday">오늘</button>
+                <button class="date-apply" onclick="setDailyDatePreset('yesterday')" id="btnYesterday" style="background:#0891b2;">어제</button>
+                <button class="date-apply" onclick="setDailyDatePreset('week')" id="btnThisWeek" style="background:#4f46e5;">이번주</button>
+                <button class="date-apply" onclick="setDailyDatePreset('month')" id="btnThisMonth" style="background:#059669;">이번달</button>
+                <button class="date-apply" onclick="setDailyDatePreset('all')" id="btnAllDate" style="background:#475569;">전체</button>
+                <span class="date-sep" id="lblWeekNum" style="font-size:11px;white-space:nowrap;">주차:</span>
+                <input type="number" id="weekNumInput" min="1" max="53" placeholder="예) 8" style="width:70px;padding:6px 10px;border:1.5px solid var(--border);border-radius:10px;font-size:12px;font-family:'JetBrains Mono',monospace;" onkeydown="if(event.key==='Enter')setDailyDatePreset('weeknum')">
+                <button class="date-apply" onclick="setDailyDatePreset('weeknum')" style="background:#6366f1;">이동</button>
+            </div>
+        </div>
+        <div class="filter-row">
+            <div class="filter-label" id="dlblProd">제품</div>
+            <div class="filter-btns" id="dFilterProduct"></div>
+        </div>
+        <div class="filter-row">
+            <div class="filter-label" id="dlblTeam">팀</div>
+            <div class="filter-btns" id="dFilterTeam"></div>
+        </div>
+        <div class="filter-row">
+            <div class="filter-label" id="dlblProcess">공정</div>
+            <div class="filter-btns" id="dFilterProcess"></div>
+        </div>
+    </div>
+
+    <!-- Daily KPIs -->
+    <div class="kpi-grid" style="grid-template-columns:repeat(6,1fr)">
+        <div class="kpi-card c-blue"><div class="kpi-icon">📈</div><div class="kpi-value" id="dKpiYield">—</div><div class="kpi-label" id="dLblYield">종합 수율</div></div>
+        <div class="kpi-card c-smt"><div class="kpi-icon">🔵</div><div class="kpi-value" id="dKpiSmtYield">—</div><div class="kpi-label">SMT 수율</div></div>
+        <div class="kpi-card c-test"><div class="kpi-icon">🔬</div><div class="kpi-value" id="dKpiTestYield">—</div><div class="kpi-label">TEST 수율</div></div>
+        <div class="kpi-card c-slate"><div class="kpi-icon">📥</div><div class="kpi-value" id="dKpiInput">—</div><div class="kpi-label" id="dLblInput">총 투입 수량</div></div>
+        <div class="kpi-card c-red"><div class="kpi-icon">❌</div><div class="kpi-value" id="dKpiDefect">—</div><div class="kpi-label" id="dLblDefect">총 불량</div></div>
+        <div class="kpi-card c-orange"><div class="kpi-icon">📉</div><div class="kpi-value" id="dKpiPpm">—</div><div class="kpi-label">PPM</div></div>
+    </div>
+
+    <!-- SMT vs TEST Summary -->
+    <div class="daily-summary-row">
+        <div class="team-card">
+            <div class="team-card-header">
+                <span style="font-size:28px;">🔵</span>
+                <div><div style="font-size:15px;font-weight:700;font-family:'Noto Sans KR',sans-serif;">SMT Team</div><div style="font-size:11px;color:var(--text-muted);">SMD + ROUTER</div></div>
+                <span class="team-badge team-smt" style="margin-left:auto;">SMT</span>
+            </div>
+            <div class="team-stat-grid">
+                <div class="team-stat"><div class="team-stat-value" id="smtYield" style="color:#6366f1;">—</div><div class="team-stat-label">수율</div></div>
+                <div class="team-stat"><div class="team-stat-value" id="smtInput" style="color:#334155;">—</div><div class="team-stat-label" id="smtLblInput">투입 수량</div></div>
+                <div class="team-stat"><div class="team-stat-value" id="smtDefect" style="color:#e11d48;">—</div><div class="team-stat-label">불량</div></div>
+            </div>
+        </div>
+        <div class="team-card">
+            <div class="team-card-header">
+                <span style="font-size:28px;">🔬</span>
+                <div><div style="font-size:15px;font-weight:700;font-family:'Noto Sans KR',sans-serif;">TEST Team</div><div style="font-size:11px;color:var(--text-muted);">ATE + PCT + AVI</div></div>
+                <span class="team-badge team-test" style="margin-left:auto;">TEST</span>
+            </div>
+            <div class="team-stat-grid">
+                <div class="team-stat"><div class="team-stat-value" id="testYield" style="color:#0891b2;">—</div><div class="team-stat-label">수율</div></div>
+                <div class="team-stat"><div class="team-stat-value" id="testInput" style="color:#334155;">—</div><div class="team-stat-label" id="smtLblInput">투입 수량</div></div>
+                <div class="team-stat"><div class="team-stat-value" id="testDefect" style="color:#e11d48;">—</div><div class="team-stat-label">불량</div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Daily Charts -->
+    <div class="g2">
+        <div class="card"><div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="dTitYieldTrend">일별 수율 트렌드 (%)</span></div></div><div class="card-body"><div class="mini-filters" id="dYieldFilter"></div><div class="ch-md"><canvas id="dChartYield"></canvas></div></div></div>
+        <div class="card"><div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="dTitVolTrend">일별 투입량 트렌드</span></div></div><div class="card-body"><div class="mini-filters" id="dVolFilter"></div><div class="ch-md"><canvas id="dChartVol"></canvas></div></div></div>
+    </div>
+
+    <!-- Defect Code Analysis -->
+    <div class="section-hd"><div class="section-hd-title">📉 불량 코드 분석</div><div class="section-hd-line"></div></div>
+    <div class="g3">
+        <div class="card"><div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="dTitDefectBar">불량 코드 TOP 10</span></div></div><div class="card-body"><div class="mini-filters" id="dDefectTeamFilter"></div><div style="position:relative;height:340px;"><canvas id="dChartDefectBar"></canvas></div></div></div>
+        <div class="card"><div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="dTitDefectPie">불량 코드 비율</span></div></div><div class="card-body"><div style="position:relative;height:420px;"><canvas id="dChartDefectPie"></canvas></div></div></div>
+    </div>
+    <div class="g-full" style="margin-top:0;">
+        <div class="card">
+            <div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="dTitDefectTable">불량 코드 상세</span></div></div>
+            <div class="card-body" style="padding-top:0;"><div class="tbl-wrap" style="max-height:280px;overflow-y:auto;"><table id="dTblDefect"><thead><tr><th id="dTblDefThCode">코드</th><th id="dTblDefThName">불량명</th><th id="dTblDefThTeam">팀</th><th id="dTblDefThQty">수량</th></tr></thead><tbody></tbody></table></div></div>
+        </div>
+    </div>
+
+    <!-- Daily Production Table -->
+    <div class="section-hd"><div class="section-hd-title" id="dTitProdSection">📋 일별 생산 데이터</div><div class="section-hd-line"></div></div>
+    <div class="g-full">
+        <div class="card"><div class="card-body" style="padding-top:16px;">
+            <!-- Table-level filters -->
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border);">
+                <span style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;">FILTER</span>
+                <div class="filter-btns" id="dTblModelFilter"></div>
+                <div style="width:1px;height:20px;background:var(--border);margin:0 4px;"></div>
+                <div class="filter-btns" id="dTblProcFilter"></div>
+                <div style="width:1px;height:20px;background:var(--border);margin:0 4px;"></div>
+                <div class="filter-btns" id="dTblTeamFilter"></div>
+                <div style="margin-left:auto;display:flex;align-items:center;gap:6px;">
+                    <span style="font-size:11px;color:var(--text-muted);">정렬:</span>
+                    <select id="dTblSort" style="padding:5px 10px;border:1px solid var(--border);border-radius:8px;font-size:11px;font-family:'Noto Sans KR',sans-serif;" onchange="updateDailyTables(getDailyFiltered(),getDailyDefFiltered())">
+                        <option value="date-desc">날짜 ↓</option>
+                        <option value="date-asc">날짜 ↑</option>
+                        <option value="yield-asc">수율 ↑</option>
+                        <option value="yield-desc">수율 ↓</option>
+                        <option value="defect-desc">불량 ↓</option>
+                    </select>
+                </div>
+            </div>
+            <div class="tbl-wrap" style="max-height:400px;overflow-y:auto;">
+                <table id="dTblProd">
+                    <thead><tr><th>날짜</th><th>모델</th><th>공정</th><th>팀</th><th id="dThInQty">투입수량</th><th id="dThGoodQty">양품수량</th><th id="dThDefQty">불량수량</th><th id="dThRate">수율</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div id="dTblProdCount" style="text-align:right;font-size:11px;color:var(--text-muted);margin-top:8px;font-family:'JetBrains Mono',monospace;"></div>
+        </div></div>
+    </div>
+</div><!-- /viewDaily -->
+
 <!-- Modals -->
 <div id="modalProd" class="modal">
     <div class="modal-box">
@@ -866,6 +1083,44 @@
     </div>
 </div>
 
+
+<!-- ═══ Daily Production Entry Modal ═══ -->
+<div id="modalDailyProd" class="modal">
+    <div class="modal-box">
+        <div class="modal-title">📅 일별 생산 데이터 입력</div>
+        <div class="modal-desc" id="dprodModalDesc">모델·날짜·공정별로 <strong>투입수량, 양품수량, 불량수량</strong>을 입력하세요.<br><strong style="color:#4f46e5;">붙여넣기 순서: 모델 | 날짜(YYYY-MM-DD) | 공정 | 투입수량 | 양품수량 | 불량수량</strong></div>
+        <textarea class="paste-area" id="pasteDailyProd" placeholder="Excel 데이터를 여기에 붙여넣기 (Ctrl+V)"></textarea>
+        <div style="display:flex;gap:10px;margin-bottom:20px;"><button class="btn-parse" onclick="parseDailyPaste()">📋 데이터 적용</button><span id="pasteSkipHint" style="font-size:11px;color:#f59e0b;margin-left:8px;font-family:'Noto Sans KR',sans-serif;"></span><button class="btn-clr" onclick="document.querySelector('#tblDailyProdEntry tbody').innerHTML='';document.getElementById('pasteDailyProd').value=''">🗑️ 초기화</button></div>
+        <div style="max-height:380px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;">
+            <table class="entry-tbl" id="tblDailyProdEntry">
+                <thead><tr><th>모델</th><th>날짜</th><th>공정</th><th>팀</th><th id="dThInQty">투입수량</th><th id="dThGoodQty">양품수량</th><th id="dThDefQty">불량수량</th><th>삭제</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <button class="btn-addrow" onclick="addDailyProdRow()">+ 행 추가</button>
+        <div class="modal-footer"><button class="btn-save btn-full" onclick="saveDailyProd()">💾 저장 (즉시 반영)</button><button class="btn-cancel btn-full" onclick="document.getElementById('modalDailyProd').style.display='none'">취소</button></div>
+    </div>
+</div>
+
+<!-- ═══ Daily Defect Entry Modal ═══ -->
+<div id="modalDailyDef" class="modal">
+    <div class="modal-box" style="max-width:920px;">
+        <div class="modal-title" id="ddefModalTitle">🔴 일별 불량 코드 입력</div>
+        <div class="modal-desc" id="ddefModalDesc">공정별 <strong>불량 수량 내에서만</strong> 입력 가능합니다. 공정 선택 시 해당 불량 수량이 자동으로 표시됩니다.<br>
+        <span style="color:#6366f1;font-weight:700;">🔵 SMT (SMD/ROUTER): 1000번대</span> &nbsp;|&nbsp; <span style="color:#0891b2;font-weight:700;">🔬 TEST (ATE/PCT/AVI): 4000번대</span></div>
+        <div id="ddefAvailPanel" style="background:#f0f4fb;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:12px;font-family:'Noto Sans KR',sans-serif;">
+            <strong>📋 현재 날짜 범위 미입력 불량:</strong> <span id="ddefAvailList" style="color:var(--text-sub);">생산 데이터에서 불량 수량을 가져옵니다</span>
+        </div>
+        <div style="max-height:420px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;">
+            <table class="entry-tbl" id="tblDailyDefEntry">
+                <thead><tr><th style="min-width:80px;">모델</th><th style="min-width:130px;">날짜</th><th style="min-width:80px;">공정</th><th style="min-width:50px;">팀</th><th style="min-width:220px;">불량 코드 검색</th><th style="min-width:90px;">수량<br><span style="font-size:10px;color:#94a3b8;">(가용/잔여)</span></th><th>삭제</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <button class="btn-addrow" onclick="addDailyDefRow()">+ 행 추가</button>
+        <div class="modal-footer"><button class="btn-save btn-full" onclick="saveDailyDef()">💾 저장 (즉시 반영)</button><button class="btn-cancel btn-full" onclick="document.getElementById('modalDailyDef').style.display='none'">취소</button></div>
+    </div>
+</div>
 <!-- Password Modal -->
 <div id="pwModal">
     <div class="pw-box">
@@ -916,10 +1171,10 @@ let db=null, prodData=[], shipData=[], defectTypeData=[];
 let filters={product:'전체',month:'전체',process:'전체',defectType:'전체'};
 let procChartFilter='전체', prodChartFilter='전체', prodVolFilter='전체', shipChartFilter='전체';
 let charts={}, lang='ko';
-let dataLoaded={prod:false,ship:false,defect:false};
+let dataLoaded={prod:false,ship:false,defect:false,dprod:false,ddef:false};
 
 // ─── PASSWORD ───────────────────────────────────────
-const DATA_PASSWORD = "ds2025"; // ← 여기서 비밀번호 변경하세요!
+const DATA_PASSWORD = "ds!data"; // ← 데이터 입력 비밀번호 (접속 비밀번호와 다르게 설정)
 let pwCallback = null;
 
 function requirePassword(cb){
@@ -1000,6 +1255,8 @@ function initFirebase(){
         document.getElementById('loadingOverlay').style.display='none';
         setSyncStatus('offline','⚠️ Firebase 미설정');
         prodData=getDefaultProdData(); shipData=getDefaultShipData(); defectTypeData=getDefaultDefectData();
+        dailyProdData=[]; dailyDefectData=[];
+        Object.keys(dataLoaded).forEach(k=>dataLoaded[k]=true);
         initUI(); return;
     }
     try{
@@ -1013,25 +1270,64 @@ function setupListeners(){
     db.ref('prodData').on('value',s=>{ prodData=s.val()?Object.values(s.val()):getDefaultProdData(); dataLoaded.prod=true; checkLoaded(); });
     db.ref('shipData').on('value',s=>{ shipData=s.val()?Object.values(s.val()):getDefaultShipData(); dataLoaded.ship=true; checkLoaded(); });
     db.ref('defectTypeData').on('value',s=>{ defectTypeData=s.val()?Object.values(s.val()):getDefaultDefectData(); dataLoaded.defect=true; checkLoaded(); });
+    db.ref('dailyProdData').on('value',s=>{
+        const raw=s.val()?Object.values(s.val()):[];
+        // 데이터 무결성 보정: defectQty가 inspQty보다 크면 (insp-good)으로 재계산
+        dailyProdData=raw.filter(d=>d.inspQty>0).map(d=>{
+            const correctedDef = (d.defectQty>d.inspQty) ? Math.max(0,d.inspQty-(d.goodQty||0)) : (d.defectQty||Math.max(0,d.inspQty-(d.goodQty||d.inspQty)));
+            const correctedGood = d.goodQty>0 ? d.goodQty : Math.max(0,d.inspQty-correctedDef);
+            return {...d, goodQty:correctedGood, defectQty:correctedDef};
+        });
+        dataLoaded.dprod=true; checkLoaded(); if(currentView==='daily') updateDailyUI();
+    });
+    db.ref('dailyDefectData').on('value',s=>{ dailyDefectData=s.val()?Object.values(s.val()):[]; dataLoaded.ddef=true; checkLoaded(); if(currentView==='daily') updateDailyUI(); });
     firebase.database().ref('.info/connected').on('value',s=>setSyncStatus(s.val()?'online':'offline',s.val()?'실시간 연결됨':'오프라인'));
 }
 
-function checkLoaded(){ if(dataLoaded.prod&&dataLoaded.ship&&dataLoaded.defect){ document.getElementById('loadingOverlay').style.display='none'; initUI(); } }
+function checkLoaded(){ if(Object.values(dataLoaded).every(v=>v)){ document.getElementById('loadingOverlay').style.display='none'; initUI(); } }
 function initUI(){ updateSmartLists(); renderFilterButtons(); updateUI(); updateLastUpdate(); }
 function setSyncStatus(t,x){ const e=document.getElementById('syncStatus'); e.className='sync-'+t; document.getElementById('syncText').textContent=x; }
 
 function saveToFirebase(type,data){
     if(!db) return Promise.resolve();
     setSyncStatus('saving','저장 중...');
-    const k=type==='prod'?'prodData':type==='ship'?'shipData':'defectTypeData';
-    return db.ref(k).set(data).then(()=>setSyncStatus('online','실시간 연결됨')).catch(()=>setSyncStatus('offline','저장 실패'));
+    const k={prod:'prodData',ship:'shipData',defect:'defectTypeData',dprod:'dailyProdData',ddef:'dailyDefectData'}[type]||'prodData';
+    return db.ref(k).set(data).then(()=>{setSyncStatus('online','실시간 연결됨');const t=document.getElementById('saveSuccess');t.style.display='block';setTimeout(()=>t.style.display='none',2500);}).catch(()=>setSyncStatus('offline','저장 실패'));
 }
 
 function getDefaultProdData(){return[{"prod":"RDIMM","month":"10월","proc":"SMD","in":3450,"out":3450,"fail":0},{"prod":"RDIMM","month":"10월","proc":"ROUTER","in":3450,"out":3450,"fail":0},{"prod":"RDIMM","month":"10월","proc":"ATE","in":3450,"out":3448,"fail":2},{"prod":"RDIMM","month":"10월","proc":"PCT","in":3448,"out":3418,"fail":30},{"prod":"RDIMM","month":"10월","proc":"AVI","in":3418,"out":3413,"fail":5},{"prod":"RDIMM","month":"11월","proc":"SMD","in":1410,"out":1410,"fail":0},{"prod":"RDIMM","month":"11월","proc":"ROUTER","in":1410,"out":1409,"fail":1},{"prod":"RDIMM","month":"11월","proc":"ATE","in":1409,"out":1407,"fail":2},{"prod":"RDIMM","month":"11월","proc":"PCT","in":1407,"out":1386,"fail":21},{"prod":"RDIMM","month":"11월","proc":"AVI","in":1386,"out":1384,"fail":2},{"prod":"RDIMM","month":"12월","proc":"SMD","in":7632,"out":7630,"fail":2},{"prod":"RDIMM","month":"12월","proc":"ROUTER","in":7630,"out":7628,"fail":2},{"prod":"RDIMM","month":"12월","proc":"ATE","in":7628,"out":7622,"fail":6},{"prod":"RDIMM","month":"12월","proc":"PCT","in":7622,"out":7581,"fail":41},{"prod":"RDIMM","month":"12월","proc":"AVI","in":7581,"out":7576,"fail":5},{"prod":"RDIMM","month":"1월","proc":"SMD","in":3204,"out":3204,"fail":0},{"prod":"RDIMM","month":"1월","proc":"ROUTER","in":3204,"out":3204,"fail":0},{"prod":"RDIMM","month":"1월","proc":"ATE","in":3204,"out":3201,"fail":3},{"prod":"RDIMM","month":"1월","proc":"PCT","in":3201,"out":3179,"fail":22},{"prod":"RDIMM","month":"1월","proc":"AVI","in":3179,"out":3179,"fail":0},{"prod":"SODIMM","month":"11월","proc":"SMD","in":2574,"out":2574,"fail":0},{"prod":"SODIMM","month":"11월","proc":"ROUTER","in":2574,"out":2574,"fail":0},{"prod":"SODIMM","month":"11월","proc":"ATE","in":2574,"out":2574,"fail":0},{"prod":"SODIMM","month":"11월","proc":"PCT","in":2574,"out":2562,"fail":12},{"prod":"SODIMM","month":"11월","proc":"AVI","in":2562,"out":2559,"fail":3},{"prod":"SODIMM","month":"12월","proc":"SMD","in":1404,"out":1404,"fail":0},{"prod":"SODIMM","month":"12월","proc":"ROUTER","in":1404,"out":1404,"fail":0},{"prod":"SODIMM","month":"12월","proc":"ATE","in":1404,"out":1404,"fail":0},{"prod":"SODIMM","month":"12월","proc":"PCT","in":1404,"out":1399,"fail":5},{"prod":"SODIMM","month":"12월","proc":"AVI","in":1399,"out":1398,"fail":1},{"prod":"UDIMM","month":"12월","proc":"SMD","in":4212,"out":4212,"fail":0},{"prod":"UDIMM","month":"12월","proc":"ROUTER","in":4212,"out":4212,"fail":0},{"prod":"UDIMM","month":"12월","proc":"ATE","in":4212,"out":4212,"fail":0},{"prod":"UDIMM","month":"12월","proc":"PCT","in":4212,"out":4198,"fail":14},{"prod":"UDIMM","month":"12월","proc":"AVI","in":4198,"out":4198,"fail":0},{"prod":"UDIMM","month":"1월","proc":"SMD","in":2046,"out":2046,"fail":0},{"prod":"UDIMM","month":"1월","proc":"ROUTER","in":2046,"out":2046,"fail":0},{"prod":"UDIMM","month":"1월","proc":"ATE","in":2046,"out":2045,"fail":1},{"prod":"UDIMM","month":"1월","proc":"PCT","in":2045,"out":2042,"fail":3},{"prod":"UDIMM","month":"1월","proc":"AVI","in":2042,"out":2042,"fail":0}];}
 function getDefaultShipData(){return[{"model":"RDIMM","name":"M321R8GA0EB2-CWMXJ-IRB","date":"2025-10-28","qty":1026,"reason":"Mass Production","month":"25.10"},{"model":"RDIMM","name":"M321R8GA0EB2-CWMXJ-IRB","date":"2025-11-06","qty":4304,"reason":"Mass Production","month":"25.11"},{"model":"UDIMM","name":"M323R2GA3EB0-CWMOL-IYB","date":"2025-11-25","qty":2000,"reason":"Mass Production","month":"25.11"},{"model":"RDIMM","name":"M321R8GA0EB2-CWMXJ-IRB","date":"2025-12-16","qty":2344,"reason":"Mass Production","month":"25.12"},{"model":"SODIMM","name":"M425R2GA3EB0-CWMOL-IYB","date":"2025-12-16","qty":1935,"reason":"Mass Production","month":"25.12"}];}
 function getDefaultDefectData(){return[{"reason":"Human Error","month":"25.10","qty":0},{"reason":"Human Error","month":"25.11","qty":3},{"reason":"Human Error","month":"25.12","qty":1},{"reason":"Human Error","month":"26.01","qty":0},{"reason":"Handling Damage","month":"25.10","qty":5},{"reason":"Handling Damage","month":"25.11","qty":3},{"reason":"Handling Damage","month":"25.12","qty":8},{"reason":"Handling Damage","month":"26.01","qty":0},{"reason":"Component Lifting","month":"25.10","qty":0},{"reason":"Component Lifting","month":"25.11","qty":0},{"reason":"Component Lifting","month":"25.12","qty":1},{"reason":"Component Lifting","month":"26.01","qty":0}];}
 
-const T={ko:{mainTitle:'📊 DS Quality Performance',lblProd:'제품',lblPeriod:'기간',lblProcess:'공정',btnProd:'✏️ 생산 입력',btnShip:'📦 출하 입력',btnDefect:'🛠️ 불량 유형 입력',lblKpiYield:'종합 수율',lblKpiPPM:'당사 귀책 불량률',lblKpiInput:'총 투입 수량',lblKpiOutput:'총 산출 수량',lblKpiDefect:'총 불량 수량',lblKpiCompDefect:'당사 귀책 불량',titProcYield:'공정별 수율 현황',titMonthYield:'공정별 월별 수율 추이',titProdYield:'제품별 수율 현황',titTotalTrend:'종합 수율 월별 트렌드 (%)',titProdTrend:'제품별 수율 추이 (%)',titProcTrend:'공정별 수율 추이 (%)',titProdVol:'DS 생산 실적',titTotalDefect:'월별 불량 수 트렌드',titCompDefect:'당사 귀책 불량 수 트렌드',titDefectType:'불량 유형 차트',titDefectTable:'불량 유형 상세 현황',titDefectSection:'📉 불량 분석 및 상세 현황',titShipSection:'📦 출하 실적',titShipTable:'월별 출하 수량',titShipChart:'월별 출하 실적 추이',thProc:'공정',thIn:'투입',thOut:'산출',thFail:'불량',thYld:'수율',thStat:'판정',thMonth:'기간',thProd:'제품',thIn2:'투입',thOut2:'산출',thFail2:'불량',thYld2:'수율',thStat2:'판정',thShipMonth:'기간',thTotal:'합계',moTitProd:'✏️ 생산 데이터 입력',moTitShip:'📦 출하 데이터 입력',moTitDefect:'🛠️ 불량 유형 데이터 입력',all:'전체',good:'양호',warn:'경고'},en:{mainTitle:'📊 DS Quality Performance',lblProd:'Product',lblPeriod:'Period',lblProcess:'Process',btnProd:'✏️ Production',btnShip:'📦 Shipment',btnDefect:'🛠️ Defect Types',lblKpiYield:'Overall Yield',lblKpiPPM:'Defect Rate (PPM)',lblKpiInput:'Total Input',lblKpiOutput:'Total Output',lblKpiDefect:'Total Defects',lblKpiCompDefect:'Company Defects',titProcYield:'Process Yield',titMonthYield:'Monthly Process Yield',titProdYield:'Product Yield',titTotalTrend:'Overall Yield Trend (%)',titProdTrend:'Product Yield Trend (%)',titProcTrend:'Process Yield Trend (%)',titProdVol:'Production Volume',titTotalDefect:'Total Defect Trend',titCompDefect:'Company Defect Trend',titDefectType:'Defect Type Chart',titDefectTable:'Defect Type Details',titDefectSection:'📉 Defect Analysis',titShipSection:'📦 Shipment Performance',titShipTable:'Monthly Shipment',titShipChart:'Shipment Trend',thProc:'Process',thIn:'Input',thOut:'Output',thFail:'Defect',thYld:'Yield',thStat:'Status',thMonth:'Period',thProd:'Product',thIn2:'Input',thOut2:'Output',thFail2:'Defect',thYld2:'Yield',thStat2:'Status',thShipMonth:'Period',thTotal:'Total',moTitProd:'✏️ Production Data Entry',moTitShip:'📦 Shipment Data Entry',moTitDefect:'🛠️ Defect Type Data Entry',all:'All',good:'Good',warn:'Warning'}};
+const T={ko:{mainTitle:'📊 DS Quality Performance',lblProd:'제품',lblPeriod:'기간',lblProcess:'공정',btnProd:'✏️ 생산 입력',btnShip:'📦 출하 입력',btnDefect:'🛠️ 불량 유형 입력',lblKpiYield:'종합 수율',lblKpiPPM:'당사 귀책 불량률',lblKpiInput:'총 투입 수량',lblKpiOutput:'총 산출 수량',lblKpiDefect:'총 불량 수량',lblKpiCompDefect:'당사 귀책 불량',titProcYield:'공정별 수율 현황',titMonthYield:'공정별 월별 수율 추이',titProdYield:'제품별 수율 현황',titTotalTrend:'종합 수율 월별 트렌드 (%)',titProdTrend:'제품별 수율 추이 (%)',titProcTrend:'공정별 수율 추이 (%)',titProdVol:'DS 생산 실적',titTotalDefect:'월별 불량 수 트렌드',titCompDefect:'당사 귀책 불량 수 트렌드',titDefectType:'불량 유형 차트',titDefectTable:'불량 유형 상세 현황',titDefectSection:'📉 불량 분석 및 상세 현황',titShipSection:'📦 출하 실적',titShipTable:'월별 출하 수량',titShipChart:'월별 출하 실적 추이',thProc:'공정',thIn:'투입',thOut:'산출',thFail:'불량',thYld:'수율',thStat:'판정',thMonth:'기간',thProd:'제품',thIn2:'투입',thOut2:'산출',thFail2:'불량',thYld2:'수율',thStat2:'판정',thShipMonth:'기간',thTotal:'합계',moTitProd:'✏️ 생산 데이터 입력',moTitShip:'📦 출하 데이터 입력',moTitDefect:'🛠️ 불량 유형 데이터 입력',all:'전체',good:'양호',warn:'경고',
+    btnViewMonthly:'📅 월별',btnViewDaily:'📆 일별',btnDailyProd:'📅 일별 생산 입력',btnDailyDef:'🔴 불량 코드 입력',
+    dlblDate:'날짜',dlblProd:'제품',dlblTeam:'팀',dlblProcess:'공정',
+    dLblYield:'종합 수율',dLblSmtYield:'SMT 수율',dLblTestYield:'TEST 수율',dLblInput:'총 투입 수량',dLblDefect:'총 불량',
+    dTitYieldTrend:'일별 수율 트렌드 (%)',dTitVolTrend:'일별 투입량 트렌드',
+    dTitDefectSection:'📉 불량 코드 분석',dTitDefectBar:'불량 코드 TOP 10',dTitDefectPie:'불량 코드 비율',dTitDefectTable:'불량 코드 상세',
+    dTitProdSection:'📋 일별 생산 데이터',dTitProcVolTrend:'공정별 일별 생산수량',
+    dTblDefThCode:'코드',dTblDefThName:'불량명',dTblDefThTeam:'팀',dTblDefThQty:'수량',
+    dThRate:'수율',
+    dProdTblThDate:'날짜',dProdTblThModel:'모델',dProdTblThProc:'공정',dProdTblThTeam:'팀',dProdTblThYield:'수율',
+    dThDate:'날짜',dThModel:'모델',dThProc:'공정',dThTeamCol:'팀',dThInQty:'투입수량',dThGoodQty:'양품수량',dThDefQty:'불량수량',dThYield:'수율',
+    btnToday:'오늘',btnYesterday:'어제',btnThisWeek:'이번주',btnThisMonth:'이번달',btnAllDate:'전체',lblWeekNum:'주차 검색:',
+    smtLblYield:'수율',smtLblInput:'투입 수량',smtLblDefect:'불량',testLblYield:'수율',testLblInput:'투입 수량',testLblDefect:'불량',
+    modalDailyProdTitle:'📅 일별 생산 데이터 입력',modalDailyProdDesc:'붙여넣기 순서: 모델 | 날짜(YYYY-MM-DD) | 공정 | 투입수량 | 양품수량 | 불량수량',
+    modalDailyDefTitle:'🔴 일별 불량 코드 입력',modalDailyDefDesc:'공정별 불량 수량 내에서만 코드를 입력할 수 있습니다'},en:{mainTitle:'📊 DS Quality Performance',lblProd:'Product',lblPeriod:'Period',lblProcess:'Process',btnProd:'✏️ Production',btnShip:'📦 Shipment',btnDefect:'🛠️ Defect Types',lblKpiYield:'Overall Yield',lblKpiPPM:'Defect Rate (PPM)',lblKpiInput:'Total Input',lblKpiOutput:'Total Output',lblKpiDefect:'Total Defects',lblKpiCompDefect:'Company Defects',titProcYield:'Process Yield',titMonthYield:'Monthly Process Yield',titProdYield:'Product Yield',titTotalTrend:'Overall Yield Trend (%)',titProdTrend:'Product Yield Trend (%)',titProcTrend:'Process Yield Trend (%)',titProdVol:'Production Volume',titTotalDefect:'Total Defect Trend',titCompDefect:'Company Defect Trend',titDefectType:'Defect Type Chart',titDefectTable:'Defect Type Details',titDefectSection:'📉 Defect Analysis',titShipSection:'📦 Shipment Performance',titShipTable:'Monthly Shipment',titShipChart:'Shipment Trend',thProc:'Process',thIn:'Input',thOut:'Output',thFail:'Defect',thYld:'Yield',thStat:'Status',thMonth:'Period',thProd:'Product',thIn2:'Input',thOut2:'Output',thFail2:'Defect',thYld2:'Yield',thStat2:'Status',thShipMonth:'Period',thTotal:'Total',moTitProd:'✏️ Production Data Entry',moTitShip:'📦 Shipment Data Entry',moTitDefect:'🛠️ Defect Type Data Entry',all:'All',good:'Good',warn:'Warning',
+    btnViewMonthly:'📅 Monthly',btnViewDaily:'📆 Daily',btnDailyProd:'📅 Daily Prod Entry',btnDailyDef:'🔴 Defect Code Entry',
+    dlblDate:'Date',dlblProd:'Product',dlblTeam:'Team',dlblProcess:'Process',
+    dLblYield:'Overall Yield',dLblSmtYield:'SMT Yield',dLblTestYield:'TEST Yield',dLblInput:'Total Input Qty',dLblDefect:'Total Defects',
+    dTitYieldTrend:'Daily Yield Trend (%)',dTitVolTrend:'Daily Input Volume Trend',
+    dTitDefectSection:'📉 Defect Code Analysis',dTitDefectBar:'Top 10 Defect Codes',dTitDefectPie:'Defect Code Distribution',dTitDefectTable:'Defect Code Details',
+    dTitProdSection:'📋 Daily Production Data',dTitProcVolTrend:'Daily Volume by Process',
+    dTblDefThCode:'Code',dTblDefThName:'Defect Name',dTblDefThTeam:'Team',dTblDefThQty:'Qty',
+    dThRate:'Yield',
+    dProdTblThDate:'Date',dProdTblThModel:'Model',dProdTblThProc:'Process',dProdTblThTeam:'Team',dProdTblThYield:'Yield',
+    dThDate:'Date',dThModel:'Model',dThProc:'Process',dThTeamCol:'Team',dThInQty:'Input Qty',dThGoodQty:'Good Qty',dThDefQty:'Def. Qty',dThYield:'Yield',
+    btnToday:'Today',btnYesterday:'Yesterday',btnThisWeek:'This Week',btnThisMonth:'This Month',btnAllDate:'All',lblWeekNum:'Week#:',
+    smtLblYield:'Yield',smtLblInput:'Input Qty',smtLblDefect:'Defects',testLblYield:'Yield',testLblInput:'Input Qty',testLblDefect:'Defects',
+    modalDailyProdTitle:'📅 Daily Production Entry',modalDailyProdDesc:'Paste order: Model | Date(YYYY-MM-DD) | Process | InputQty | GoodQty | DefectQty',
+    modalDailyDefTitle:'🔴 Daily Defect Code Entry',modalDailyDefDesc:'Defect codes must be within the defect quantity already recorded for that date/model/process'}};
 
 function getUV(a,k){return[...new Set(a.map(d=>d[k]))].filter(v=>v&&v.toString().trim()).sort();}
 function updateSmartLists(){
@@ -1046,7 +1342,8 @@ function updateLastUpdate(){
     const n=new Date(), p=x=>String(x).padStart(2,'0');
     el.innerText=(lang==='ko'?'최종 업데이트: ':'Last Update: ')+`${n.getFullYear()}-${p(n.getMonth()+1)}-${p(n.getDate())} ${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())}`;
 }
-window.onload=initFirebase;
+// initFirebase는 로그인 후 doLogin()에서 호출됨
+// window.onload=initFirebase; ← 자동실행 제거
 
 function extractYM(s){
     if(!s)return''; const c=s.toString().trim();
@@ -1495,14 +1792,760 @@ function exportExcel(){
         const wb=XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(prodData.map(d=>({'제품':d.prod,'기간':fmtPeriod(d.month),'공정':d.proc,'투입':d.in,'산출':d.out,'불량':d.fail}))),"생산데이터");
         XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(shipData.map(d=>({'모델':d.model,'모델명':d.name,'출하일':d.date,'수량':d.qty,'사유':d.reason,'기간':fmtPeriod(d.month)}))),"출하데이터");
-        XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(defectTypeData.map(d=>({'불량명':d.reason,'기간':fmtPeriod(d.month),'수량':d.qty}))),"불량유형데이터");
+        XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(defectTypeData.map(d=>({'불량명':d.reason,'기간':fmtPeriod(d.month),'수량':d.qty}))),lang==='ko'?"불량유형데이터":"Defect_Types");
+        if(dailyProdData&&dailyProdData.length) XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(dailyProdData.map(d=>({[lang==='ko'?'날짜':'Date']:d.date,[lang==='ko'?'모델':'Model']:d.model,[lang==='ko'?'공정':'Process']:d.proc,[lang==='ko'?'팀':'Team']:d.team,[lang==='ko'?'투입수량':'Input Qty']:d.inspQty,[lang==='ko'?'양품수량':'Good Qty']:d.goodQty,[lang==='ko'?'불량수량':'Defect Qty']:d.defectQty}))),lang==='ko'?"일별생산":"Daily_Prod");
+        if(dailyDefectData&&dailyDefectData.length) XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(dailyDefectData.map(d=>({[lang==='ko'?'날짜':'Date']:d.date,[lang==='ko'?'모델':'Model']:d.model,[lang==='ko'?'공정':'Process']:d.proc,[lang==='ko'?'팀':'Team']:d.team,[lang==='ko'?'불량코드':'Code']:d.defectCode,[lang==='ko'?'불량명':'Name']:d.defectName,[lang==='ko'?'수량':'Qty']:d.qty}))),lang==='ko'?"일별불량코드":"Daily_Defects");
         XLSX.writeFile(wb,`DS_Quality_Performance_${new Date().toISOString().slice(0,10).replace(/-/g,'')}.xlsx`);
         alert('✅ Excel 파일이 다운로드되었습니다!');
     }catch(e){alert('Excel 오류: '+e.message);}
 }
+
+// ══════════════════════════════════════════════════════
+// LOGIN
+// ══════════════════════════════════════════════════════
+const LOGIN_PASSWORD = "ds2025"; // ← 대시보드 접속 비밀번호 (데이터 입력과 분리)
+let loggedIn = false;
+
+function doLogin(){
+    const v=document.getElementById('loginInput').value;
+    if(v===LOGIN_PASSWORD){
+        loggedIn=true;
+        document.getElementById('loginModal').style.display='none';
+        document.getElementById('loadingOverlay').style.display='flex';
+        initFirebase();
+    } else {
+        const e=document.getElementById('loginErr');
+        e.innerText='❌ 비밀번호가 틀렸습니다';
+        document.getElementById('loginInput').value='';
+        document.getElementById('loginInput').focus();
+        setTimeout(()=>e.innerText='',2000);
+    }
+}
+document.addEventListener('DOMContentLoaded',()=>{
+    // 로딩 오버레이 숨기고, 로그인 모달 먼저 표시
+    document.getElementById('loadingOverlay').style.display='none';
+    document.getElementById('loginModal').style.display='flex';
+    setTimeout(()=>document.getElementById('loginInput').focus(), 100);
+});
+
+// ══════════════════════════════════════════════════════
+// DEFECT CODE LISTS (SMT = 1000s, TEST = 4000s)
+// ══════════════════════════════════════════════════════
+const SMD_DEFECTS=[
+    {code:'1000',name:'PCB;TAB BREAKAGE'},{code:'1001',name:'PCB;TAB EXPOSE'},{code:'1002',name:'PCB;TAB BUBBLE'},
+    {code:'1003',name:'PCB;TAB BURR'},{code:'1004',name:'PCB;TAB LIFTING'},{code:'1005',name:'PCB;TAB DISCOLOR'},
+    {code:'1006',name:'PCB;TAB SOLDER RESIDUE'},{code:'1008',name:'PCB;TAB FOREIGN MATERIALS'},{code:'1009',name:'PCB TAB DAMAGED'},
+    {code:'1012',name:'PCB;TAB BURNT'},{code:'1013',name:'PCB;TAB DENT'},{code:'1014',name:'PCB;TAB SCRATCH'},
+    {code:'1015',name:'PCB;TAB SHORT'},{code:'1016',name:'PCB;TAB VOID'},{code:'1018',name:'PCB;TAB SHAPE DEFECT'},
+    {code:'1021',name:'PCB;TAB FINE DEFECT'},{code:'1100',name:'PCB;PCB FOLD'},{code:'1101',name:'PCB;PCB BURR'},
+    {code:'1102',name:'PCB PCB LIFTING'},{code:'1103',name:'PCB PCB DELAMINATION'},{code:'1104',name:'PCB PCB DISCOLOR'},
+    {code:'1105',name:'PCB PCB CONTAMINATION'},{code:'1106',name:'PCB PCB BREAKAGE'},{code:'1107',name:'PCB PCB FOREIGN MATERIALS'},
+    {code:'1108',name:'PCB PCB BURNING'},{code:'1109',name:'PCB PCB CIRCUIT DEFECT'},{code:'1112',name:'PCB;PCB BOW'},
+    {code:'1113',name:'PCB;PCB BUBBLE'},{code:'1115',name:'PCB PCB CU EXPOSE'},{code:'1116',name:'PCB PCB DIMENSION DEFECT'},
+    {code:'1117',name:'PCB PCB MARKING DEFECT'},{code:'1118',name:'PCB PCB MIX'},{code:'1119',name:'PCB PCB PAD DEFECT'}
+];
+const TEST_DEFECTS=[
+    {code:'4001',name:'COM;SPD_WP'},{code:'4041',name:'COM;SPD_WRITE_FUNC'},{code:'4044',name:'COM;SPD_READ_SERIAL_FUNC'},
+    {code:'4045',name:'COM;SPD_WP (2)'},{code:'4046',name:'COM;EEPROM_TEMP_GRADE'},{code:'4048',name:'COM;SPD_BIN_READ_FUNC'},
+    {code:'4050',name:'COM;BIN 50'},{code:'4051',name:'COM;BIN 51'},{code:'4052',name:'COM;BIN 52'},
+    {code:'4053',name:'COM;BIN 53'},{code:'4054',name:'COM;BIN 54'},{code:'4057',name:'COM;BIN 57'},
+    {code:'4061',name:'COM;VREFDQ-Vss_SHORT_SCREEN'},{code:'4070',name:'COM;INPUT_LEAKAGE'},{code:'4071',name:'COM;OUTPUT_LEAKAGE'},
+    {code:'4080',name:'COM;INPUT_OPEN'},{code:'4081',name:'COM;OUTPUT_OPEN'},{code:'4095',name:'COM;FUSE FAIL'}
+];
+let CUSTOM_DEFECTS=[];
+
+function getDefectsForProc(proc){
+    const c=CUSTOM_DEFECTS;
+    if(['SMD','ROUTER'].includes(proc)) return [...SMD_DEFECTS,...c.filter(d=>d.team==='SMT')];
+    if(['ATE','PCT','AVI'].includes(proc)) return [...TEST_DEFECTS,...c.filter(d=>d.team==='TEST')];
+    return [...SMD_DEFECTS,...TEST_DEFECTS,...c];
+}
+function getTeam(proc){
+    if(['SMD','ROUTER'].includes(proc)) return 'SMT';
+    if(['ATE','PCT','AVI'].includes(proc)) return 'TEST';
+    return '—';
+}
+function getTeamBadge(proc){
+    const t=getTeam(proc);
+    if(t==='SMT') return '<span class="team-badge team-smt">SMT</span>';
+    if(t==='TEST') return '<span class="team-badge team-test">TEST</span>';
+    return '<span style="color:var(--text-muted)">—</span>';
+}
+
+// ══════════════════════════════════════════════════════
+// DAILY STATE
+// ══════════════════════════════════════════════════════
+let dailyProdData=[], dailyDefectData=[];
+let dFilters={product:'전체',team:'전체',process:'전체',dateFrom:'',dateTo:''};
+let dYieldFilter='전체', dVolFilter='전체', dDefectTeamFilter='전체';
+let dCharts={}, currentView='monthly';
+
+// ══════════════════════════════════════════════════════
+// VIEW SWITCH
+// ══════════════════════════════════════════════════════
+function setView(v){
+    currentView=v;
+    document.getElementById('viewMonthly').style.display=v==='monthly'?'block':'none';
+    document.getElementById('viewDaily').style.display=v==='daily'?'block':'none';
+    document.getElementById('monthlyBtns').style.display=v==='monthly'?'inline-flex':'none';
+    document.getElementById('dailyBtns').style.display=v==='daily'?'inline-flex':'none';
+    document.getElementById('btnViewMonthly').className='lang-btn'+(v==='monthly'?' active':'');
+    document.getElementById('btnViewDaily').className='lang-btn'+(v==='daily'?' active':'');
+    if(v==='daily'){initDailyFilters();updateDailyUI();}
+}
+
+// ══════════════════════════════════════════════════════
+// DAILY DATE FILTERS
+// ══════════════════════════════════════════════════════
+function initDailyFilters(){
+    const now=new Date(),y=now.getFullYear(),m=String(now.getMonth()+1).padStart(2,'0');
+    const last=new Date(y,now.getMonth()+1,0);
+    if(!dFilters.dateFrom){
+        dFilters.dateFrom=`${y}-${m}-01`;
+        document.getElementById('dFilterFrom').value=dFilters.dateFrom;
+    }
+    if(!dFilters.dateTo){
+        dFilters.dateTo=`${y}-${m}-${String(last.getDate()).padStart(2,'0')}`;
+        document.getElementById('dFilterTo').value=dFilters.dateTo;
+    }
+}
+
+function setDailyDatePreset(type){
+    const now=new Date(),y=now.getFullYear(),m=now.getMonth();
+    const p=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    let from,to;
+    if(type==='today'){from=to=now;}
+    else if(type==='yesterday'){const y2=new Date(now);y2.setDate(now.getDate()-1);from=to=y2;}
+    else if(type==='week'){
+        const day=now.getDay(),diff=now.getDate()-day+(day===0?-6:1);
+        from=new Date(y,m,diff);to=new Date(y,m,diff+6);
+    }
+    else if(type==='month'){from=new Date(y,m,1);to=new Date(y,m+1,0);}
+    else if(type==='all'){from=new Date('2000-01-01');to=new Date('2099-12-31');}
+    else if(type==='weeknum'){
+        const wn=parseInt(document.getElementById('weekNumInput').value);
+        if(!wn||wn<1||wn>53){alert(lang==='ko'?'올바른 주차를 입력하세요 (1~53)':'Enter valid week number (1~53)');return;}
+        const yr=now.getFullYear();
+        const jan4=new Date(yr,0,4);
+        const firstMon=new Date(jan4);
+        firstMon.setDate(jan4.getDate()-(jan4.getDay()||7)+1);
+        from=new Date(firstMon);from.setDate(firstMon.getDate()+(wn-1)*7);
+        to=new Date(from);to.setDate(from.getDate()+6);
+    }
+    dFilters.dateFrom=p(from);dFilters.dateTo=p(to);
+    document.getElementById('dFilterFrom').value=dFilters.dateFrom;
+    document.getElementById('dFilterTo').value=dFilters.dateTo;
+    updateDailyUI();
+}
+
+function applyDailyFilters(){
+    dFilters.dateFrom=document.getElementById('dFilterFrom').value;
+    dFilters.dateTo=document.getElementById('dFilterTo').value;
+    updateDailyUI();
+}
+function dFilter(t,v){dFilters[t]=v;updateDailyUI();}
+
+function renderDailyFilterBtns(){
+    const all=lang==='ko'?'전체':'All';
+    const pp=document.getElementById('dFilterProduct');if(!pp)return;
+    pp.innerHTML='';
+    ['전체','RDIMM','SODIMM','UDIMM'].forEach(p=>{
+        const b=document.createElement('button');
+        b.className='filter-btn'+(dFilters.product===p?' active':'');
+        b.innerText=p==='전체'?all:p;
+        b.onclick=()=>dFilter('product',p);
+        pp.appendChild(b);
+    });
+    const tp=document.getElementById('dFilterTeam');tp.innerHTML='';
+    [['전체',all],['SMT','SMT'],['TEST','TEST']].forEach(([v,label])=>{
+        const b=document.createElement('button');
+        b.className='filter-btn'+(dFilters.team===v?(v==='SMT'?' active-smt':v==='TEST'?' active-test':' active'):'');
+        b.innerText=label;b.onclick=()=>dFilter('team',v);tp.appendChild(b);
+    });
+    const pr=document.getElementById('dFilterProcess');pr.innerHTML='';
+    ['전체','SMD','ROUTER','ATE','PCT','AVI'].forEach(p=>{
+        const b=document.createElement('button');
+        b.className='filter-btn'+(dFilters.process===p?' active':'');
+        b.innerText=p==='전체'?all:p;b.onclick=()=>dFilter('process',p);pr.appendChild(b);
+    });
+    // Chart mini-filters
+    const dyf=document.getElementById('dYieldFilter');if(dyf){dyf.innerHTML='';
+        const yGroups=[
+            {items:['전체'],color:''},
+            {items:['SMT','TEST'],color:'#6366f1',label:'Team'},
+            {items:['RDIMM','SODIMM','UDIMM'],color:'#f43f5e',label:'Model'},
+            {items:['SMD','ROUTER'],color:'#8b5cf6',label:'SMT-Proc'},
+            {items:['ATE','PCT','AVI'],color:'#0891b2',label:'TEST-Proc'}
+        ];
+        const yGroupColors={'SMT':'#6366f1','TEST':'#6366f1','RDIMM':'#f43f5e','SODIMM':'#0891b2','UDIMM':'#f59e0b','SMD':'#8b5cf6','ROUTER':'#ec4899','ATE':'#6366f1','PCT':'#f59e0b','AVI':'#10b981'};
+        yGroups.forEach(g=>{
+            if(g.label){const sep=document.createElement('span');sep.style.cssText='display:inline-flex;align-items:center;margin:0 4px 0 6px;font-size:9px;font-weight:700;color:'+g.color+';letter-spacing:.5px;';sep.innerText=g.label.toUpperCase();dyf.appendChild(sep);}
+            g.items.forEach(p=>{
+                const b=document.createElement('button');
+                const isActive=dYieldFilter===p;
+                const gc=yGroupColors[p]||'';
+                b.style.cssText=gc&&!isActive?`border-color:${gc}40;color:${gc};`:'';
+                b.className='mini-btn'+(isActive?' active':'');
+                if(isActive&&gc) b.style.cssText=`background:${gc};border-color:${gc};color:white;`;
+                b.innerText=p==='전체'?all:p;
+                b.onclick=()=>{dYieldFilter=p;renderDailyFilterBtns();drawDailyCharts(getDailyFiltered());};
+                dyf.appendChild(b);
+            });
+        });
+    }
+    const dvf=document.getElementById('dVolFilter');if(dvf){dvf.innerHTML='';
+        ['전체','RDIMM','SODIMM','UDIMM'].forEach(p=>{
+            const b=document.createElement('button');b.className='mini-btn'+(dVolFilter===p?' active':'');
+            b.innerText=p==='전체'?all:p;b.onclick=()=>{dVolFilter=p;renderDailyFilterBtns();drawDailyCharts(getDailyFiltered());};dvf.appendChild(b);});}
+    const ddf=document.getElementById('dDefectTeamFilter');if(ddf){ddf.innerHTML='';
+        ['전체','SMT','TEST'].forEach(t=>{
+            const b=document.createElement('button');b.className='mini-btn'+(dDefectTeamFilter===t?' active':'');
+            b.innerText=t==='전체'?all:t;b.onclick=()=>{dDefectTeamFilter=t;renderDailyFilterBtns();drawDailyCharts(getDailyFiltered());};ddf.appendChild(b);});}
+}
+
+function getDailyFiltered(){
+    return dailyProdData.filter(d=>{
+        if(!d.inspQty||d.inspQty<=0) return false; // 0건 제외
+        if(dFilters.dateFrom&&d.date<dFilters.dateFrom)return false;
+        if(dFilters.dateTo&&d.date>dFilters.dateTo)return false;
+        if(dFilters.product!=='전체'&&d.model!==dFilters.product)return false;
+        if(dFilters.team!=='전체'&&getTeam(d.proc)!==dFilters.team)return false;
+        if(dFilters.process!=='전체'&&d.proc!==dFilters.process)return false;
+        return true;
+    });
+}
+function getDailyDefFiltered(){
+    return dailyDefectData.filter(d=>{
+        if(dFilters.dateFrom&&d.date<dFilters.dateFrom)return false;
+        if(dFilters.dateTo&&d.date>dFilters.dateTo)return false;
+        if(dFilters.product!=='전체'&&d.model!==dFilters.product)return false;
+        if(dFilters.team!=='전체'&&d.team!==dFilters.team)return false;
+        if(dFilters.process!=='전체'&&d.proc!==dFilters.process)return false;
+        return true;
+    });
+}
+
+// ══════════════════════════════════════════════════════
+// DAILY UI UPDATE
+// ══════════════════════════════════════════════════════
+function updateDailyUI(){
+    renderDailyFilterBtns();
+    const data=getDailyFiltered(), defData=getDailyDefFiltered();
+    const smtData=data.filter(d=>['SMD','ROUTER'].includes(d.proc));
+    const testData=data.filter(d=>['ATE','PCT','AVI'].includes(d.proc));
+    // 투입수량: SMD 기준 (첫 공정)으로만 집계
+    const smdData=data.filter(d=>d.proc==='SMD');
+    const totalIn=smdData.length>0 ? smdData.reduce((a,b)=>a+b.inspQty,0)
+                  : data.filter(d=>d.proc==='ROUTER').reduce((a,b)=>a+b.inspQty,0)||data.reduce((a,b)=>a+b.inspQty,0);
+    // 불량수량: 각 날짜+모델별로 (첫공정 투입 - 마지막 공정 양품) 합산
+    const procOrder=['SMD','ROUTER','ATE','PCT','AVI'];
+    const dayModelKeys=[...new Set(data.map(d=>d.date+'|'+d.model))];
+    let totalDef=0;
+    dayModelKeys.forEach(key=>{
+        const [date,model]=key.split('|');
+        const rows=data.filter(d=>d.date===date&&d.model===model);
+        if(!rows.length) return;
+        // first proc input
+        rows.sort((a,b)=>procOrder.indexOf(a.proc)-procOrder.indexOf(b.proc));
+        const firstIn=rows[0].inspQty;
+        const lastGood=rows[rows.length-1].goodQty;
+        totalDef+=(firstIn-lastGood);
+    });
+    // SMT: first=SMD inspQty, last=ROUTER goodQty
+    const smtIn=smtData.filter(d=>d.proc==='SMD').reduce((a,b)=>a+b.inspQty,0)||smtData.reduce((a,b)=>a+b.inspQty,0);
+    let smtDef=0;
+    dayModelKeys.forEach(key=>{
+        const [date,model]=key.split('|');
+        const rows=data.filter(d=>d.date===date&&d.model===model&&['SMD','ROUTER'].includes(d.proc));
+        if(!rows.length) return;
+        rows.sort((a,b)=>procOrder.indexOf(a.proc)-procOrder.indexOf(b.proc));
+        smtDef+=(rows[0].inspQty-rows[rows.length-1].goodQty);
+    });
+    // TEST: first=ATE inspQty, last=AVI goodQty
+    const testIn=testData.filter(d=>d.proc==='ATE').reduce((a,b)=>a+b.inspQty,0)||testData.reduce((a,b)=>a+b.inspQty,0);
+    let testDef=0;
+    dayModelKeys.forEach(key=>{
+        const [date,model]=key.split('|');
+        const rows=data.filter(d=>d.date===date&&d.model===model&&['ATE','PCT','AVI'].includes(d.proc));
+        if(!rows.length) return;
+        rows.sort((a,b)=>procOrder.indexOf(a.proc)-procOrder.indexOf(b.proc));
+        testDef+=(rows[0].inspQty-rows[rows.length-1].goodQty);
+    });
+    const smtGood=smtIn-smtDef;
+    const testGood=testIn-testDef;
+    const smtYield=smtIn>0?smtGood/smtIn*100:0;
+    const testYield=testIn>0?testGood/testIn*100:0;
+    const overallYield=totalIn>0?(totalIn-totalDef)/totalIn*100:0;
+    const ppm=totalIn>0?totalDef/totalIn*1000000:0;
+    document.getElementById('dKpiYield').innerText=overallYield.toFixed(2)+'%';
+    document.getElementById('dKpiSmtYield').innerText=smtIn>0?smtYield.toFixed(2)+'%':'—';
+    document.getElementById('dKpiTestYield').innerText=testIn>0?testYield.toFixed(2)+'%':'—';
+    document.getElementById('dKpiInput').innerText=totalIn.toLocaleString();
+    document.getElementById('dKpiDefect').innerText=totalDef.toLocaleString();
+    document.getElementById('dKpiPpm').innerText=Math.round(ppm).toLocaleString()+' PPM';
+    document.getElementById('smtYield').innerText=smtIn>0?smtYield.toFixed(2)+'%':'—';
+    document.getElementById('smtInput').innerText=smtIn.toLocaleString();
+    document.getElementById('smtDefect').innerText=smtDef.toLocaleString();
+    document.getElementById('testYield').innerText=testIn>0?testYield.toFixed(2)+'%':'—';
+    document.getElementById('testInput').innerText=testIn.toLocaleString();
+    document.getElementById('testDefect').innerText=testDef.toLocaleString();
+    updateDailyTables(data,defData);
+    drawDailyCharts(data);
+}
+
+// Table-level filter state
+let tblFilters={model:'전체',proc:'전체',team:'전체'};
+function renderTblFilterBtns(){
+    const all=lang==='ko'?'전체':'All';
+    const mf=document.getElementById('dTblModelFilter');
+    if(mf){mf.innerHTML='';['전체','RDIMM','SODIMM','UDIMM'].forEach(v=>{const b=document.createElement('button');b.className='filter-btn filter-btn-sm'+(tblFilters.model===v?' active':'');b.innerText=v==='전체'?all:v;b.onclick=()=>{tblFilters.model=v;renderTblFilterBtns();updateDailyTables(getDailyFiltered(),getDailyDefFiltered());};mf.appendChild(b);});}
+    const pf=document.getElementById('dTblProcFilter');
+    if(pf){pf.innerHTML='';['전체','SMD','ROUTER','ATE','PCT','AVI'].forEach(v=>{const b=document.createElement('button');b.className='filter-btn filter-btn-sm'+(tblFilters.proc===v?' active':'');b.innerText=v==='전체'?all:v;b.onclick=()=>{tblFilters.proc=v;renderTblFilterBtns();updateDailyTables(getDailyFiltered(),getDailyDefFiltered());};pf.appendChild(b);});}
+    const tf=document.getElementById('dTblTeamFilter');
+    if(tf){tf.innerHTML='';[['전체',all],['SMT','SMT'],['TEST','TEST']].forEach(([v,l])=>{const b=document.createElement('button');b.className='filter-btn filter-btn-sm'+(tblFilters.team===v?(v==='SMT'?' active-smt':v==='TEST'?' active-test':' active'):'');b.innerText=l;b.onclick=()=>{tblFilters.team=v;renderTblFilterBtns();updateDailyTables(getDailyFiltered(),getDailyDefFiltered());};tf.appendChild(b);});}
+}
+function applyTblFilter(data){
+    return data.filter(d=>{
+        if(tblFilters.model!=='전체'&&d.model!==tblFilters.model) return false;
+        if(tblFilters.proc!=='전체'&&d.proc!==tblFilters.proc) return false;
+        if(tblFilters.team!=='전체'&&getTeam(d.proc)!==tblFilters.team) return false;
+        return true;
+    });
+}
+function updateDailyTables(data,defData){
+    renderTblFilterBtns();
+    // Production table with table-level filters + sort
+    const tbody=document.querySelector('#dTblProd tbody');
+    const tblData=applyTblFilter(data);
+    if(!tblData.length){
+        tbody.innerHTML=`<tr><td colspan="8" class="daily-no-data">📭 ${lang==='ko'?'데이터 없음 — 일별 생산 입력 버튼으로 추가하세요':'No data — use Daily Prod Entry'}</td></tr>`;
+    } else {
+        const sortVal=(document.getElementById('dTblSort')||{}).value||'date-desc';
+        const sorted=[...tblData].sort((a,b)=>{
+            const ya=a.inspQty>0?a.goodQty/a.inspQty*100:0;
+            const yb=b.inspQty>0?b.goodQty/b.inspQty*100:0;
+            if(sortVal==='date-desc') return a.date>b.date?-1:1;
+            if(sortVal==='date-asc') return a.date<b.date?-1:1;
+            if(sortVal==='yield-asc') return ya-yb;
+            if(sortVal==='yield-desc') return yb-ya;
+            if(sortVal==='defect-desc') return b.defectQty-a.defectQty;
+            return 0;
+        });
+        tbody.innerHTML=sorted.map(d=>{
+            const y=d.inspQty>0?d.goodQty/d.inspQty*100:0,ok=y>=99.5;
+            return`<tr>
+                <td><strong>${d.date}</strong></td>
+                <td>${d.model}</td><td>${d.proc}</td>
+                <td>${getTeamBadge(d.proc)}</td>
+                <td style="text-align:right;font-family:'JetBrains Mono',monospace">${d.inspQty.toLocaleString()}</td>
+                <td style="text-align:right;font-family:'JetBrains Mono',monospace">${d.goodQty.toLocaleString()}</td>
+                <td style="text-align:right;font-family:'JetBrains Mono',monospace;color:#e11d48">${d.defectQty.toLocaleString()}</td>
+                <td class="${ok?'yield-good':'yield-bad'}">${y.toFixed(2)}%</td>
+            </tr>`;
+        }).join('');
+        const cnt=document.getElementById('dTblProdCount');
+        if(cnt) cnt.innerText=(lang==='ko'?`${sorted.length}건 / 전체 ${tblData.length}건`:`${sorted.length} / ${tblData.length} records`);
+    }
+    // Defect code table
+    const dtbody=document.querySelector('#dTblDefect tbody');
+    const fDef=dDefectTeamFilter==='전체'?defData:defData.filter(d=>d.team===dDefectTeamFilter);
+    if(!fDef.length){
+        dtbody.innerHTML=`<tr><td colspan="4" class="daily-no-data">${lang==='ko'?'불량 코드 데이터 없음':'No defect code data'}</td></tr>`;
+        return;
+    }
+    const codeMap={};
+    fDef.forEach(d=>{if(!codeMap[d.defectCode])codeMap[d.defectCode]={code:d.defectCode,name:d.defectName,team:d.team,qty:0};codeMap[d.defectCode].qty+=d.qty;});
+    dtbody.innerHTML=Object.values(codeMap).sort((a,b)=>b.qty-a.qty).map(r=>
+        `<tr><td style="font-family:'JetBrains Mono',monospace;font-weight:700;color:#4f46e5">${r.code}</td>
+         <td style="font-size:12px;">${r.name}</td>
+         <td>${getTeamBadge(r.team==='SMT'?'SMD':'ATE')}</td>
+         <td style="font-family:'JetBrains Mono',monospace;font-weight:700;color:#e11d48">${r.qty.toLocaleString()}</td></tr>`
+    ).join('');
+}
+
+function drawDailyCharts(data){
+    Object.values(dCharts).forEach(c=>c&&c.destroy());dCharts={};
+    const defData=getDailyDefFiltered();
+    const bOpts={responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{position:'bottom',labels:{boxWidth:10,boxHeight:10,padding:10,font:{size:11,weight:'600',family:'Noto Sans KR,Inter,sans-serif'},usePointStyle:true,pointStyleWidth:8}},
+        datalabels:{display:false}},
+        scales:{x:{grid:{display:false},ticks:{font:{size:10,family:'Noto Sans KR,Inter,sans-serif',weight:'600'},color:'#94a3b8',maxRotation:45},border:{display:false}},
+        y:{grid:{color:'#f1f5f9'},ticks:{font:{size:11},color:'#94a3b8'},border:{display:false}}}};
+    try{
+        const dates=[...new Set(data.map(d=>d.date))].sort();
+        if(!dates.length) return;
+        // ── Yield Trend with DATA LABELS ──
+        const isTeam=['SMT','TEST'].includes(dYieldFilter);
+        const isProc=['SMD','ROUTER','ATE','PCT','AVI'].includes(dYieldFilter);
+        let yDS;
+        if(isTeam){
+            const procs=dYieldFilter==='SMT'?['SMD','ROUTER']:['ATE','PCT','AVI'];
+            const c=dYieldFilter==='SMT'?'#6366f1':'#0891b2';
+            yDS=[{label:dYieldFilter,data:dates.map(dt=>{const d=data.filter(r=>r.date===dt&&procs.includes(r.proc));const i=d.reduce((a,b)=>a+b.inspQty,0);const g=d.reduce((a,b)=>a+b.goodQty,0);return i>0?+(g/i*100).toFixed(2):null;}),borderColor:c,fill:false,tension:.4,borderWidth:2.5,pointRadius:5,pointBackgroundColor:'white',pointBorderColor:c,pointBorderWidth:2.5}];
+        } else if(isProc){
+            const c={SMD:'#8b5cf6',ROUTER:'#ec4899',ATE:'#6366f1',PCT:'#f59e0b',AVI:'#10b981'}[dYieldFilter]||'#6366f1';
+            yDS=[{label:dYieldFilter,data:dates.map(dt=>{const d=data.filter(r=>r.date===dt&&r.proc===dYieldFilter);const i=d.reduce((a,b)=>a+b.inspQty,0);const g=d.reduce((a,b)=>a+b.goodQty,0);return i>0?+(g/i*100).toFixed(2):null;}),borderColor:c,fill:false,tension:.4,borderWidth:2.5,pointRadius:5,pointBackgroundColor:'white',pointBorderColor:c,pointBorderWidth:2.5}];
+        } else {
+            const models=dYieldFilter==='전체'?['RDIMM','SODIMM','UDIMM']:[dYieldFilter];
+            const pColors={RDIMM:'#f43f5e',SODIMM:'#0891b2',UDIMM:'#f59e0b'};
+            yDS=models.map(p=>({label:p,borderColor:pColors[p]||'#6366f1',fill:false,tension:.4,borderWidth:2.5,pointRadius:4,pointBackgroundColor:'white',data:dates.map(dt=>{const d=data.filter(r=>r.date===dt&&r.model===p);const i=d.reduce((a,b)=>a+b.inspQty,0);const g=d.reduce((a,b)=>a+b.goodQty,0);return i>0?+(g/i*100).toFixed(2):null;})}));
+        }
+        const yLabelOpts={display:ctx=>ctx.dataset.data[ctx.dataIndex]!==null,color:ctx=>{const c=['#f43f5e','#0891b2','#f59e0b','#6366f1','#10b981'];return c[ctx.datasetIndex]||'#334155';},backgroundColor:'rgba(255,255,255,0.95)',borderRadius:6,padding:{top:3,right:8,bottom:3,left:8},font:{weight:'700',size:11,family:'JetBrains Mono,monospace'},anchor:'end',align:'top',offset:6,clip:false,formatter:v=>v?v.toFixed(2)+'%':''};
+        dCharts.yield=new Chart(document.getElementById('dChartYield'),{type:'line',data:{labels:dates,datasets:yDS},options:{...bOpts,layout:{padding:{top:40,right:50,bottom:10,left:20}},plugins:{...bOpts.plugins,datalabels:yLabelOpts},scales:{...bOpts.scales,x:{...bOpts.scales.x,offset:true},y:{...bOpts.scales.y,min:90,max:101,grace:'5%',afterDataLimits:(axis)=>{axis.max=101.5;}}}}});
+
+        // ── Volume Trend (SMD 기준 투입수량 per day+model) ──
+        const models2=dVolFilter==='전체'?['RDIMM','SODIMM','UDIMM']:[dVolFilter];
+        const vColors={RDIMM:'#6366f1',SODIMM:'#0891b2',UDIMM:'#f59e0b'};
+        // SMD 기준: 날짜+모델별 SMD 투입수량만 사용 (없으면 첫번째 공정)
+        const getVolForDateModel=(dt,model)=>{
+            const smdRow=data.find(r=>r.date===dt&&r.model===model&&r.proc==='SMD');
+            if(smdRow) return smdRow.inspQty;
+            const rows=data.filter(r=>r.date===dt&&r.model===model);
+            if(!rows.length) return 0;
+            rows.sort((a,b)=>['SMD','ROUTER','ATE','PCT','AVI'].indexOf(a.proc)-['SMD','ROUTER','ATE','PCT','AVI'].indexOf(b.proc));
+            return rows[0].inspQty;
+        };
+        const vDS=models2.map(m=>({label:m,data:dates.map(dt=>getVolForDateModel(dt,m)),backgroundColor:vColors[m]||'#6366f1',borderRadius:4,borderSkipped:false,stack:'v0',
+            datalabels:{display:ctx=>ctx.dataset.data[ctx.dataIndex]>0,anchor:'center',align:'center',color:'white',backgroundColor:'transparent',font:{weight:'700',size:10,family:'JetBrains Mono,monospace'},formatter:v=>v>0?v.toLocaleString():''}}));
+        const vTotals=dates.map(dt=>models2.reduce((s,m)=>s+getVolForDateModel(dt,m),0));
+        dCharts.vol=new Chart(document.getElementById('dChartVol'),{type:'bar',data:{labels:dates,datasets:[...vDS,{type:'line',label:'Total',data:vTotals,borderColor:'transparent',backgroundColor:'transparent',pointRadius:0,order:-1,datalabels:{display:ctx=>ctx.dataset.data[ctx.dataIndex]>0,anchor:'end',align:'top',color:'#334155',backgroundColor:'rgba(255,255,255,0.95)',borderRadius:6,padding:{top:3,right:7,bottom:3,left:7},font:{weight:'700',size:11,family:'JetBrains Mono,monospace'},formatter:v=>v>0?v.toLocaleString():'',offset:6}}]},options:{...bOpts,layout:{padding:{top:36,right:10}},plugins:{...bOpts.plugins,legend:{...bOpts.plugins.legend,labels:{...bOpts.plugins.legend.labels,filter:item=>item.text!=='Total'}},datalabels:{display:false}},scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:10},color:'#94a3b8',maxRotation:45},border:{display:false}},y:{stacked:true,grid:{color:'#f1f5f9'},ticks:{font:{size:11},color:'#94a3b8'},border:{display:false}}}}});
+        // ── FIX 8: Daily Production by Process chart ──
+        const procColors={SMD:'#8b5cf6',ROUTER:'#ec4899',ATE:'#6366f1',PCT:'#f59e0b',AVI:'#10b981'};
+        const procs2=['SMD','ROUTER','ATE','PCT','AVI'];
+        const pDS=procs2.map(p=>({label:p,data:dates.map(dt=>data.filter(r=>r.date===dt&&r.proc===p).reduce((a,b)=>a+b.inspQty,0)),backgroundColor:procColors[p],borderRadius:3,borderSkipped:false,stack:'p0',
+            datalabels:{display:ctx=>ctx.dataset.data[ctx.dataIndex]>0,anchor:'center',align:'center',color:'white',backgroundColor:'transparent',font:{weight:'700',size:9,family:'JetBrains Mono,monospace'},formatter:v=>v>0?v.toLocaleString():''}}));
+        if(document.getElementById('dChartProcVol')){
+            if(dCharts.procVol) dCharts.procVol.destroy();
+            dCharts.procVol=new Chart(document.getElementById('dChartProcVol'),{type:'bar',data:{labels:dates,datasets:pDS},options:{...bOpts,layout:{padding:{top:10}},plugins:{...bOpts.plugins,datalabels:{display:false}},scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:10},color:'#94a3b8',maxRotation:45},border:{display:false}},y:{stacked:true,grid:{color:'#f1f5f9'},ticks:{font:{size:11},color:'#94a3b8'},border:{display:false}}}}});
+        }
+
+        // ── Defect Bar & Pie ──
+        const fDef=dDefectTeamFilter==='전체'?defData:defData.filter(d=>d.team===dDefectTeamFilter);
+        const codeMap={};fDef.forEach(d=>{if(!codeMap[d.defectCode])codeMap[d.defectCode]={name:d.defectName,team:d.team,qty:0};codeMap[d.defectCode].qty+=d.qty;});
+        const top10=Object.entries(codeMap).sort((a,b)=>b[1].qty-a[1].qty).slice(0,10);
+        if(top10.length){
+            const dColors=top10.map(([,v])=>v.team==='SMT'?'rgba(99,102,241,0.85)':'rgba(8,145,178,0.85)');
+            dCharts.defBar=new Chart(document.getElementById('dChartDefectBar'),{type:'bar',data:{labels:top10.map(([k,v])=>`${k} ${v.name.slice(0,18)}`),datasets:[{label:lang==='ko'?'불량 수량':'Defect Qty',data:top10.map(([,v])=>v.qty),backgroundColor:dColors,borderRadius:4,borderSkipped:false}]},options:{...bOpts,indexAxis:'y',layout:{padding:{right:60}},plugins:{...bOpts.plugins,legend:{display:false},datalabels:{display:true,anchor:'end',align:'end',color:'#334155',font:{weight:'700',size:11,family:'JetBrains Mono,monospace'},formatter:v=>v.toLocaleString()}},scales:{x:{grid:{display:false},ticks:{font:{size:11,family:'JetBrains Mono,monospace'},color:'#94a3b8'},border:{display:false}},y:{grid:{display:false},ticks:{font:{size:11,family:'JetBrains Mono,monospace',weight:'600'},color:'#334155'},border:{display:false}}}}});
+            const pieColors=['#6366f1','#0891b2','#f59e0b','#10b981','#ec4899','#8b5cf6','#ef4444','#06b6d4','#84cc16','#f97316'];
+            const pieLabels=top10.map(([k,v])=>`${k} ${v.name.slice(0,20)}`);
+            dCharts.defPie=new Chart(document.getElementById('dChartDefectPie'),{type:'doughnut',data:{labels:pieLabels,datasets:[{data:top10.map(([,v])=>v.qty),backgroundColor:top10.map(([,v],i)=>v.team==='SMT'?['#6366f1','#8b5cf6','#a78bfa','#c4b5fd','#e0e7ff'][i%5]:['#0891b2','#06b6d4','#22d3ee','#67e8f9','#cffafe'][i%5]),borderWidth:3,borderColor:'white',hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,cutout:'45%',layout:{padding:{top:8,bottom:8,left:8,right:8}},plugins:{legend:{position:'bottom',align:'start',labels:{font:{size:10,family:'JetBrains Mono,monospace',weight:'600'},padding:6,usePointStyle:true,pointStyleWidth:8,boxWidth:10,boxHeight:10,generateLabels:(chart)=>{const data=chart.data;return data.labels.map((l,i)=>({text:l,fillStyle:data.datasets[0].backgroundColor[i],strokeStyle:'white',lineWidth:1,pointStyle:'circle',index:i}));}}},datalabels:{display:ctx=>ctx.dataset.data[ctx.dataIndex]/ctx.dataset.data.reduce((a,b)=>a+b,0)>0.03,color:'white',font:{weight:'800',size:11,family:'JetBrains Mono,monospace'},textStrokeColor:'rgba(0,0,0,0.5)',textStrokeWidth:3,formatter:(v,ctx)=>{const total=ctx.chart.data.datasets[0].data.reduce((a,b)=>a+b,0);return v>0?(v*100/total).toFixed(1)+'%':'';},anchor:'center',align:'center'}}}});
+        }
+    }catch(e){console.error('일별 차트 오류:',e);}
+}
+
+// ══════════════════════════════════════════════════════
+// DAILY PROD MODAL
+// ══════════════════════════════════════════════════════
+function openDailyProdModal(){
+    requirePassword(()=>{
+        document.getElementById('modalDailyProd').style.display='block';
+        if(!document.querySelector('#tblDailyProdEntry tbody tr')) addDailyProdRow();
+    });
+}
+
+function addDailyProdRow(model='',date='',proc='',insp='',good='',def=''){
+    const today=new Date().toISOString().slice(0,10);
+    const tbody=document.querySelector('#tblDailyProdEntry tbody');
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+        <td><select style="width:88px;padding:6px 8px;border:1px solid var(--border);border-radius:7px;background:white;">
+            <option value="">${lang==='ko'?'선택':'Select'}</option>
+            <option value="RDIMM"${model==='RDIMM'?' selected':''}>RDIMM</option>
+            <option value="SODIMM"${model==='SODIMM'?' selected':''}>SODIMM</option>
+            <option value="UDIMM"${model==='UDIMM'?' selected':''}>UDIMM</option>
+        </select></td>
+        <td><input type="date" style="padding:6px 8px;border:1px solid var(--border);border-radius:7px;font-family:'JetBrains Mono',monospace;width:138px;" value="${date||today}"></td>
+        <td><select style="width:88px;padding:6px 8px;border:1px solid var(--border);border-radius:7px;background:white;" onchange="this.closest('tr').querySelector('.tc').innerHTML=getTeamBadge(this.value)">
+            <option value="">${lang==='ko'?'선택':'Select'}</option>
+            <option value="SMD"${proc==='SMD'?' selected':''}>SMD</option>
+            <option value="ROUTER"${proc==='ROUTER'?' selected':''}>ROUTER</option>
+            <option value="ATE"${proc==='ATE'?' selected':''}>ATE</option>
+            <option value="PCT"${proc==='PCT'?' selected':''}>PCT</option>
+            <option value="AVI"${proc==='AVI'?' selected':''}>AVI</option>
+        </select></td>
+        <td class="tc">${getTeamBadge(proc)}</td>
+        <td><input type="number" style="width:88px;padding:6px 8px;border:1px solid var(--border);border-radius:7px;font-family:'JetBrains Mono',monospace;" value="${insp}" placeholder="${lang==='ko'?'투입':'Input'}" min="0"></td>
+        <td><input type="number" style="width:88px;padding:6px 8px;border:1px solid var(--border);border-radius:7px;font-family:'JetBrains Mono',monospace;" value="${good}" placeholder="${lang==='ko'?'양품':'Good'}" min="0"></td>
+        <td><input type="number" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:7px;font-family:'JetBrains Mono',monospace;" value="${def}" placeholder="0" min="0"></td>
+        <td><button class="btn-del" onclick="this.closest('tr').remove()">${lang==='ko'?'삭제':'Del'}</button></td>`;
+    tbody.appendChild(tr);
+    tr.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function parseDailyPaste(){
+    const raw=document.getElementById('pasteDailyProd').value.trim();if(!raw)return;
+    const rows=raw.split('\n').filter(r=>r.trim());
+    document.querySelector('#tblDailyProdEntry tbody').innerHTML='';
+    let skipped=0;
+    rows.forEach(r=>{
+        const c=r.split('\t').map(x=>x.trim());
+        const insp=Number(c[3])||0;
+        // 투입수량 0인 행은 건너뜀
+        if(insp<=0){skipped++;return;}
+        addDailyProdRow(c[0]||'',c[1]||'',c[2]||'',c[3]||'',c[4]||'',c[5]||'');
+    });
+    document.getElementById('pasteDailyProd').value='';
+    if(skipped>0){
+        const hint=document.getElementById('pasteSkipHint');
+        if(hint) hint.innerText=(lang==='ko'?`ℹ️ 투입수량 0인 ${skipped}행은 제외되었습니다`:`ℹ️ ${skipped} zero-qty rows skipped`);
+        setTimeout(()=>{const h=document.getElementById('pasteSkipHint');if(h)h.innerText='';},4000);
+    }
+}
+
+function saveDailyProd(){
+    const rows=document.querySelectorAll('#tblDailyProdEntry tbody tr');
+    const newData=[];
+    rows.forEach(r=>{
+        const sels=r.querySelectorAll('select');
+        const inps=r.querySelectorAll('input');
+        const model=sels[0]?.value, proc=sels[1]?.value;
+        const date=inps[0]?.value;
+        const insp=cleanNum(inps[1]?.value);
+        const goodRaw=inps[2]?.value.trim();
+        const defRaw=inps[3]?.value.trim();
+        const def=cleanNum(defRaw);
+        // goodQty: 명시적으로 입력된 경우 그 값 사용, 없으면 insp-def 계산
+        const good = goodRaw!=='' ? cleanNum(goodRaw) : Math.max(0, insp - def);
+        if(!model||!proc||!date||insp<=0) return; // 0건 행 제외
+        // 기본 검증
+        if(good < 0 || def < 0 || good > insp){
+            console.warn(`건너뜀: ${date} ${model} ${proc} - 수량 오류 (투입:${insp} 양품:${good} 불량:${def})`);
+            return;
+        }
+        newData.push({model,date,proc,team:getTeam(proc),inspQty:insp,goodQty:good,defectQty:Math.max(0,insp-good),month:extractYM(date)});
+    });
+    if(!newData.length){alert(lang==='ko'?'유효한 데이터가 없습니다. (투입수량 > 0 이어야 합니다)':'No valid data. (Input Qty must be > 0)');return;}
+    
+    // ★ 중복 제거: 같은 날짜+모델+공정이면 새 데이터로 덮어씀
+    const merged=[...dailyProdData];
+    let updated=0, added=0;
+    newData.forEach(nd=>{
+        const idx=merged.findIndex(d=>d.date===nd.date&&d.model===nd.model&&d.proc===nd.proc);
+        if(idx>=0){merged[idx]=nd; updated++;}
+        else{merged.push(nd); added++;}
+    });
+    
+    const msg=lang==='ko'
+        ? `✅ 저장 완료!
+신규: ${added}건 / 업데이트: ${updated}건`
+        : `✅ Saved!
+New: ${added} / Updated: ${updated}`;
+    
+    saveToFirebase('dprod',merged).then(()=>{
+        document.getElementById('modalDailyProd').style.display='none';
+        document.querySelector('#tblDailyProdEntry tbody').innerHTML='';
+        alert(msg);
+    });
+}
+
+// ══════════════════════════════════════════════════════
+// DAILY DEFECT MODAL (with qty limit validation)
+// ══════════════════════════════════════════════════════
+function openDailyDefModal(){
+    requirePassword(()=>{
+        document.getElementById('modalDailyDef').style.display='block';
+        refreshAvailDefects();
+        if(!document.querySelector('#tblDailyDefEntry tbody tr')) addDailyDefRow();
+    });
+}
+
+// Build a lookup: date+model+proc → available defect qty (from dailyProdData minus already-assigned)
+function getAvailableDefects(){
+    const available={};
+    dailyProdData.forEach(d=>{
+        const key=`${d.date}|${d.model}|${d.proc}`;
+        if(!available[key]) available[key]={date:d.date,model:d.model,proc:d.proc,team:getTeam(d.proc),total:d.defectQty,assigned:0};
+        else available[key].total+=d.defectQty;
+    });
+    dailyDefectData.forEach(d=>{
+        const key=`${d.date}|${d.model}|${d.proc}`;
+        if(available[key]) available[key].assigned+=d.qty;
+    });
+    return available;
+}
+
+function refreshAvailDefects(){
+    const available=getAvailableDefects();
+    const panel=document.getElementById('ddefAvailList');
+    const items=Object.values(available).filter(a=>a.total>0).sort((a,b)=>a.date<b.date?1:-1);
+    if(!items.length){
+        panel.innerHTML=lang==='ko'?'<span style="color:#94a3b8">생산 데이터에 불량 수량이 없습니다</span>':'<span style="color:#94a3b8">No defect qty in production data</span>';
+        return;
+    }
+    panel.innerHTML=items.map(a=>{
+        const rem=a.total-a.assigned;
+        const color=rem<=0?'#e11d48':rem<a.total?'#f59e0b':'#16a34a';
+        return`<span style="display:inline-block;margin:2px 4px;padding:3px 10px;background:#f0f4fb;border-radius:20px;font-size:11px;font-family:'JetBrains Mono',monospace;border:1px solid ${color}20">
+            <strong>${a.date} ${a.model} ${a.proc}</strong>: <span style="color:${color};font-weight:700;">${rem}/${a.total}</span>${lang==='ko'?' 잔여':' left'}</span>`;
+    }).join('');
+}
+
+function addDailyDefRow(model='',date='',proc='',defCode='',defName='',qty=''){
+    const today=new Date().toISOString().slice(0,10);
+    const rowId='dr'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+    const tbody=document.querySelector('#tblDailyDefEntry tbody');
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+        <td><select style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:7px;background:white;" onchange="refreshAvailDefects()">
+            <option value="">${lang==='ko'?'선택':'Sel'}</option>
+            <option value="RDIMM"${model==='RDIMM'?' selected':''}>RDIMM</option>
+            <option value="SODIMM"${model==='SODIMM'?' selected':''}>SODIMM</option>
+            <option value="UDIMM"${model==='UDIMM'?' selected':''}>UDIMM</option>
+        </select></td>
+        <td><input type="date" style="padding:6px 8px;border:1px solid var(--border);border-radius:7px;font-family:'JetBrains Mono',monospace;width:128px;" value="${date||today}" onchange="refreshAvailDefects()"></td>
+        <td><select style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:7px;background:white;" onchange="onDefProcChange(this,'${rowId}')">
+            <option value="">${lang==='ko'?'선택':'Sel'}</option>
+            <option value="SMD"${proc==='SMD'?' selected':''}>SMD</option>
+            <option value="ROUTER"${proc==='ROUTER'?' selected':''}>ROUTER</option>
+            <option value="ATE"${proc==='ATE'?' selected':''}>ATE</option>
+            <option value="PCT"${proc==='PCT'?' selected':''}>PCT</option>
+            <option value="AVI"${proc==='AVI'?' selected':''}>AVI</option>
+        </select></td>
+        <td class="tc-${rowId}">${getTeamBadge(proc)}</td>
+        <td><div class="search-select-wrap" id="ssw_${rowId}">
+            <input type="text" class="search-select-input" placeholder="${lang==='ko'?'코드/이름 검색...':'Search code/name...'}" 
+                value="${defCode?(defCode+' '+defName).trim():''}" data-code="${defCode}" data-name="${defName}"
+                oninput="filterDefDD(this,'${rowId}')" onfocus="openDefDD('${rowId}')" autocomplete="off">
+            <div class="search-dropdown" id="dd_${rowId}"></div>
+        </div></td>
+        <td>
+            <input type="number" class="def-qty-input" style="width:70px;padding:6px 8px;border:1px solid var(--border);border-radius:7px;font-family:'JetBrains Mono',monospace;" 
+                value="${qty}" placeholder="0" min="0" 
+                oninput="validateDefQty(this,'${rowId}')" onchange="refreshAvailDefects()">
+            <div class="def-avail-hint" id="hint_${rowId}" style="font-size:10px;color:#94a3b8;margin-top:2px;text-align:center;"></div>
+        </td>
+        <td><button class="btn-del" onclick="this.closest('tr').remove();refreshAvailDefects()">${lang==='ko'?'삭제':'Del'}</button></td>`;
+    tbody.appendChild(tr);
+    if(proc) buildDefDD(rowId,proc,'');
+    tr.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function validateDefQty(input,rowId){
+    const row=input.closest('tr');
+    const sels=row.querySelectorAll('select');
+    const dateInp=row.querySelector('input[type="date"]');
+    const model=sels[0]?.value,proc=sels[1]?.value,date=dateInp?.value;
+    if(!model||!proc||!date){return;}
+    const key=`${date}|${model}|${proc}`;
+    const available=getAvailableDefects();
+    const avail=available[key];
+    const hint=document.getElementById('hint_'+rowId);
+    if(!avail||avail.total===0){
+        if(hint) hint.innerHTML=`<span style="color:#e11d48">${lang==='ko'?'생산 데이터 없음':'No prod data'}</span>`;
+        return;
+    }
+    // Calculate already entered in this modal for same key (excluding current row)
+    let thisRowQty=parseInt(input.value)||0;
+    let otherRowsQty=0;
+    document.querySelectorAll('#tblDailyDefEntry tbody tr').forEach(r=>{
+        if(r===row) return;
+        const rs=r.querySelectorAll('select');
+        const rd=r.querySelector('input[type="date"]');
+        const rq=r.querySelector('.def-qty-input');
+        if(rs[0]?.value===model&&rs[1]?.value===proc&&rd?.value===date){
+            otherRowsQty+=parseInt(rq?.value)||0;
+        }
+    });
+    const alreadySaved=avail.assigned;
+    const maxAllowed=avail.total-alreadySaved-otherRowsQty;
+    if(thisRowQty>maxAllowed){
+        input.value=Math.max(0,maxAllowed);
+        input.style.borderColor='#e11d48';
+        if(hint) hint.innerHTML=`<span style="color:#e11d48">Max: ${maxAllowed}</span>`;
+    } else {
+        input.style.borderColor=thisRowQty>0?'#10b981':'var(--border)';
+        if(hint) hint.innerHTML=avail?`<span style="color:#94a3b8">${lang==='ko'?'가능:':'Avail:'} ${Math.max(0,maxAllowed)}</span>`:'';
+    }
+}
+
+function onDefProcChange(sel,rowId){
+    const proc=sel.value;
+    const tc=document.querySelector('.tc-'+rowId);
+    if(tc) tc.innerHTML=getTeamBadge(proc);
+    buildDefDD(rowId,proc,'');
+    refreshAvailDefects();
+}
+
+function buildDefDD(rowId,proc,query){
+    const dd=document.getElementById('dd_'+rowId);if(!dd)return;
+    const codes=getDefectsForProc(proc);
+    const q=(query||'').toLowerCase();
+    const filtered=q?codes.filter(c=>c.code.includes(q)||c.name.toLowerCase().includes(q)):codes;
+    dd.innerHTML=filtered.slice(0,25).map(c=>
+        `<div class="search-option" onclick="selDefCode('${rowId}','${c.code}','${c.name.replace(/'/g,"\\'")}')">
+            <span class="opt-code">${c.code}</span><span class="opt-name">${c.name}</span>
+        </div>`
+    ).join('');
+    if(!filtered.length) dd.innerHTML=`<div class="search-option" style="color:var(--text-muted);cursor:default;">${lang==='ko'?'결과 없음 — 직접 입력 가능':'Not found — manual entry OK'}</div>`;
+}
+
+function filterDefDD(input,rowId){
+    const row=input.closest('tr');
+    const proc=row.querySelectorAll('select')[1]?.value||'';
+    buildDefDD(rowId,proc,input.value);
+    document.getElementById('dd_'+rowId).classList.add('open');
+}
+function openDefDD(rowId){
+    const row=document.getElementById('ssw_'+rowId).closest('tr');
+    const proc=row.querySelectorAll('select')[1]?.value||'';
+    const val=row.querySelector('.search-select-input')?.value||'';
+    buildDefDD(rowId,proc,val);
+    document.getElementById('dd_'+rowId).classList.add('open');
+}
+function selDefCode(rowId,code,name){
+    const inp=document.querySelector('#ssw_'+rowId+' input');
+    if(inp){inp.value=code+' '+name;inp.dataset.code=code;inp.dataset.name=name;}
+    document.getElementById('dd_'+rowId).classList.remove('open');
+}
+document.addEventListener('click',e=>{
+    if(!e.target.closest('.search-select-wrap'))
+        document.querySelectorAll('.search-dropdown').forEach(d=>d.classList.remove('open'));
+});
+
+function saveDailyDef(){
+    const rows=document.querySelectorAll('#tblDailyDefEntry tbody tr');
+    const newData=[];
+    let valid=true;
+    rows.forEach(r=>{
+        const sels=r.querySelectorAll('select');
+        const dateInp=r.querySelector('input[type="date"]');
+        const codeInp=r.querySelector('.search-select-input');
+        const qtyInp=r.querySelector('.def-qty-input');
+        const model=sels[0]?.value,proc=sels[1]?.value,date=dateInp?.value;
+        const raw=codeInp?.value||'';
+        const defCode=codeInp?.dataset.code||(raw.split(' ')[0]||'');
+        const defName=codeInp?.dataset.name||(raw.split(' ').slice(1).join(' ')||'');
+        const qty=cleanNum(qtyInp?.value);
+        if(!model||!proc||!date||!defCode){return;}
+        if(qty<=0) return;
+        newData.push({model,date,proc,team:getTeam(proc),defectCode:defCode,defectName:defName,qty,month:extractYM(date)});
+    });
+    if(!newData.length){alert(lang==='ko'?'저장할 데이터가 없습니다.':'No data to save.');return;}
+    // Final validation: check totals don't exceed prod data
+    const available=getAvailableDefects();
+    const checkMap={};
+    newData.forEach(d=>{
+        const k=`${d.date}|${d.model}|${d.proc}`;
+        checkMap[k]=(checkMap[k]||0)+d.qty;
+    });
+    for(const [k,total] of Object.entries(checkMap)){
+        const a=available[k];
+        if(a&&(a.assigned+total)>a.total){
+            alert(lang==='ko'?`⚠️ [${k.replace(/\|/g,' ')}] 불량 코드 합계(${a.assigned+total})가 불량 수량(${a.total})을 초과합니다.`:`⚠️ [${k.replace(/\|/g,' ')}] Defect codes total(${a.assigned+total}) exceeds defect qty(${a.total}).`);
+            return;
+        }
+    }
+    const merged=[...dailyDefectData,...newData];
+    saveToFirebase('ddef',merged).then(()=>{
+        document.getElementById('modalDailyDef').style.display='none';
+        document.querySelector('#tblDailyDefEntry tbody').innerHTML='';
+        alert(lang==='ko'?`✅ ${newData.length}건의 불량 코드가 저장되었습니다!`:`✅ ${newData.length} defect code records saved!`);
+    });
+}
+
 window.onclick=e=>{
-    if(e.target.classList.contains('modal'))e.target.style.display='none';
-    if(e.target.id==='backupModal')closeBackupModal();
+    if(e.target.classList.contains('modal')) e.target.style.display='none';
+    if(e.target.id==='backupModal') closeBackupModal();
 };
 </script>
 </body>
