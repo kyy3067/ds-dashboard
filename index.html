@@ -1159,12 +1159,12 @@
 <div id="modalDailyProd" class="modal">
     <div class="modal-box">
         <div class="modal-title">📅 일별 생산 데이터 입력</div>
-        <div class="modal-desc" id="dprodModalDesc">모델·날짜·공정별로 <strong>투입수량, 양품수량, 불량수량</strong>을 입력하세요.<br><strong style="color:#4f46e5;">붙여넣기 순서: 모델 | 날짜(YYYY-MM-DD) | 공정 | 투입수량 | 양품수량 | 불량수량</strong></div>
+        <div class="modal-desc" id="dprodModalDesc">날짜·모델·공정별로 <strong>투입수량, 양품수량, 불량수량</strong>을 입력하세요.<br><strong style="color:#4f46e5;">붙여넣기 순서: 날짜(YYYY-MM-DD) | 모델 | 공정 | 팀 | 투입수량 | 양품수량 | 불량수량</strong></div>
         <textarea class="paste-area" id="pasteDailyProd" placeholder="Excel 데이터를 여기에 붙여넣기 (Ctrl+V)"></textarea>
         <div style="display:flex;gap:10px;margin-bottom:20px;"><button class="btn-parse" onclick="parseDailyPaste()">📋 데이터 적용</button><span id="pasteSkipHint" style="font-size:11px;color:#f59e0b;margin-left:8px;font-family:'Noto Sans KR',sans-serif;"></span><button class="btn-clr" onclick="document.querySelector('#tblDailyProdEntry tbody').innerHTML='';document.getElementById('pasteDailyProd').value=''">🗑️ 초기화</button></div>
         <div style="max-height:380px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;">
             <table class="entry-tbl" id="tblDailyProdEntry">
-                <thead><tr><th>모델</th><th>날짜</th><th>공정</th><th>팀</th><th id="dThInQty">투입수량</th><th id="dThGoodQty">양품수량</th><th id="dThDefQty">불량수량</th><th>삭제</th></tr></thead>
+                <thead><tr><th>날짜</th><th>모델</th><th>공정</th><th>팀</th><th id="dThInQty">투입수량</th><th id="dThGoodQty">양품수량</th><th id="dThDefQty">불량수량</th><th>삭제</th></tr></thead>
                 <tbody></tbody>
             </table>
         </div>
@@ -1415,7 +1415,7 @@ const T={ko:{mainTitle:'📊 DS Quality Performance',lblProd:'제품',lblPeriod:
     dThDate:'날짜',dThModel:'모델',dThProc:'공정',dThTeamCol:'팀',dThInQty:'투입수량',dThGoodQty:'양품수량',dThDefQty:'불량수량',dThYield:'수율',
     btnToday:'오늘',btnYesterday:'어제',btnThisWeek:'이번주',btnThisMonth:'이번달',btnAllDate:'전체',lblWeekNum:'주차 검색:',
     smtLblYield:'수율',smtLblInput:'투입 수량',smtLblDefect:'불량',testLblYield:'수율',testLblInput:'투입 수량',testLblDefect:'불량',
-    modalDailyProdTitle:'📅 일별 생산 데이터 입력',modalDailyProdDesc:'붙여넣기 순서: 모델 | 날짜(YYYY-MM-DD) | 공정 | 투입수량 | 양품수량 | 불량수량',
+    modalDailyProdTitle:'📅 일별 생산 데이터 입력',modalDailyProdDesc:'붙여넣기 순서: 날짜(YYYY-MM-DD) | 모델 | 공정 | 팀 | 투입수량 | 양품수량 | 불량수량',
     modalDailyDefTitle:'🔴 일별 불량 코드 입력',modalDailyDefDesc:'공정별 불량 수량 내에서만 코드를 입력할 수 있습니다'},en:{mainTitle:'📊 DS Quality Performance',lblProd:'Product',lblPeriod:'Period',lblProcess:'Process',btnProd:'✏️ Production',btnShip:'📦 Shipment',btnDefect:'🛠️ Defect Types',lblKpiYield:'Overall Yield',lblKpiPPM:'Company Defect PPM',lblKpiInput:'Total Input',lblKpiOutput:'Total Output',lblKpiDefect:'Total Defects',lblKpiDefectPPM:'Total Defect PPM',lblKpiCompDefect:'Company Defect Qty',titProcYield:'Process Yield',titMonthYield:'Monthly Process Yield',titProdYield:'Product Yield',titTotalTrend:'Overall Yield Trend (%)',titPpmTrend:'Overall PPM Trend',titProdTrend:'Product Yield Trend (%)',titProcTrend:'Process Yield Trend (%)',titProdVol:'Production Volume',titTotalDefect:'Total Defect Trend',titCompDefect:'Company Defect Trend',titDefectType:'Defect Type Chart',titDefectTable:'Defect Type Details',titDefectSection:'📉 Defect Analysis',titShipSection:'📦 Shipment Performance',titShipTable:'Monthly Shipment',titShipChart:'Shipment Trend',thProc:'Process',thIn:'Input',thOut:'Output',thFail:'Defect',thYld:'Yield',thStat:'Status',thMonth:'Period',thProd:'Product',thIn2:'Input',thOut2:'Output',thFail2:'Defect',thYld2:'Yield',thStat2:'Status',thShipMonth:'Period',thTotal:'Total',moTitProd:'✏️ Production Data Entry',moTitShip:'📦 Shipment Data Entry',moTitDefect:'🛠️ Defect Type Data Entry',all:'All',good:'Good',warn:'Warning',
     btnViewMonthly:'📅 Monthly',btnViewDaily:'📆 Daily',btnDailyProd:'📅 Daily Prod Entry',btnDailyDef:'🔴 Defect Code Entry',
     dlblDate:'Date',dlblProd:'Product',dlblTeam:'Team',dlblProcess:'Process',
@@ -1429,7 +1429,7 @@ const T={ko:{mainTitle:'📊 DS Quality Performance',lblProd:'제품',lblPeriod:
     dThDate:'Date',dThModel:'Model',dThProc:'Process',dThTeamCol:'Team',dThInQty:'Input Qty',dThGoodQty:'Good Qty',dThDefQty:'Def. Qty',dThYield:'Yield',
     btnToday:'Today',btnYesterday:'Yesterday',btnThisWeek:'This Week',btnThisMonth:'This Month',btnAllDate:'All',lblWeekNum:'Week#:',
     smtLblYield:'Yield',smtLblInput:'Input Qty',smtLblDefect:'Defects',testLblYield:'Yield',testLblInput:'Input Qty',testLblDefect:'Defects',
-    modalDailyProdTitle:'📅 Daily Production Entry',modalDailyProdDesc:'Paste order: Model | Date(YYYY-MM-DD) | Process | InputQty | GoodQty | DefectQty',
+    modalDailyProdTitle:'📅 Daily Production Entry',modalDailyProdDesc:'Paste order: Date(YYYY-MM-DD) | Model | Process | Team | InputQty | GoodQty | DefectQty',
     modalDailyDefTitle:'🔴 Daily Defect Code Entry',modalDailyDefDesc:'Defect codes must be within the defect quantity already recorded for that date/model/process'}};
 
 function getUV(a,k){return[...new Set(a.map(d=>d[k]))].filter(v=>v&&v.toString().trim()).sort();}
@@ -2560,18 +2560,18 @@ function openDailyProdModal(){
     });
 }
 
-function addDailyProdRow(model='',date='',proc='',insp='',good='',def=''){
+function addDailyProdRow(date='',model='',proc='',insp='',good='',def=''){
     const today=new Date().toISOString().slice(0,10);
     const tbody=document.querySelector('#tblDailyProdEntry tbody');
     const tr=document.createElement('tr');
     tr.innerHTML=`
+        <td><input type="date" style="padding:6px 8px;border:1px solid var(--border);border-radius:7px;font-family:'JetBrains Mono',monospace;width:138px;" value="${date||today}"></td>
         <td><select style="width:88px;padding:6px 8px;border:1px solid var(--border);border-radius:7px;background:white;">
             <option value="">${lang==='ko'?'선택':'Select'}</option>
             <option value="RDIMM"${model==='RDIMM'?' selected':''}>RDIMM</option>
             <option value="SODIMM"${model==='SODIMM'?' selected':''}>SODIMM</option>
             <option value="UDIMM"${model==='UDIMM'?' selected':''}>UDIMM</option>
         </select></td>
-        <td><input type="date" style="padding:6px 8px;border:1px solid var(--border);border-radius:7px;font-family:'JetBrains Mono',monospace;width:138px;" value="${date||today}"></td>
         <td><select style="width:88px;padding:6px 8px;border:1px solid var(--border);border-radius:7px;background:white;" onchange="this.closest('tr').querySelector('.tc').innerHTML=getTeamBadge(this.value)">
             <option value="">${lang==='ko'?'선택':'Select'}</option>
             <option value="SMD"${proc==='SMD'?' selected':''}>SMD</option>
@@ -2596,10 +2596,12 @@ function parseDailyPaste(){
     let skipped=0;
     rows.forEach(r=>{
         const c=r.split('\t').map(x=>x.trim());
-        const insp=Number(c[3])||0;
+        // Excel 순서: 날짜(0) | 모델(1) | 공정(2) | 팀(3) | 투입수량(4) | 양품수량(5) | 불량수량(6)
+        const insp=Number(c[4])||0;
         // 투입수량 0인 행은 건너뜀
         if(insp<=0){skipped++;return;}
-        addDailyProdRow(c[0]||'',c[1]||'',c[2]||'',c[3]||'',c[4]||'',c[5]||'');
+        // addDailyProdRow(date, model, proc, insp, good, def) - 팀(c[3])은 자동 계산되므로 건너뜀
+        addDailyProdRow(c[0]||'',c[1]||'',c[2]||'',c[4]||'',c[5]||'',c[6]||'');
     });
     document.getElementById('pasteDailyProd').value='';
     if(skipped>0){
