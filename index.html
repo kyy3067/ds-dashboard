@@ -218,14 +218,14 @@
         }
         .btn:hover { transform: translateY(-2px); }
         .btn:active { transform: translateY(0); }
-        .btn-prod  { background: rgba(255,255,255,0.22); color: white; border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(4px); }
-        .btn-prod:hover { background: rgba(255,255,255,0.32); }
-        .btn-ship  { background: rgba(255,255,255,0.22); color: white; border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(4px); }
-        .btn-ship:hover { background: rgba(255,255,255,0.32); }
-        .btn-def   { background: rgba(255,255,255,0.22); color: white; border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(4px); }
-        .btn-def:hover { background: rgba(255,255,255,0.32); }
-        .btn-excel { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.15); }
-        .btn-excel:hover { background: rgba(255,255,255,0.18); }
+        .btn-prod  { background: rgba(52,211,153,0.85); color: white; border: 1px solid rgba(52,211,153,0.6); backdrop-filter: blur(4px); box-shadow: 0 2px 8px rgba(52,211,153,0.3); }
+        .btn-prod:hover { background: rgba(52,211,153,1); box-shadow: 0 4px 12px rgba(52,211,153,0.4); }
+        .btn-ship  { background: rgba(96,165,250,0.85); color: white; border: 1px solid rgba(96,165,250,0.6); backdrop-filter: blur(4px); box-shadow: 0 2px 8px rgba(96,165,250,0.3); }
+        .btn-ship:hover { background: rgba(96,165,250,1); box-shadow: 0 4px 12px rgba(96,165,250,0.4); }
+        .btn-def   { background: rgba(251,146,60,0.85); color: white; border: 1px solid rgba(251,146,60,0.6); backdrop-filter: blur(4px); box-shadow: 0 2px 8px rgba(251,146,60,0.3); }
+        .btn-def:hover { background: rgba(251,146,60,1); box-shadow: 0 4px 12px rgba(251,146,60,0.4); }
+        .btn-excel { background: rgba(34,197,94,0.8); color: white; border: 1px solid rgba(34,197,94,0.5); box-shadow: 0 2px 8px rgba(34,197,94,0.25); }
+        .btn-excel:hover { background: rgba(34,197,94,1); box-shadow: 0 4px 12px rgba(34,197,94,0.35); }
 
         /* ─── Filter Row ─── */
         .filter-section {
@@ -519,10 +519,10 @@
 
         /* ─── View Switch ─── */
         .view-switch{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:3px;display:flex;gap:2px;}
-        .btn-daily-prod{background:rgba(255,255,255,0.22);color:white;border:1px solid rgba(255,255,255,0.3);backdrop-filter:blur(4px);}
-        .btn-daily-prod:hover{background:rgba(255,255,255,0.32);}
-        .btn-daily-def{background:rgba(255,255,255,0.22);color:white;border:1px solid rgba(255,255,255,0.3);backdrop-filter:blur(4px);}
-        .btn-daily-def:hover{background:rgba(255,255,255,0.32);}
+        .btn-daily-prod{background:rgba(52,211,153,0.85);color:white;border:1px solid rgba(52,211,153,0.6);backdrop-filter:blur(4px);box-shadow:0 2px 8px rgba(52,211,153,0.3);}
+        .btn-daily-prod:hover{background:rgba(52,211,153,1);box-shadow:0 4px 12px rgba(52,211,153,0.4);}
+        .btn-daily-def{background:rgba(251,146,60,0.85);color:white;border:1px solid rgba(251,146,60,0.6);backdrop-filter:blur(4px);box-shadow:0 2px 8px rgba(251,146,60,0.3);}
+        .btn-daily-def:hover{background:rgba(251,146,60,1);box-shadow:0 4px 12px rgba(251,146,60,0.4);}
         /* ─── Team Badges ─── */
         .team-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;font-family:'Inter',sans-serif;}
         .team-smt{background:#eef2ff;color:#6366f1;}
@@ -621,8 +621,8 @@
         .pw-cancel:hover { border-color:var(--text-sub); }
 
         /* ─── Backup Button ─── */
-        .btn-backup { background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.8); border:1px solid rgba(255,255,255,0.15); font-size:12px; padding:8px 14px; }
-        .btn-backup:hover { background:rgba(255,255,255,0.15); color:white; }
+        .btn-backup { background:rgba(168,85,247,0.8); color:white; border:1px solid rgba(168,85,247,0.5); font-size:12px; padding:8px 14px; box-shadow:0 2px 8px rgba(168,85,247,0.25); }
+        .btn-backup:hover { background:rgba(168,85,247,1); box-shadow:0 4px 12px rgba(168,85,247,0.35); }
 
         /* ─── Backup Modal ─── */
         #backupModal {
@@ -1694,7 +1694,7 @@ function drawCharts(data){
             const tf=d.reduce((a,b)=>a+b.fail,0);
             return ti>0?Math.round(tf/ti*1000000):null;
         });
-        charts.ppmTrend=new Chart(document.getElementById('chartPpmTrend'),{type:'line',data:{labels:pl,datasets:[{label:T[lang].titPpmTrend||'종합 PPM',data:ppmTrendData,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.07)',fill:true,tension:0.4,pointBackgroundColor:'white',pointBorderColor:'#f59e0b',pointBorderWidth:2.5,pointRadius:5,borderWidth:2.5}]},options:{...baseOpts,layout:{padding:{left:10,right:50,top:38,bottom:6}},plugins:{...baseOpts.plugins,legend:{display:false},datalabels:{color:'#d97706',backgroundColor:'rgba(255,255,255,0.95)',borderRadius:6,padding:{top:4,right:9,bottom:4,left:9},font:{weight:'700',size:12,family:'JetBrains Mono, monospace'},anchor:'end',align:'end',offset:12,clip:false,display:true,formatter:v=>v!==null?v.toLocaleString()+' PPM':''}},scales:{...baseOpts.scales,x:{...baseOpts.scales.x,offset:true},y:{...baseOpts.scales.y,afterDataLimits:(axis)=>{const vals=[];axis.chart.data.datasets.forEach(ds=>{ds.data.forEach(v=>{if(v!==null&&v!==undefined)vals.push(v);});});if(vals.length){const mn=Math.min(...vals),mx=Math.max(...vals),pad=Math.max(500,Math.round((mx-mn)*0.15));axis.min=Math.max(0,Math.floor((mn-pad)/500)*500);axis.max=Math.ceil((mx+pad)/500)*500;}else{axis.min=0;axis.max=1000;}}}}});
+        charts.ppmTrend=new Chart(document.getElementById('chartPpmTrend'),{type:'line',data:{labels:pl,datasets:[{label:T[lang].titPpmTrend||'종합 PPM',data:ppmTrendData,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.07)',fill:true,tension:0.4,pointBackgroundColor:'white',pointBorderColor:'#f59e0b',pointBorderWidth:2.5,pointRadius:5,borderWidth:2.5}]},options:{...baseOpts,layout:{padding:{left:10,right:50,top:38,bottom:6}},plugins:{...baseOpts.plugins,legend:{display:false},datalabels:{color:'#d97706',backgroundColor:'rgba(255,255,255,0.95)',borderRadius:6,padding:{top:4,right:9,bottom:4,left:9},font:{weight:'700',size:12,family:'JetBrains Mono, monospace'},anchor:'end',align:'end',offset:12,clip:false,display:true,formatter:v=>v!==null?v.toLocaleString()+' PPM':''}},scales:{...baseOpts.scales,x:{...baseOpts.scales.x,offset:true},y:{...baseOpts.scales.y,afterDataLimits:(axis)=>{const vals=[];axis.chart.data.datasets.forEach(ds=>{ds.data.forEach(v=>{if(v!==null&&v!==undefined)vals.push(v);});});if(vals.length){const mn=Math.min(...vals),mx=Math.max(...vals),pad=Math.max(500,Math.round((mx-mn)*0.15));axis.min=Math.max(0,Math.floor((mn-pad)/500)*500);axis.max=Math.ceil((mx+pad)/500)*500;}else{axis.min=0;axis.max=1000;}}}}}});
 
         // Fix 2: legend ON, Fix 3: datalabels only when single filter
         const prodSingle = prodChartFilter!=='전체';
@@ -2160,20 +2160,14 @@ function getDailyFiltered(){
     });
 }
 function getDailyDefFiltered(){
-    // 현재 필터 범위의 생산 데이터에서 실제 불량이 있는 날짜+모델+공정 조합만 허용
-    const prodData=getDailyFiltered();
-    const validKeys=new Set();
-    prodData.forEach(d=>{
-        if(d.defectQty>0) validKeys.add(d.date+'|'+d.model+'|'+d.proc);
-    });
+    // 불량 데이터 자체에서 qty > 0인 것만 필터링 (날짜/제품/팀/공정 필터 적용)
     return dailyDefectData.filter(d=>{
+        if(!d.qty||d.qty<=0)return false;
         if(dFilters.dateFrom&&d.date<dFilters.dateFrom)return false;
         if(dFilters.dateTo&&d.date>dFilters.dateTo)return false;
         if(dFilters.product!=='전체'&&d.model!==dFilters.product)return false;
         if(dFilters.team!=='전체'&&d.team!==dFilters.team)return false;
         if(dFilters.process!=='전체'&&d.proc!==dFilters.process)return false;
-        // 생산 데이터에 실제 불량이 있는 경우에만 표시
-        if(!validKeys.has(d.date+'|'+d.model+'|'+d.proc))return false;
         return true;
     });
 }
