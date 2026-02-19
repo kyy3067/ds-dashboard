@@ -1098,6 +1098,7 @@
             </table>
         </div>
         <button class="btn-addrow" onclick="addDailyProdRow()">+ 행 추가</button>
+        <div style="padding:10px 20px 0;"><button onclick="clearAllDailyProdData()" style="width:100%;padding:10px;background:#fff0f0;border:1.5px solid #fca5a5;border-radius:10px;color:#e11d48;font-size:12px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">🗑️ Firebase 일별 생산 데이터 전체 초기화 (주의: 복구 불가)</button></div>
         <div class="modal-footer"><button class="btn-save btn-full" onclick="saveDailyProd()">💾 저장 (즉시 반영)</button><button class="btn-cancel btn-full" onclick="document.getElementById('modalDailyProd').style.display='none'">취소</button></div>
     </div>
 </div>
@@ -1272,11 +1273,16 @@ function setupListeners(){
     db.ref('defectTypeData').on('value',s=>{ defectTypeData=s.val()?Object.values(s.val()):getDefaultDefectData(); dataLoaded.defect=true; checkLoaded(); });
     db.ref('dailyProdData').on('value',s=>{
         const raw=s.val()?Object.values(s.val()):[];
-        // 데이터 무결성 보정: defectQty가 inspQty보다 크면 (insp-good)으로 재계산
+        // 데이터 로드: inspQty > 0인 행만, defectQty는 저장값 그대로 신뢰
+        // (저장 시 defectQty = inspQty - goodQty 로 이미 정확히 계산됨)
         dailyProdData=raw.filter(d=>d.inspQty>0).map(d=>{
-            const correctedDef = (d.defectQty>d.inspQty) ? Math.max(0,d.inspQty-(d.goodQty||0)) : (d.defectQty||Math.max(0,d.inspQty-(d.goodQty||d.inspQty)));
-            const correctedGood = d.goodQty>0 ? d.goodQty : Math.max(0,d.inspQty-correctedDef);
-            return {...d, goodQty:correctedGood, defectQty:correctedDef};
+            const inspQty = Number(d.inspQty)||0;
+            const goodQty = Number(d.goodQty)||0;
+            // defectQty: 저장된 값이 있으면 사용, 없으면 inspQty-goodQty
+            const defectQty = (d.defectQty !== undefined && d.defectQty !== null)
+                ? Math.min(Number(d.defectQty), inspQty)  // inspQty 초과 방지만
+                : Math.max(0, inspQty - goodQty);
+            return {...d, inspQty, goodQty, defectQty};
         });
         dataLoaded.dprod=true; checkLoaded(); if(currentView==='daily') updateDailyUI();
     });
@@ -2037,40 +2043,17 @@ function updateDailyUI(){
     const smdData=data.filter(d=>d.proc==='SMD');
     const totalIn=smdData.length>0 ? smdData.reduce((a,b)=>a+b.inspQty,0)
                   : data.filter(d=>d.proc==='ROUTER').reduce((a,b)=>a+b.inspQty,0)||data.reduce((a,b)=>a+b.inspQty,0);
-    // 불량수량: 각 날짜+모델별로 (첫공정 투입 - 마지막 공정 양품) 합산
-    const procOrder=['SMD','ROUTER','ATE','PCT','AVI'];
-    const dayModelKeys=[...new Set(data.map(d=>d.date+'|'+d.model))];
-    let totalDef=0;
-    dayModelKeys.forEach(key=>{
-        const [date,model]=key.split('|');
-        const rows=data.filter(d=>d.date===date&&d.model===model);
-        if(!rows.length) return;
-        // first proc input
-        rows.sort((a,b)=>procOrder.indexOf(a.proc)-procOrder.indexOf(b.proc));
-        const firstIn=rows[0].inspQty;
-        const lastGood=rows[rows.length-1].goodQty;
-        totalDef+=(firstIn-lastGood);
-    });
-    // SMT: first=SMD inspQty, last=ROUTER goodQty
-    const smtIn=smtData.filter(d=>d.proc==='SMD').reduce((a,b)=>a+b.inspQty,0)||smtData.reduce((a,b)=>a+b.inspQty,0);
-    let smtDef=0;
-    dayModelKeys.forEach(key=>{
-        const [date,model]=key.split('|');
-        const rows=data.filter(d=>d.date===date&&d.model===model&&['SMD','ROUTER'].includes(d.proc));
-        if(!rows.length) return;
-        rows.sort((a,b)=>procOrder.indexOf(a.proc)-procOrder.indexOf(b.proc));
-        smtDef+=(rows[0].inspQty-rows[rows.length-1].goodQty);
-    });
-    // TEST: first=ATE inspQty, last=AVI goodQty
-    const testIn=testData.filter(d=>d.proc==='ATE').reduce((a,b)=>a+b.inspQty,0)||testData.reduce((a,b)=>a+b.inspQty,0);
-    let testDef=0;
-    dayModelKeys.forEach(key=>{
-        const [date,model]=key.split('|');
-        const rows=data.filter(d=>d.date===date&&d.model===model&&['ATE','PCT','AVI'].includes(d.proc));
-        if(!rows.length) return;
-        rows.sort((a,b)=>procOrder.indexOf(a.proc)-procOrder.indexOf(b.proc));
-        testDef+=(rows[0].inspQty-rows[rows.length-1].goodQty);
-    });
+    // 불량수량: 각 공정별 defectQty를 단순 합산 (공정간 배치가 달라 첫-끝 계산 부정확)
+    // 각 행의 defectQty = 해당 공정에서 발생한 실제 불량 수
+    const totalDef = data.reduce((a,b)=>a+(b.defectQty||0), 0);
+    // SMT 투입: SMD 공정 기준
+    const smtIn = smtData.filter(d=>d.proc==='SMD').reduce((a,b)=>a+b.inspQty,0)
+                  || smtData.reduce((a,b)=>a+b.inspQty,0);
+    const smtDef = smtData.reduce((a,b)=>a+(b.defectQty||0), 0);
+    // TEST 투입: ATE 공정 기준
+    const testIn = testData.filter(d=>d.proc==='ATE').reduce((a,b)=>a+b.inspQty,0)
+                   || testData.reduce((a,b)=>a+b.inspQty,0);
+    const testDef = testData.reduce((a,b)=>a+(b.defectQty||0), 0);
     const smtGood=smtIn-smtDef;
     const testGood=testIn-testDef;
     const smtYield=smtIn>0?smtGood/smtIn*100:0;
@@ -2292,6 +2275,22 @@ function parseDailyPaste(){
     }
 }
 
+function clearAllDailyProdData(){
+    if(!confirm(lang==='ko'
+        ? '⚠️ 경고: Firebase의 일별 생산 데이터를 전부 삭제합니다.
+이 작업은 복구할 수 없습니다.
+
+계속하시겠습니까?'
+        : '⚠️ WARNING: This will DELETE ALL daily production data from Firebase.
+This cannot be undone.
+
+Continue?'))return;
+    saveToFirebase('dprod',[]).then(()=>{
+        alert(lang==='ko'?'✅ 일별 생산 데이터가 모두 삭제되었습니다.':'✅ All daily production data deleted.');
+        document.getElementById('modalDailyProd').style.display='none';
+    });
+}
+
 function saveDailyProd(){
     const rows=document.querySelectorAll('#tblDailyProdEntry tbody tr');
     const newData=[];
@@ -2316,20 +2315,19 @@ function saveDailyProd(){
     });
     if(!newData.length){alert(lang==='ko'?'유효한 데이터가 없습니다. (투입수량 > 0 이어야 합니다)':'No valid data. (Input Qty must be > 0)');return;}
     
-    // ★ 중복 제거: 같은 날짜+모델+공정이면 새 데이터로 덮어씀
-    const merged=[...dailyProdData];
-    let updated=0, added=0;
-    newData.forEach(nd=>{
-        const idx=merged.findIndex(d=>d.date===nd.date&&d.model===nd.model&&d.proc===nd.proc);
-        if(idx>=0){merged[idx]=nd; updated++;}
-        else{merged.push(nd); added++;}
-    });
+    // ★ 핵심: 입력한 모델+공정 조합을 통째로 교체
+    // - 새로 입력된 모델+공정 조합에 해당하는 기존 데이터 전부 삭제
+    // - 입력하지 않은 모델+공정 조합은 그대로 유지
+    // → Firebase 오염 데이터가 남는 문제 완전 해결
+    const newModelProcs = new Set(newData.map(d=>d.model+'|'+d.proc));
+    const kept = dailyProdData.filter(d=>!newModelProcs.has(d.model+'|'+d.proc));
+    const merged = [...kept, ...newData];
     
     const msg=lang==='ko'
-        ? `✅ 저장 완료!
-신규: ${added}건 / 업데이트: ${updated}건`
-        : `✅ Saved!
-New: ${added} / Updated: ${updated}`;
+        ? `✅ 저장 완료! (${newData.length}건)
+교체된 모델+공정: ${[...newModelProcs].join(', ')}`
+        : `✅ Saved! (${newData.length} records)
+Replaced: ${[...newModelProcs].join(', ')}`;
     
     saveToFirebase('dprod',merged).then(()=>{
         document.getElementById('modalDailyProd').style.display='none';
