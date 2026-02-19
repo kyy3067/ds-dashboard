@@ -2153,12 +2153,20 @@ function getDailyFiltered(){
     });
 }
 function getDailyDefFiltered(){
+    // 현재 필터 범위의 생산 데이터에서 실제 불량이 있는 날짜+모델+공정 조합만 허용
+    const prodData=getDailyFiltered();
+    const validKeys=new Set();
+    prodData.forEach(d=>{
+        if(d.defectQty>0) validKeys.add(d.date+'|'+d.model+'|'+d.proc);
+    });
     return dailyDefectData.filter(d=>{
         if(dFilters.dateFrom&&d.date<dFilters.dateFrom)return false;
         if(dFilters.dateTo&&d.date>dFilters.dateTo)return false;
         if(dFilters.product!=='전체'&&d.model!==dFilters.product)return false;
         if(dFilters.team!=='전체'&&d.team!==dFilters.team)return false;
         if(dFilters.process!=='전체'&&d.proc!==dFilters.process)return false;
+        // 생산 데이터에 실제 불량이 있는 경우에만 표시
+        if(!validKeys.has(d.date+'|'+d.model+'|'+d.proc))return false;
         return true;
     });
 }
