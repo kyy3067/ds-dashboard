@@ -14,12 +14,12 @@
 
     <style>
         :root {
-            --navy:       #0c1e3e;
-            --navy-mid:   #152d56;
-            --navy-light: #1e3d6e;
-            --gold:       #e8a020;
-            --gold-light: #f5c55a;
-            --gold-pale:  #fdf3de;
+            --navy:       #00234d;
+            --navy-mid:   #003470;
+            --navy-light: #004B87;
+            --gold:       #0074d9;
+            --gold-light: #3498f0;
+            --gold-pale:  #e8f4ff;
             --cyan:       #38bdf8;
             --success:    #10b981;
             --danger:     #f43f5e;
@@ -47,8 +47,8 @@
             min-height: 100vh;
             padding: 28px;
             background-image:
-                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(56,189,248,0.08) 0%, transparent 60%),
-                radial-gradient(ellipse 60% 40% at 100% 100%, rgba(232,160,32,0.05) 0%, transparent 50%);
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0,116,217,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 100% 100%, rgba(91,184,255,0.06) 0%, transparent 50%);
             word-break: keep-all;
             -webkit-font-smoothing: antialiased;
         }
@@ -60,13 +60,13 @@
             z-index: 99999;
             display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
         }
-        .loading-logo { font-size: 36px; font-weight: 800; color: white; letter-spacing: -1px; font-family: 'Inter', 'Noto Sans KR', sans-serif; }
-        .loading-logo span { color: var(--gold); }
+        .loading-logo { font-size: 36px; font-weight: 900; color: white; letter-spacing: 3px; font-family: 'Inter', 'Noto Sans KR', sans-serif; text-transform: uppercase; }
+        .loading-logo span { color: #5bb8ff; }
         .loading-bar {
             width: 200px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;
         }
         .loading-bar-inner {
-            height: 100%; width: 0%; background: linear-gradient(90deg, var(--gold), var(--cyan));
+            height: 100%; width: 0%; background: linear-gradient(90deg, #0074d9, #5bb8ff);
             border-radius: 2px; animation: loadBar 1.8s ease-in-out forwards;
         }
         @keyframes loadBar { to { width: 100%; } }
@@ -127,7 +127,7 @@
             content: '';
             position: absolute; top: -60px; right: -60px;
             width: 240px; height: 240px;
-            background: radial-gradient(circle, rgba(232,160,32,0.15) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(91,184,255,0.15) 0%, transparent 70%);
             pointer-events: none;
         }
         .header::after {
@@ -147,10 +147,10 @@
         .header-brand { display: flex; align-items: center; gap: 16px; margin-bottom: 6px; }
         .brand-badge {
             width: 44px; height: 44px;
-            background: linear-gradient(135deg, var(--gold), var(--gold-light));
+            background: linear-gradient(135deg, #0074d9, #5bb8ff);
             border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 20px; box-shadow: 0 4px 12px rgba(232,160,32,0.4);
+            font-size: 20px; box-shadow: 0 4px 12px rgba(0,116,217,0.4);
         }
         .header h1 {
             font-size: 24px; font-weight: 800; color: white;
@@ -162,14 +162,26 @@
             font-weight: 400; margin-top: 4px; letter-spacing: 0.2px;
             font-family: 'Noto Sans KR', sans-serif;
         }
+        .logo-area { text-align: right; }
         .logo-text {
             font-family: 'Inter', sans-serif;
-            font-weight: 800; font-size: 26px;
-            color: white; letter-spacing: -1px;
-            line-height: 1;
+            font-weight: 900; font-size: 28px;
+            color: white; letter-spacing: 2px;
+            line-height: 1; text-transform: uppercase;
         }
-        .logo-text span { color: var(--gold); }
-        .logo-sub { font-size: 10px; color: rgba(255,255,255,0.4); letter-spacing: 2px; text-transform: uppercase; margin-top: 3px; font-family: 'Inter', sans-serif; }
+        .logo-text span { color: #5bb8ff; font-weight: 900; }
+        .logo-sub {
+            font-size: 9px; color: rgba(255,255,255,0.35);
+            letter-spacing: 3px; text-transform: uppercase;
+            margin-top: 5px; font-family: 'Inter', sans-serif;
+            font-weight: 500;
+        }
+        .logo-designer {
+            font-size: 9px; color: rgba(255,255,255,0.25);
+            letter-spacing: 1px; margin-top: 8px;
+            font-family: 'Inter', sans-serif; font-weight: 400;
+            font-style: italic;
+        }
 
         /* ─── Controls Row ─── */
         .controls-row {
@@ -198,9 +210,9 @@
         }
         .btn:hover { transform: translateY(-2px); }
         .btn:active { transform: translateY(0); }
-        .btn-prod  { background: linear-gradient(135deg, #6366f1, #818cf8); color: white; box-shadow: 0 4px 12px rgba(99,102,241,0.35); }
-        .btn-ship  { background: linear-gradient(135deg, #8b5cf6, #a78bfa); color: white; box-shadow: 0 4px 12px rgba(139,92,246,0.35); }
-        .btn-def   { background: linear-gradient(135deg, var(--gold), #f5c55a); color: var(--navy); box-shadow: 0 4px 12px rgba(232,160,32,0.35); }
+        .btn-prod  { background: linear-gradient(135deg, #004B87, #0074d9); color: white; box-shadow: 0 4px 12px rgba(0,75,135,0.35); }
+        .btn-ship  { background: linear-gradient(135deg, #0074d9, #3498f0); color: white; box-shadow: 0 4px 12px rgba(0,116,217,0.35); }
+        .btn-def   { background: linear-gradient(135deg, #5bb8ff, #82ccff); color: #00234d; box-shadow: 0 4px 12px rgba(91,184,255,0.35); }
         .btn-excel { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.15); }
         .btn-excel:hover { background: rgba(255,255,255,0.18); }
 
@@ -227,7 +239,7 @@
             font-weight: 600; font-family: 'Noto Sans KR', 'Inter', sans-serif;
             letter-spacing: 0; line-height: 1.4;
         }
-        .filter-btn:hover { border-color: #6366f1; color: #4f46e5; background: #eef2ff; }
+        .filter-btn:hover { border-color: #0074d9; color: #004B87; background: #e8f4ff; }
         .filter-btn.active {
             background: var(--navy); color: white; border-color: var(--navy);
             box-shadow: 0 2px 8px rgba(12,30,62,0.20);
@@ -259,25 +271,25 @@
             content: '';
             position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
         }
-        .kpi-card.c-blue::after  { background: linear-gradient(90deg,#6366f1,#818cf8); }
+        .kpi-card.c-blue::after  { background: linear-gradient(90deg,#004B87,#0074d9); }
         .kpi-card.c-red::after   { background: linear-gradient(90deg,#f43f5e,#fb7185); }
         .kpi-card.c-slate::after { background: linear-gradient(90deg,#475569,#64748b); }
-        .kpi-card.c-orange::after{ background: linear-gradient(90deg,var(--gold),#f5c55a); }
+        .kpi-card.c-orange::after{ background: linear-gradient(90deg,#e8a020,#f5c55a); }
 
         .kpi-icon {
             width: 36px; height: 36px; border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
             font-size: 16px; margin-bottom: 14px;
         }
-        .c-blue  .kpi-icon { background: #eef2ff; }
+        .c-blue  .kpi-icon { background: #e8f4ff; }
         .c-red   .kpi-icon { background: #fff1f2; }
         .c-slate .kpi-icon { background: #f1f5f9; }
-        .c-orange .kpi-icon { background: #fffbeb; }
+        .c-orange .kpi-icon { background: #fff8eb; }
         .kpi-value {
             font-size: 28px; font-weight: 800; letter-spacing: -0.5px;
             font-family: 'JetBrains Mono', 'Inter', monospace; margin-bottom: 4px; line-height: 1.1;
         }
-        .c-blue   .kpi-value { color: #4f46e5; }
+        .c-blue   .kpi-value { color: #004B87; }
         .c-red    .kpi-value { color: #e11d48; }
         .c-slate  .kpi-value { color: #334155; }
         .c-orange .kpi-value { color: #b45309; }
@@ -334,7 +346,7 @@
         }
         .card-title-dot {
             width: 8px; height: 8px; border-radius: 2px;
-            background: linear-gradient(135deg, #6366f1, #818cf8);
+            background: linear-gradient(135deg, #004B87, #0074d9);
             flex-shrink: 0;
         }
         .card-body { padding: 16px 22px 22px; flex: 1; }
@@ -671,9 +683,10 @@
                 </div>
             </div>
         </div>
-        <div style="text-align:right">
+        <div class="logo-area">
             <div class="logo-text">DREAM<span>TECH</span></div>
-            <div class="logo-sub">DS Division</div>
+            <div class="logo-sub">Solutions come from Dreamtech</div>
+            <div class="logo-designer">Designed by YU.KIM</div>
         </div>
     </div>
     <div class="controls-row">
@@ -1654,7 +1667,7 @@ function drawCharts(data){
     try{
         const totalY=pm.map(m=>{const d=data.filter(r=>r.month===m);const i=d.filter(r=>r.proc==='SMD').reduce((a,b)=>a+b.in,0);const o=d.filter(r=>r.proc==='AVI').reduce((a,b)=>a+b.out,0);return i>0?o/i*100:null;});
         // Fix 1: Much more padding so labels never overlap Y axis
-        charts.totalYield=new Chart(document.getElementById('chartTotalYield'),{type:'line',data:{labels:pl,datasets:[{label:T[lang].lblKpiYield,data:totalY,borderColor:'#4f46e5',backgroundColor:'rgba(79,70,229,0.06)',fill:true,tension:0.4,pointBackgroundColor:'white',pointBorderColor:'#4f46e5',pointBorderWidth:2.5,pointRadius:5,borderWidth:2.5}]},options:{...baseOpts,layout:{padding:{left:10,right:50,top:38,bottom:6}},plugins:{...baseOpts.plugins,legend:{display:false},datalabels:{color:'#4f46e5',backgroundColor:'rgba(255,255,255,0.95)',borderRadius:6,padding:{top:4,right:9,bottom:4,left:9},font:{weight:'700',size:12,family:'JetBrains Mono, monospace'},anchor:'end',align:'end',offset:12,clip:false,display:true,formatter:v=>v?v.toFixed(2)+'%':''}},scales:{...baseOpts.scales,x:{...baseOpts.scales.x,offset:true},y:{...baseOpts.scales.y,min:95,max:101}}}});
+        charts.totalYield=new Chart(document.getElementById('chartTotalYield'),{type:'line',data:{labels:pl,datasets:[{label:T[lang].lblKpiYield,data:totalY,borderColor:'#004B87',backgroundColor:'rgba(0,75,135,0.06)',fill:true,tension:0.4,pointBackgroundColor:'white',pointBorderColor:'#004B87',pointBorderWidth:2.5,pointRadius:5,borderWidth:2.5}]},options:{...baseOpts,layout:{padding:{left:10,right:50,top:38,bottom:6}},plugins:{...baseOpts.plugins,legend:{display:false},datalabels:{color:'#004B87',backgroundColor:'rgba(255,255,255,0.95)',borderRadius:6,padding:{top:4,right:9,bottom:4,left:9},font:{weight:'700',size:12,family:'JetBrains Mono, monospace'},anchor:'end',align:'end',offset:12,clip:false,display:true,formatter:v=>v?v.toFixed(2)+'%':''}},scales:{...baseOpts.scales,x:{...baseOpts.scales.x,offset:true},y:{...baseOpts.scales.y,min:95,max:101}}}});
 
         // PPM Monthly Trend Chart
         const ppmTrendData=pm.map(m=>{
