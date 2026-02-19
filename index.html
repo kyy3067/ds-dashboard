@@ -718,7 +718,10 @@
     </div>
     <div class="card">
         <div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="titProdVol">DS 생산 실적</span></div></div>
-        <div class="card-body"><div class="ch-md"><canvas id="chartProdVol"></canvas></div></div>
+        <div class="card-body">
+            <div class="mini-filters" id="prodVolFilter"></div>
+            <div class="ch-md"><canvas id="chartProdVol"></canvas></div>
+        </div>
     </div>
 </div>
 
@@ -786,7 +789,10 @@
     </div>
     <div class="card">
         <div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="titShipChart">월별 출하 실적 추이</span></div></div>
-        <div class="card-body"><div class="ch-md"><canvas id="chartShipment"></canvas></div></div>
+        <div class="card-body">
+            <div class="mini-filters" id="shipChartFilter"></div>
+            <div class="ch-md"><canvas id="chartShipment"></canvas></div>
+        </div>
     </div>
 </div>
 
@@ -908,7 +914,7 @@ const FIREBASE_CONFIG = {
 const isConfigured = !Object.values(FIREBASE_CONFIG).some(v=>v.includes('YOUR_'));
 let db=null, prodData=[], shipData=[], defectTypeData=[];
 let filters={product:'전체',month:'전체',process:'전체',defectType:'전체'};
-let procChartFilter='전체', prodChartFilter='전체';
+let procChartFilter='전체', prodChartFilter='전체', prodVolFilter='전체', shipChartFilter='전체';
 let charts={}, lang='ko';
 let dataLoaded={prod:false,ship:false,defect:false};
 
@@ -1100,7 +1106,13 @@ function renderProdChartBtns(){
 }
 function setPCF(v){
     prodChartFilter=v;
-    if(charts.prodYield){charts.prodYield.data.datasets.forEach((ds,i)=>charts.prodYield.setDatasetVisibility(i,v==='전체'||ds.label===v));charts.prodYield.update();}
+    if(charts.prodYield){
+        const isSingle = v!=='전체';
+        charts.prodYield.data.datasets.forEach((ds,i)=>charts.prodYield.setDatasetVisibility(i,!isSingle||ds.label===v));
+        // Show labels only when single filter
+        charts.prodYield.options.plugins.datalabels.display = isSingle ? ctx=>ctx.dataset.data[ctx.dataIndex]!==null : false;
+        charts.prodYield.update();
+    }
     renderProdChartBtns();
 }
 function renderProcChartBtns(){
@@ -1112,8 +1124,46 @@ function renderProcChartBtns(){
 }
 function setRCF(v){
     procChartFilter=v;
-    if(charts.procYield){charts.procYield.data.datasets.forEach((ds,i)=>charts.procYield.setDatasetVisibility(i,v==='전체'||ds.label===v));charts.procYield.update();}
+    if(charts.procYield){
+        const isSingle = v!=='전체';
+        charts.procYield.data.datasets.forEach((ds,i)=>charts.procYield.setDatasetVisibility(i,!isSingle||ds.label===v));
+        charts.procYield.options.plugins.datalabels.display = isSingle ? ctx=>ctx.dataset.data[ctx.dataIndex]!==null : false;
+        charts.procYield.update();
+    }
     renderProcChartBtns();
+}
+function renderProdVolBtns(){
+    const c=document.getElementById('prodVolFilter'); if(!c)return; c.innerHTML='';
+    ['전체','RDIMM','SODIMM','UDIMM'].forEach(p=>{
+        const b=document.createElement('button'); b.className='mini-btn'+(prodVolFilter===p?' active':'');
+        b.innerText=p==='전체'?T[lang].all:p; b.onclick=()=>setPVF(p); c.appendChild(b);
+    });
+}
+function setPVF(v){
+    prodVolFilter=v;
+    if(charts.prodVol){
+        charts.prodVol.data.datasets.forEach((ds,i)=>charts.prodVol.setDatasetVisibility(i,v==='전체'||ds.label===v));
+        charts.prodVol.update();
+    }
+    renderProdVolBtns();
+}
+function renderShipChartBtns(){
+    const c=document.getElementById('shipChartFilter'); if(!c)return; c.innerHTML='';
+    ['전체','RDIMM','SODIMM','UDIMM'].forEach(p=>{
+        const b=document.createElement('button'); b.className='mini-btn'+(shipChartFilter===p?' active':'');
+        b.innerText=p==='전체'?T[lang].all:p; b.onclick=()=>setSCF(p); c.appendChild(b);
+    });
+}
+function setSCF(v){
+    shipChartFilter=v;
+    if(charts.shipment){
+        charts.shipment.data.datasets.forEach((ds,i)=>{
+            if(ds.label==='Total')charts.shipment.setDatasetVisibility(i,v==='전체');
+            else charts.shipment.setDatasetVisibility(i,v==='전체'||ds.label===v);
+        });
+        charts.shipment.update();
+    }
+    renderShipChartBtns();
 }
 function renderDefectBtns(){
     const c=document.getElementById('defectTypeFilters'); if(!c)return; c.innerHTML='';
@@ -1156,7 +1206,7 @@ function renderFilterButtons(){
 }
 
 function updateUI(){
-    renderFilterButtons(); renderProdChartBtns(); renderProcChartBtns(); renderDefectBtns();
+    renderFilterButtons(); renderProdChartBtns(); renderProcChartBtns(); renderDefectBtns(); renderProdVolBtns(); renderShipChartBtns();
     const data=getFD();
     let tI=0,tO=0,tF=0,cF=0;
     if(filters.process!=='전체'){tI=data.reduce((a,b)=>a+b.in,0);tO=data.reduce((a,b)=>a+b.out,0);}
@@ -1232,25 +1282,83 @@ function drawCharts(data){
 
     try{
         const totalY=pm.map(m=>{const d=data.filter(r=>r.month===m);const i=d.filter(r=>r.proc==='SMD').reduce((a,b)=>a+b.in,0);const o=d.filter(r=>r.proc==='AVI').reduce((a,b)=>a+b.out,0);return i>0?o/i*100:null;});
-        // Fix 1: Extra left/right padding so labels don't overlap Y axis
-        charts.totalYield=new Chart(document.getElementById('chartTotalYield'),{type:'line',data:{labels:pl,datasets:[{label:T[lang].lblKpiYield,data:totalY,borderColor:'#4f46e5',backgroundColor:'rgba(79,70,229,0.06)',fill:true,tension:0.4,pointBackgroundColor:'white',pointBorderColor:'#4f46e5',pointBorderWidth:2.5,pointRadius:5,borderWidth:2.5}]},options:{...baseOpts,layout:{padding:{left:10,right:30,top:36,bottom:6}},plugins:{...baseOpts.plugins,legend:{display:false},datalabels:{...baseOpts.plugins.datalabels,formatter:v=>v?v.toFixed(2)+'%':'',color:'#4f46e5',backgroundColor:'rgba(255,255,255,0.95)',borderRadius:6,padding:{top:4,right:8,bottom:4,left:8},font:{weight:'700',size:12,family:'JetBrains Mono, monospace'},offset:10}},scales:{...baseOpts.scales,y:{...baseOpts.scales.y,min:95,max:101}}}});
+        // Fix 1: Much more padding so labels never overlap Y axis
+        charts.totalYield=new Chart(document.getElementById('chartTotalYield'),{type:'line',data:{labels:pl,datasets:[{label:T[lang].lblKpiYield,data:totalY,borderColor:'#4f46e5',backgroundColor:'rgba(79,70,229,0.06)',fill:true,tension:0.4,pointBackgroundColor:'white',pointBorderColor:'#4f46e5',pointBorderWidth:2.5,pointRadius:5,borderWidth:2.5}]},options:{...baseOpts,layout:{padding:{left:14,right:50,top:38,bottom:6}},plugins:{...baseOpts.plugins,legend:{display:false},datalabels:{color:'#4f46e5',backgroundColor:'rgba(255,255,255,0.95)',borderRadius:6,padding:{top:4,right:9,bottom:4,left:9},font:{weight:'700',size:12,family:'JetBrains Mono, monospace'},anchor:'end',align:'end',offset:12,clip:false,display:true,formatter:v=>v?v.toFixed(2)+'%':''}},scales:{...baseOpts.scales,y:{...baseOpts.scales.y,min:95,max:101}}}});
 
-        charts.prodYield=new Chart(document.getElementById('chartProdYield'),{type:'line',data:{labels:pl,datasets:['RDIMM','SODIMM','UDIMM'].map((p,i)=>({label:p,borderColor:['#f43f5e','#0891b2','#f59e0b'][i],backgroundColor:['rgba(244,63,94,0.05)','rgba(8,145,178,0.05)','rgba(245,158,11,0.05)'][i],fill:true,tension:0.4,borderWidth:2.5,pointRadius:4,pointBorderWidth:2,pointBackgroundColor:'white',data:pm.map(m=>{const d=data.filter(r=>r.month===m&&r.prod===p);const ti=d.filter(r=>r.proc==='SMD').reduce((a,b)=>a+b.in,0);const to=d.filter(r=>r.proc==='AVI').reduce((a,b)=>a+b.out,0);return ti>0?to/ti*100:null;})}))},options:{...baseOpts,plugins:{...baseOpts.plugins,legend:{display:false},datalabels:{display:false}},scales:{...baseOpts.scales,y:{...baseOpts.scales.y,min:95,max:101}}}});
+        // Fix 2: legend ON, Fix 3: datalabels only when single filter
+        const prodSingle = prodChartFilter!=='전체';
+        const prodYieldLabelOpts = {
+            display: prodSingle ? ctx=>ctx.dataset.data[ctx.dataIndex]!==null : false,
+            color: ctx=>['#f43f5e','#0891b2','#f59e0b'][ctx.datasetIndex]||'#0c1e3e',
+            backgroundColor:'rgba(255,255,255,0.95)',borderRadius:5,
+            padding:{top:3,right:7,bottom:3,left:7},
+            font:{weight:'700',size:11,family:'JetBrains Mono, monospace'},
+            anchor:'end',align:'end',offset:8,clip:false,
+            formatter:v=>v?v.toFixed(2)+'%':''
+        };
+        charts.prodYield=new Chart(document.getElementById('chartProdYield'),{type:'line',data:{labels:pl,datasets:['RDIMM','SODIMM','UDIMM'].map((p,i)=>({label:p,borderColor:['#f43f5e','#0891b2','#f59e0b'][i],backgroundColor:['rgba(244,63,94,0.05)','rgba(8,145,178,0.05)','rgba(245,158,11,0.05)'][i],fill:true,tension:0.4,borderWidth:2.5,pointRadius:4,pointBorderWidth:2,pointBackgroundColor:'white',hidden:prodSingle&&p!==prodChartFilter,data:pm.map(m=>{const d=data.filter(r=>r.month===m&&r.prod===p);const ti=d.filter(r=>r.proc==='SMD').reduce((a,b)=>a+b.in,0);const to=d.filter(r=>r.proc==='AVI').reduce((a,b)=>a+b.out,0);return ti>0?to/ti*100:null;})}))},options:{...baseOpts,layout:{padding:{top:prodSingle?38:16,right:prodSingle?50:14,bottom:8,left:8}},plugins:{...baseOpts.plugins,legend:{position:'bottom',display:true,labels:{boxWidth:10,boxHeight:10,padding:12,font:{size:11,weight:'600',family:'Noto Sans KR, Inter, sans-serif'},usePointStyle:true,pointStyleWidth:8}},datalabels:prodYieldLabelOpts},scales:{...baseOpts.scales,y:{...baseOpts.scales.y,min:95,max:101}}}});
 
-        charts.procYield=new Chart(document.getElementById('chartProcYield'),{type:'line',data:{labels:pl,datasets:['SMD','ROUTER','ATE','PCT','AVI'].map((p,i)=>({label:p,borderColor:['#8b5cf6','#ec4899','#6366f1','#f59e0b','#10b981'][i],tension:0.4,borderWidth:2.5,pointRadius:4,pointBorderWidth:2,pointBackgroundColor:'white',data:pm.map(m=>{const d=data.filter(r=>r.month===m&&r.proc===p);const ti=d.reduce((a,b)=>a+b.in,0);const to=d.reduce((a,b)=>a+b.out,0);return ti>0?to/ti*100:null;})}))},options:{...baseOpts,plugins:{...baseOpts.plugins,legend:{display:false},datalabels:{display:false}},scales:{...baseOpts.scales,y:{...baseOpts.scales.y,min:95,max:101}}}});
+        const procSingle = procChartFilter!=='전체';
+        const procColors=['#8b5cf6','#ec4899','#6366f1','#f59e0b','#10b981'];
+        const procYieldLabelOpts = {
+            display: procSingle ? ctx=>ctx.dataset.data[ctx.dataIndex]!==null : false,
+            color: ctx=>procColors[ctx.datasetIndex]||'#0c1e3e',
+            backgroundColor:'rgba(255,255,255,0.95)',borderRadius:5,
+            padding:{top:3,right:7,bottom:3,left:7},
+            font:{weight:'700',size:11,family:'JetBrains Mono, monospace'},
+            anchor:'end',align:'end',offset:8,clip:false,
+            formatter:v=>v?v.toFixed(2)+'%':''
+        };
+        charts.procYield=new Chart(document.getElementById('chartProcYield'),{type:'line',data:{labels:pl,datasets:['SMD','ROUTER','ATE','PCT','AVI'].map((p,i)=>({label:p,borderColor:procColors[i],tension:0.4,borderWidth:2.5,pointRadius:4,pointBorderWidth:2,pointBackgroundColor:'white',hidden:procSingle&&p!==procChartFilter,data:pm.map(m=>{const d=data.filter(r=>r.month===m&&r.proc===p);const ti=d.reduce((a,b)=>a+b.in,0);const to=d.reduce((a,b)=>a+b.out,0);return ti>0?to/ti*100:null;})}))},options:{...baseOpts,layout:{padding:{top:procSingle?38:16,right:procSingle?50:14,bottom:8,left:8}},plugins:{...baseOpts.plugins,legend:{position:'bottom',display:true,labels:{boxWidth:10,boxHeight:10,padding:12,font:{size:11,weight:'600',family:'Noto Sans KR, Inter, sans-serif'},usePointStyle:true,pointStyleWidth:8}},datalabels:procYieldLabelOpts},scales:{...baseOpts.scales,y:{...baseOpts.scales.y,min:95,max:101}}}});
 
-        charts.prodVol=new Chart(document.getElementById('chartProdVol'),{type:'bar',data:{labels:pl,datasets:[{label:T[lang].lblKpiInput,data:pm.map(m=>data.filter(r=>r.month===m&&r.proc==='SMD').reduce((a,b)=>a+b.in,0)),backgroundColor:'rgba(79,70,229,0.7)',borderRadius:6,borderSkipped:false,hoverBackgroundColor:'rgba(79,70,229,0.9)'}]},options:{...baseOpts,plugins:{...baseOpts.plugins,datalabels:{...baseOpts.plugins.datalabels,color:'#4f46e5'}}}});
+        // Fix 4: prodVol by model RDIMM/SODIMM/UDIMM stacked with filter
+        const pvColors=['#6366f1','#0891b2','#f59e0b'];
+        const pvDS=['RDIMM','SODIMM','UDIMM'].map((p,i)=>({
+            label:p,
+            data:pm.map(m=>data.filter(r=>r.month===m&&r.prod===p&&r.proc==='SMD').reduce((a,b)=>a+b.in,0)),
+            backgroundColor:pvColors[i], borderRadius:4, borderSkipped:false, stack:'pv',
+            hidden: prodVolFilter!=='전체'&&p!==prodVolFilter,
+            datalabels:{display:true,anchor:'center',align:'center',color:'white',backgroundColor:'transparent',
+                font:{weight:'700',size:11,family:'JetBrains Mono, monospace'},
+                formatter:v=>v>0?v.toLocaleString():''}
+        }));
+        const pvTotals=pm.map(m=>data.filter(r=>r.month===m&&r.proc==='SMD').reduce((a,b)=>a+b.in,0));
+        charts.prodVol=new Chart(document.getElementById('chartProdVol'),{
+            type:'bar',
+            data:{labels:pl,datasets:[...pvDS,{type:'line',label:lang==='ko'?'합계':'Total',data:pvTotals,borderColor:'transparent',backgroundColor:'transparent',pointRadius:0,hidden:prodVolFilter!=='전체',
+                datalabels:{display:true,anchor:'end',align:'end',color:'#4f46e5',backgroundColor:'rgba(255,255,255,0.95)',borderRadius:6,
+                    padding:{top:4,right:8,bottom:4,left:8},font:{weight:'700',size:12,family:'JetBrains Mono, monospace'},
+                    formatter:v=>v.toLocaleString(),offset:12},order:-1}]},
+            options:{...baseOpts,layout:{padding:{top:50,right:20,left:10,bottom:8}},
+                plugins:{...baseOpts.plugins,
+                    legend:{position:'bottom',display:true,labels:{boxWidth:10,boxHeight:10,padding:12,font:{size:11,weight:'600',family:'Noto Sans KR, Inter, sans-serif'},usePointStyle:true,pointStyleWidth:8,filter:item=>item.text!==lang?'합계':'Total'}},
+                    datalabels:{display:false}},
+                scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:11,family:'Noto Sans KR, Inter, sans-serif',weight:'600'},color:'#94a3b8'},border:{display:false}},
+                    y:{stacked:true,grid:{color:'#f1f5f9'},ticks:{font:{size:11,family:'Noto Sans KR, Inter, sans-serif'},color:'#94a3b8'},border:{display:false}}}
+            }
+        });
 
         const defData=pm.map(m=>data.filter(r=>r.month===m).reduce((a,b)=>a+b.fail,0));
-        charts.totalDefect=new Chart(document.getElementById('chartTotalDefect'),{type:'line',data:{labels:pl,datasets:[{label:T[lang].lblKpiDefect,data:defData,borderColor:'#f43f5e',backgroundColor:'rgba(244,63,94,0.07)',fill:true,tension:0.4,borderWidth:2.5,pointRadius:5,pointBackgroundColor:'white',pointBorderColor:'#f43f5e',pointBorderWidth:2.5}]},options:{...baseOpts,plugins:{...baseOpts.plugins,datalabels:{...baseOpts.plugins.datalabels,color:'#f43f5e',offset:10}}}});
+        charts.totalDefect=new Chart(document.getElementById('chartTotalDefect'),{type:'line',data:{labels:pl,datasets:[{label:T[lang].lblKpiDefect,data:defData,borderColor:'#f43f5e',backgroundColor:'rgba(244,63,94,0.07)',fill:true,tension:0.4,borderWidth:2.5,pointRadius:5,pointBackgroundColor:'white',pointBorderColor:'#f43f5e',pointBorderWidth:2.5}]},options:{...baseOpts,layout:{padding:{top:40,right:50,left:10,bottom:6}},plugins:{...baseOpts.plugins,legend:{display:false},datalabels:{...baseOpts.plugins.datalabels,color:'#f43f5e',offset:10,formatter:v=>v.toLocaleString()}}}});
 
         const compDef=pm.map(m=>data.filter(r=>r.month===m&&['SMD','ROUTER','AVI'].includes(r.proc)).reduce((a,b)=>a+b.fail,0));
-        charts.compDefect=new Chart(document.getElementById('chartCompDefect'),{type:'line',data:{labels:pl,datasets:[{label:T[lang].lblKpiCompDefect,data:compDef,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.07)',fill:true,tension:0.4,borderWidth:2.5,pointRadius:5,pointBackgroundColor:'white',pointBorderColor:'#f59e0b',pointBorderWidth:2.5}]},options:{...baseOpts,plugins:{...baseOpts.plugins,datalabels:{...baseOpts.plugins.datalabels,color:'#d97706',offset:10}}}});
+        charts.compDefect=new Chart(document.getElementById('chartCompDefect'),{type:'line',data:{labels:pl,datasets:[{label:T[lang].lblKpiCompDefect,data:compDef,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.07)',fill:true,tension:0.4,borderWidth:2.5,pointRadius:5,pointBackgroundColor:'white',pointBorderColor:'#f59e0b',pointBorderWidth:2.5}]},options:{...baseOpts,layout:{padding:{top:40,right:50,left:10,bottom:6}},plugins:{...baseOpts.plugins,legend:{display:false},datalabels:{...baseOpts.plugins.datalabels,color:'#d97706',offset:10,formatter:v=>v.toLocaleString()}}}});
 
+        // Fix 5: Shipment chart with filter buttons support
         const sColors=['#3b82f6','#10b981','#f59e0b'];
-        const sDS=['RDIMM','SODIMM','UDIMM'].map((m,i)=>({label:m,data:sm.map(mo=>shipData.filter(r=>r.month===mo&&r.model===m).reduce((a,b)=>a+b.qty,0)),backgroundColor:sColors[i],borderRadius:5,stack:'s0',datalabels:{display:true,color:'white',font:{weight:'bold',size:11,family:'DM Mono'},anchor:'center',align:'center',formatter:v=>v>0?v.toLocaleString():''}}));
+        const sDS=['RDIMM','SODIMM','UDIMM'].map((m,i)=>({
+            label:m,
+            data:sm.map(mo=>shipData.filter(r=>r.month===mo&&r.model===m).reduce((a,b)=>a+b.qty,0)),
+            backgroundColor:sColors[i], borderRadius:5, stack:'s0',
+            hidden:shipChartFilter!=='전체'&&m!==shipChartFilter,
+            datalabels:{display:true,color:'white',font:{weight:'700',size:11,family:'JetBrains Mono, monospace'},anchor:'center',align:'center',formatter:v=>v>0?v.toLocaleString():''}
+        }));
         const sTotals=sm.map(mo=>shipData.filter(r=>r.month===mo).reduce((a,b)=>a+b.qty,0));
-        charts.shipment=new Chart(document.getElementById('chartShipment'),{type:'bar',data:{labels:sl,datasets:[...sDS,{type:'line',label:'Total',data:sTotals,borderColor:'transparent',backgroundColor:'transparent',pointRadius:0,datalabels:{display:true,anchor:'end',align:'end',color:'#0c1e3e',backgroundColor:'rgba(255,255,255,0.95)',borderRadius:6,padding:{top:4,right:8,bottom:4,left:8},font:{weight:'bold',size:12,family:'DM Mono'},formatter:v=>v.toLocaleString(),offset:14},order:-1}]},options:{...baseOpts,layout:{padding:{top:50}},plugins:{...baseOpts.plugins,legend:{...baseOpts.plugins.legend,labels:{...baseOpts.plugins.legend.labels,filter:item=>item.text!=='Total'}},datalabels:{display:false}},scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:11,family:'Plus Jakarta Sans',weight:'600'},color:'#94a3b8'},border:{display:false}},y:{stacked:true,grid:{color:'#f1f5f9'},ticks:{font:{size:11,family:'Plus Jakarta Sans'},color:'#94a3b8'},border:{display:false}}}}});
+        charts.shipment=new Chart(document.getElementById('chartShipment'),{type:'bar',data:{labels:sl,datasets:[...sDS,{type:'line',label:'Total',data:sTotals,borderColor:'transparent',backgroundColor:'transparent',pointRadius:0,hidden:shipChartFilter!=='전체',
+            datalabels:{display:true,anchor:'end',align:'end',color:'#0c1e3e',backgroundColor:'rgba(255,255,255,0.95)',borderRadius:6,padding:{top:4,right:8,bottom:4,left:8},font:{weight:'700',size:12,family:'JetBrains Mono, monospace'},formatter:v=>v.toLocaleString(),offset:14},order:-1}]},
+            options:{...baseOpts,layout:{padding:{top:50,right:20,left:10,bottom:8}},
+                plugins:{...baseOpts.plugins,legend:{...baseOpts.plugins.legend,labels:{...baseOpts.plugins.legend.labels,filter:item=>item.text!=='Total'}},datalabels:{display:false}},
+                scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:11,family:'Noto Sans KR, Inter, sans-serif',weight:'600'},color:'#94a3b8'},border:{display:false}},y:{stacked:true,grid:{color:'#f1f5f9'},ticks:{font:{size:11,family:'Noto Sans KR, Inter, sans-serif'},color:'#94a3b8'},border:{display:false}}}}});
 
         const palCols=['#6366f1','#06b6d4','#f59e0b','#f43f5e','#10b981'];
         let dDS=reasons.map((r,i)=>({label:r,data:dm.map(m=>{const d=defectTypeData.find(x=>x.month===m&&x.reason===r);return d?d.qty:0;}),backgroundColor:palCols[i%5],borderRadius:4,borderSkipped:false,stack:'s0'}));
