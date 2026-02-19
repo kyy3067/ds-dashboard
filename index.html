@@ -56,21 +56,27 @@
         /* ─── Loading ─── */
         #loadingOverlay {
             position: fixed; inset: 0;
-            background: linear-gradient(135deg, #3B8BF5 0%, #2D7CE5 50%, #5BA0F7 100%);
+            background: url('https://images.unsplash.com/photo-1518770660439-4636190af475?w=1600&q=80') center/cover no-repeat;
             z-index: 99999;
             display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
         }
-        .loading-logo { font-size: 36px; font-weight: 900; color: white; letter-spacing: 3px; font-family: 'Inter', 'Noto Sans KR', sans-serif; text-transform: uppercase; }
+        #loadingOverlay::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(45,124,229,0.90) 0%, rgba(59,139,245,0.85) 40%, rgba(91,160,247,0.82) 100%);
+        }
+        .loading-logo { font-size: 36px; font-weight: 900; color: white; letter-spacing: 3px; font-family: 'Inter', 'Noto Sans KR', sans-serif; text-transform: uppercase; position: relative; z-index: 1; }
         .loading-logo span { color: rgba(255,255,255,0.7); }
         .loading-bar {
             width: 200px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;
+            position: relative; z-index: 1;
         }
         .loading-bar-inner {
             height: 100%; width: 0%; background: linear-gradient(90deg, rgba(255,255,255,0.9), white);
             border-radius: 2px; animation: loadBar 1.8s ease-in-out forwards;
         }
         @keyframes loadBar { to { width: 100%; } }
-        .loading-text { font-size: 13px; color: rgba(255,255,255,0.5); font-weight: 500; letter-spacing: 0.3px; font-family: 'Noto Sans KR', sans-serif; }
+        .loading-text { font-size: 13px; color: rgba(255,255,255,0.5); font-weight: 500; letter-spacing: 0.3px; font-family: 'Noto Sans KR', sans-serif; position: relative; z-index: 1; }
 
         /* ─── Sync Status ─── */
         #syncStatus {
@@ -114,7 +120,7 @@
 
         /* ─── Header ─── */
         .header {
-            background: linear-gradient(135deg, #3B8BF5 0%, #2D7CE5 50%, #5BA0F7 100%);
+            background: url('https://images.unsplash.com/photo-1518770660439-4636190af475?w=1600&q=80') center/cover no-repeat;
             border-radius: var(--r-lg);
             padding: 32px 36px;
             margin-bottom: 28px;
@@ -125,16 +131,16 @@
         }
         .header::before {
             content: '';
-            position: absolute; top: -60px; right: -60px;
-            width: 240px; height: 240px;
-            background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
+            position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(45,124,229,0.88) 0%, rgba(59,139,245,0.82) 40%, rgba(91,160,247,0.78) 100%);
             pointer-events: none;
         }
         .header::after {
             content: '';
-            position: absolute; bottom: -40px; left: 30%;
-            width: 300px; height: 180px;
-            background: radial-gradient(ellipse, rgba(56,189,248,0.08) 0%, transparent 70%);
+            position: absolute; inset: 0;
+            background:
+                radial-gradient(ellipse at 90% 20%, rgba(255,255,255,0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 10% 80%, rgba(255,255,255,0.05) 0%, transparent 50%);
             pointer-events: none;
         }
         .header-grid {
@@ -561,8 +567,9 @@
 
 
         /* ─── Login Modal ─── */
-        #loginModal{display:flex;position:fixed;inset:0;z-index:99998;background:linear-gradient(135deg,#3B8BF5 0%,#2D7CE5 50%,#5BA0F7 100%);align-items:center;justify-content:center;}
-        .login-box{background:white;border-radius:24px;padding:48px 52px;width:420px;text-align:center;box-shadow:0 40px 80px rgba(0,0,0,0.15);animation:modalUp .5s cubic-bezier(.34,1.56,.64,1);}
+        #loginModal{display:flex;position:fixed;inset:0;z-index:99998;background:url('https://images.unsplash.com/photo-1518770660439-4636190af475?w=1600&q=80') center/cover no-repeat;align-items:center;justify-content:center;}
+        #loginModal::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(45,124,229,0.92) 0%,rgba(59,139,245,0.88) 40%,rgba(91,160,247,0.85) 100%);}
+        .login-box{background:white;border-radius:24px;padding:48px 52px;width:420px;text-align:center;box-shadow:0 40px 80px rgba(0,0,0,0.15);animation:modalUp .5s cubic-bezier(.34,1.56,.64,1);position:relative;z-index:1;}
         .login-logo{font-family:'Inter',sans-serif;font-weight:900;font-size:34px;color:#1E293B;letter-spacing:2px;margin-bottom:6px;text-transform:uppercase;}.login-logo span{color:#3B8BF5;}
         .login-sub{font-size:10px;color:var(--text-muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:36px;font-family:'Inter',sans-serif;line-height:1.6;}
         .login-divider{width:40px;height:3px;background:linear-gradient(90deg,#3B8BF5,#6DB3FF);border-radius:2px;margin:0 auto 28px;}
@@ -574,7 +581,7 @@
         .login-err{font-size:12px;color:#F87171;margin-bottom:14px;height:16px;font-family:'Noto Sans KR',sans-serif;transition:all .2s;}
         .login-btn{width:100%;padding:15px;background:linear-gradient(135deg,#3B8BF5,#5BA0F7);color:white;border:none;border-radius:12px;cursor:pointer;font-size:15px;font-weight:700;font-family:'Noto Sans KR',sans-serif;transition:all .2s;letter-spacing:1px;}
         .login-btn:hover{box-shadow:0 8px 20px rgba(59,139,245,0.35);transform:translateY(-2px);}
-        .login-hint{font-size:11px;color:var(--text-muted);margin-top:16px;font-family:'Noto Sans KR',sans-serif;}
+        .login-hint{font-size:11px;color:var(--text-muted);margin-top:16px;font-family:'Noto Sans KR',sans-serif;position:relative;z-index:1;}
 
         @media(max-width:768px){
             body{padding:14px;}
