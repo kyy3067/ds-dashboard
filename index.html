@@ -945,6 +945,7 @@
                 <div class="team-stat"><div class="team-stat-value" id="smtInput" style="color:#334155;">—</div><div class="team-stat-label" id="smtLblInput">투입 수량</div></div>
                 <div class="team-stat"><div class="team-stat-value" id="smtDefect" style="color:#e11d48;">—</div><div class="team-stat-label">불량</div></div>
             </div>
+            <div id="smtProcDetail" style="margin-top:10px;padding-top:10px;border-top:1px dashed #e0e8f5;"></div>
         </div>
         <div class="team-card">
             <div class="team-card-header">
@@ -957,6 +958,7 @@
                 <div class="team-stat"><div class="team-stat-value" id="testInput" style="color:#334155;">—</div><div class="team-stat-label" id="smtLblInput">투입 수량</div></div>
                 <div class="team-stat"><div class="team-stat-value" id="testDefect" style="color:#e11d48;">—</div><div class="team-stat-label">불량</div></div>
             </div>
+            <div id="testProcDetail" style="margin-top:10px;padding-top:10px;border-top:1px dashed #e0e8f5;"></div>
         </div>
     </div>
 
@@ -1017,13 +1019,13 @@
             <div class="card-head">
                 <div class="card-title"><div class="card-title-dot"></div><span id="dTitProdBarProc">공정별 투입수량</span></div>
             </div>
-            <div class="card-body"><div style="position:relative;height:260px;"><canvas id="dChartProdByProc"></canvas></div></div>
+            <div class="card-body"><div class="mini-filters" id="dProcVolFilter"></div><div style="position:relative;height:260px;"><canvas id="dChartProdByProc"></canvas></div></div>
         </div>
         <div class="card">
             <div class="card-head">
                 <div class="card-title"><div class="card-title-dot"></div><span id="dTitProdBarModel">모델별 투입수량</span></div>
             </div>
-            <div class="card-body"><div style="position:relative;height:260px;"><canvas id="dChartProdByModel"></canvas></div></div>
+            <div class="card-body"><div class="mini-filters" id="dModelVolFilter"></div><div style="position:relative;height:260px;"><canvas id="dChartProdByModel"></canvas></div></div>
         </div>
     </div>
     <!-- 수율 vs 불량 복합 차트 -->
@@ -1930,6 +1932,7 @@ function getTeamBadge(proc){
 let dailyProdData=[], dailyDefectData=[];
 let dFilters={product:'전체',team:'전체',process:'전체',dateFrom:'',dateTo:''};
 let dYieldFilter='전체', dVolFilter='전체', dDefectTeamFilter='전체';
+let dProcVolFilter='전체', dModelVolFilter='전체';
 let dCharts={}, currentView='monthly';
 
 // ══════════════════════════════════════════════════════
@@ -2053,6 +2056,16 @@ function renderDailyFilterBtns(){
         ['전체','SMT','TEST'].forEach(t=>{
             const b=document.createElement('button');b.className='mini-btn'+(dDefectTeamFilter===t?' active':'');
             b.innerText=t==='전체'?all:t;b.onclick=()=>{dDefectTeamFilter=t;renderDailyFilterBtns();drawDailyCharts(getDailyFiltered());};ddf.appendChild(b);});}
+    // 공정별 투입수량 필터
+    const dpvf=document.getElementById('dProcVolFilter');if(dpvf){dpvf.innerHTML='';
+        ['전체','SMD','ROUTER','ATE','PCT','AVI'].forEach(p=>{
+            const b=document.createElement('button');b.className='mini-btn'+(dProcVolFilter===p?' active':'');
+            b.innerText=p==='전체'?all:p;b.onclick=()=>{dProcVolFilter=p;renderDailyFilterBtns();drawDailyCharts(getDailyFiltered());};dpvf.appendChild(b);});}
+    // 모델별 투입수량 필터
+    const dmvf=document.getElementById('dModelVolFilter');if(dmvf){dmvf.innerHTML='';
+        ['전체','RDIMM','SODIMM','UDIMM'].forEach(m=>{
+            const b=document.createElement('button');b.className='mini-btn'+(dModelVolFilter===m?' active':'');
+            b.innerText=m==='전체'?all:m;b.onclick=()=>{dModelVolFilter=m;renderDailyFilterBtns();drawDailyCharts(getDailyFiltered());};dmvf.appendChild(b);});}
 }
 
 function getDailyFiltered(){
@@ -2108,7 +2121,20 @@ function updateDailyUI(){
 
     // ── 종합 수율/PPM: SMD 기준 투입 ──
     const overallYield = totalIn>0 ? Math.max(0,(totalIn-totalDef))/totalIn*100 : 0;
-    const ppm = totalIn>0 ? totalDef/totalIn*1000000 : 0;
+    // ── PPM: 당사 귀책 불량만 (SMD/ROUTER/AVI) ──
+    const companyDefProcs = ['SMD','ROUTER','AVI'];
+    let ppmDef, ppmIn;
+    if(dFilters.process!=='전체'){
+        // 특정 공정 필터 시: 해당 공정의 불량/투입으로 PPM 계산
+        const procData = data.filter(d=>d.proc===dFilters.process);
+        ppmDef = procData.reduce((a,b)=>a+(b.defectQty||0), 0);
+        ppmIn = procData.reduce((a,b)=>a+b.inspQty, 0);
+    } else {
+        // 전체: 당사 귀책 불량만
+        ppmDef = data.filter(d=>companyDefProcs.includes(d.proc)).reduce((a,b)=>a+(b.defectQty||0), 0);
+        ppmIn = totalIn;
+    }
+    const ppm = ppmIn>0 ? ppmDef/ppmIn*1000000 : 0;
 
     // KPI 카드
     document.getElementById('dKpiYield').innerText=overallYield.toFixed(2)+'%';
@@ -2124,6 +2150,44 @@ function updateDailyUI(){
     document.getElementById('testYield').innerText=testIn>0?testYield.toFixed(2)+'%':'—';
     document.getElementById('testInput').innerText=testIn.toLocaleString();
     document.getElementById('testDefect').innerText=testDef.toLocaleString();
+    // ── 팀 카드 공정별 상세 정보 ──
+    const procDetailStyle='display:grid;grid-template-columns:repeat(3,1fr);gap:4px;font-size:11px;text-align:center;';
+    const procHeaderStyle='font-size:10px;color:#94a3b8;font-weight:600;padding:2px 0;';
+    const procValStyle='font-family:"JetBrains Mono",monospace;font-weight:700;font-size:12px;';
+    // SMT 공정별 (SMD, ROUTER)
+    const smtDetail=document.getElementById('smtProcDetail');
+    if(smtDetail){
+        let smtHtml='<div style="'+procDetailStyle+'"><div style="'+procHeaderStyle+'">공정</div><div style="'+procHeaderStyle+'">수율</div><div style="'+procHeaderStyle+'">투입/불량</div>';
+        ['SMD','ROUTER'].forEach(proc=>{
+            const pd=data.filter(d=>d.proc===proc);
+            const pi=pd.reduce((a,b)=>a+b.inspQty,0);
+            const pdef=pd.reduce((a,b)=>a+(b.defectQty||0),0);
+            const py=pi>0?((pi-pdef)/pi*100):0;
+            const pyOk=py>=99.5;
+            smtHtml+='<div style="font-weight:700;color:#8b5cf6;font-size:11px;">'+proc+'</div>';
+            smtHtml+='<div style="'+procValStyle+'color:'+(pyOk?'#10b981':'#e11d48')+';">'+(pi>0?py.toFixed(2)+'%':'—')+'</div>';
+            smtHtml+='<div style="'+procValStyle+'color:#334155;">'+pi.toLocaleString()+' / <span style="color:#e11d48;">'+pdef.toLocaleString()+'</span></div>';
+        });
+        smtHtml+='</div>';
+        smtDetail.innerHTML=smtHtml;
+    }
+    // TEST 공정별 (ATE, PCT, AVI)
+    const testDetail=document.getElementById('testProcDetail');
+    if(testDetail){
+        let testHtml='<div style="'+procDetailStyle+'"><div style="'+procHeaderStyle+'">공정</div><div style="'+procHeaderStyle+'">수율</div><div style="'+procHeaderStyle+'">투입/불량</div>';
+        ['ATE','PCT','AVI'].forEach(proc=>{
+            const pd=data.filter(d=>d.proc===proc);
+            const pi=pd.reduce((a,b)=>a+b.inspQty,0);
+            const pdef=pd.reduce((a,b)=>a+(b.defectQty||0),0);
+            const py=pi>0?((pi-pdef)/pi*100):0;
+            const pyOk=py>=99.5;
+            testHtml+='<div style="font-weight:700;color:#0891b2;font-size:11px;">'+proc+'</div>';
+            testHtml+='<div style="'+procValStyle+'color:'+(pyOk?'#10b981':'#e11d48')+';">'+(pi>0?py.toFixed(2)+'%':'—')+'</div>';
+            testHtml+='<div style="'+procValStyle+'color:#334155;">'+pi.toLocaleString()+' / <span style="color:#e11d48;">'+pdef.toLocaleString()+'</span></div>';
+        });
+        testHtml+='</div>';
+        testDetail.innerHTML=testHtml;
+    }
     updateDailyTables(data,defData);
     drawDailyCharts(data);
 }
@@ -2226,7 +2290,14 @@ function drawDailyCharts(data){
             yDS=models.map(p=>({label:p,borderColor:pColors[p]||'#6366f1',fill:false,tension:.4,borderWidth:2.5,pointRadius:4,pointBackgroundColor:'white',data:dates.map(dt=>{const d=data.filter(r=>r.date===dt&&r.model===p);const i=d.reduce((a,b)=>a+b.inspQty,0);const g=d.reduce((a,b)=>a+b.goodQty,0);return i>0?+(g/i*100).toFixed(2):null;})}));
         }
         const yLabelOpts={display:ctx=>ctx.dataset.data[ctx.dataIndex]!==null,color:ctx=>{const c=['#f43f5e','#0891b2','#f59e0b','#6366f1','#10b981'];return c[ctx.datasetIndex]||'#334155';},backgroundColor:'rgba(255,255,255,0.95)',borderRadius:6,padding:{top:3,right:8,bottom:3,left:8},font:{weight:'700',size:11,family:'JetBrains Mono,monospace'},anchor:'end',align:'top',offset:6,clip:false,formatter:v=>v?v.toFixed(2)+'%':''};
-        dCharts.yield=new Chart(document.getElementById('dChartYield'),{type:'line',data:{labels:dates,datasets:yDS},options:{...bOpts,layout:{padding:{top:40,right:50,bottom:10,left:20}},plugins:{...bOpts.plugins,datalabels:yLabelOpts},scales:{...bOpts.scales,x:{...bOpts.scales.x,offset:true},y:{...bOpts.scales.y,min:90,max:101,grace:'5%',afterDataLimits:(axis)=>{axis.max=101.5;}}}}});
+        dCharts.yield=new Chart(document.getElementById('dChartYield'),{type:'line',data:{labels:dates,datasets:yDS},options:{...bOpts,layout:{padding:{top:40,right:50,bottom:10,left:20}},plugins:{...bOpts.plugins,datalabels:yLabelOpts},scales:{...bOpts.scales,x:{...bOpts.scales.x,offset:true},y:{...bOpts.scales.y,max:101,grace:'5%',afterDataLimits:(axis)=>{
+                        axis.max=101.5;
+                        // 동적 Y축 최솟값: 실제 최솟값 - 2
+                        const allVals=[];
+                        axis.chart.data.datasets.forEach(ds=>{ds.data.forEach(v=>{if(v!==null&&v!==undefined)allVals.push(v);});});
+                        if(allVals.length){const minVal=Math.min(...allVals);axis.min=Math.max(0,Math.floor(minVal-2));}
+                        else{axis.min=90;}
+                    }}}}});
 
         // ── Volume Trend (SMD 기준 투입수량 per day+model) ──
         const models2=dVolFilter==='전체'?['RDIMM','SODIMM','UDIMM']:[dVolFilter];
@@ -2273,6 +2344,7 @@ function drawDailyCharts(data){
             const allDates=[...new Set(tblData2.map(d=>d.date))].sort();
             const procDS=['SMD','ROUTER','ATE','PCT','AVI'].map(p=>({
                 label:p, backgroundColor:pColors2[p], borderRadius:3, borderSkipped:false, stack:'pp',
+                hidden:dProcVolFilter!=='전체'&&p!==dProcVolFilter,
                 data:allDates.map(dt=>tblData2.filter(r=>r.date===dt&&r.proc===p).reduce((a,b)=>a+b.inspQty,0)),
                 datalabels:{display:ctx=>ctx.dataset.data[ctx.dataIndex]>0,anchor:'center',align:'center',color:'white',font:{weight:'700',size:9,family:'JetBrains Mono,monospace'},formatter:v=>v>0?v.toLocaleString():''}
             }));
@@ -2289,6 +2361,7 @@ function drawDailyCharts(data){
             const mColors2={RDIMM:'#6366f1',SODIMM:'#0891b2',UDIMM:'#f59e0b'};
             const modelDS2=['RDIMM','SODIMM','UDIMM'].map(m=>({
                 label:m, backgroundColor:mColors2[m], borderRadius:3, borderSkipped:false, stack:'mm',
+                hidden:dModelVolFilter!=='전체'&&m!==dModelVolFilter,
                 data:allDates.map(dt=>{
                     // SMD 기준 우선, 없으면 첫번째 공정
                     const smdRow=tblData2.find(r=>r.date===dt&&r.model===m&&r.proc==='SMD');
