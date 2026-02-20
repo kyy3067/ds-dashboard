@@ -284,6 +284,7 @@
             position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
         }
         .kpi-card.c-blue::after  { background: linear-gradient(90deg,#3B8BF5,#6DB3FF); }
+        .kpi-card.c-green::after { background: linear-gradient(90deg,#10b981,#6ee7b7); }
         .kpi-card.c-red::after   { background: linear-gradient(90deg,#F87171,#FCA5A5); }
         .kpi-card.c-slate::after { background: linear-gradient(90deg,#94A3B8,#CBD5E1); }
         .kpi-card.c-orange::after{ background: linear-gradient(90deg,#FBBF24,#FDE68A); }
@@ -294,6 +295,7 @@
             font-size: 16px; margin-bottom: 14px;
         }
         .c-blue  .kpi-icon { background: #EBF3FF; }
+        .c-green .kpi-icon { background: #ECFDF5; }
         .c-red   .kpi-icon { background: #FEF2F2; }
         .c-slate .kpi-icon { background: #F1F5F9; }
         .c-orange .kpi-icon { background: #FFFBEB; }
@@ -302,6 +304,7 @@
             font-family: 'JetBrains Mono', 'Inter', monospace; margin-bottom: 4px; line-height: 1.1;
         }
         .c-blue   .kpi-value { color: #2563EB; }
+        .c-green  .kpi-value { color: #059669; }
         .c-red    .kpi-value { color: #e11d48; }
         .c-slate  .kpi-value { color: #334155; }
         .c-orange .kpi-value { color: #b45309; }
@@ -1225,7 +1228,7 @@
         <div style="display:flex;gap:10px;margin-bottom:20px;"><button class="btn-parse" onclick="parseDailyPaste()">📋 데이터 적용</button><span id="pasteSkipHint" style="font-size:11px;color:#f59e0b;margin-left:8px;font-family:'Noto Sans KR',sans-serif;"></span><button class="btn-clr" onclick="document.querySelector('#tblDailyProdEntry tbody').innerHTML='';document.getElementById('pasteDailyProd').value=''">🗑️ 초기화</button></div>
         <div style="max-height:380px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;">
             <table class="entry-tbl" id="tblDailyProdEntry">
-                <thead><tr><th>날짜</th><th>모델</th><th>공정</th><th>팀</th><th id="dThInQty">투입수량</th><th id="dThGoodQty">양품수량</th><th id="dThDefQty">불량수량</th><th>삭제</th></tr></thead>
+                <thead><tr><th>날짜</th><th>모델</th><th>공정</th><th>팀</th><th id="dThInQtyM">투입수량</th><th id="dThGoodQtyM">양품수량</th><th id="dThDefQtyM">불량수량</th><th>삭제</th></tr></thead>
                 <tbody></tbody>
             </table>
         </div>
@@ -1381,18 +1384,6 @@ function getDefaultTeamMembers(){return{
     }catch(e){console.error('Login init error:',e);}
 })();
 
-// ★ 최우선: 로그인 모달 즉시 표시 (다른 코드 오류와 무관하게 실행)
-(function showLoginFirst(){
-    try{
-        var ov=document.getElementById('loadingOverlay');
-        var lm=document.getElementById('loginModal');
-        var li=document.getElementById('loginInput');
-        if(ov) ov.style.display='none';
-        if(lm) lm.style.display='flex';
-        if(li) setTimeout(function(){try{li.focus();}catch(e){}}, 200);
-    }catch(e){console.error('Login modal init error:',e);}
-})();
-
 // ─── PASSWORD ───────────────────────────────────────
 const DATA_PASSWORD = "ds!data"; // ← 데이터 입력 비밀번호 (접속 비밀번호와 다르게 설정)
 let pwCallback = null;
@@ -1475,7 +1466,7 @@ function initFirebase(){
         document.getElementById('loadingOverlay').style.display='none';
         setSyncStatus('offline','⚠️ Firebase 미설정');
         prodData=getDefaultProdData(); shipData=getDefaultShipData(); defectTypeData=getDefaultDefectData();
-        dailyProdData=[]; dailyDefectData=[];
+        dailyProdData=[]; dailyDefectData=[]; attendanceData=[]; teamMembers=getDefaultTeamMembers();
         Object.keys(dataLoaded).forEach(k=>dataLoaded[k]=true);
         initUI(); return;
     }
@@ -1536,7 +1527,7 @@ const T={ko:{mainTitle:'📊 DS Quality Performance',lblProd:'제품',lblPeriod:
     dTblDefThCode:'코드',dTblDefThName:'불량명',dTblDefThTeam:'팀',dTblDefThQty:'수량',
     dThRate:'수율',
     dProdTblThDate:'날짜',dProdTblThModel:'모델',dProdTblThProc:'공정',dProdTblThTeam:'팀',dProdTblThYield:'수율',
-    dThDate:'날짜',dThModel:'모델',dThProc:'공정',dThTeamCol:'팀',dThInQty:'투입수량',dThGoodQty:'양품수량',dThDefQty:'불량수량',dThYield:'수율',
+    dThDate:'날짜',dThModel:'모델',dThProc:'공정',dThTeamCol:'팀',dThInQty:'투입수량',dThGoodQty:'양품수량',dThDefQty:'불량수량',dThYield:'수율',dThInQtyM:'투입수량',dThGoodQtyM:'양품수량',dThDefQtyM:'불량수량',
     btnToday:'오늘',btnYesterday:'어제',btnThisWeek:'이번주',btnThisMonth:'이번달',btnAllDate:'전체',lblWeekNum:'주차 검색:',btnWeekGo:'이동',btnBackup:'💾 백업',
     smtLblYield:'수율',smtLblInput:'투입 수량',smtLblDefect:'불량',testLblYield:'수율',testLblInput:'투입 수량',testLblDefect:'불량',
     dSortLabel:'정렬:',dSortDateDesc:'날짜 ↓',dSortDateAsc:'날짜 ↑',dSortYieldAsc:'수율 ↑',dSortYieldDesc:'수율 ↓',dSortDefectDesc:'불량 ↓',
@@ -1557,7 +1548,7 @@ const T={ko:{mainTitle:'📊 DS Quality Performance',lblProd:'제품',lblPeriod:
     dTblDefThCode:'Code',dTblDefThName:'Defect Name',dTblDefThTeam:'Team',dTblDefThQty:'Qty',
     dThRate:'Yield',
     dProdTblThDate:'Date',dProdTblThModel:'Model',dProdTblThProc:'Process',dProdTblThTeam:'Team',dProdTblThYield:'Yield',
-    dThDate:'Date',dThModel:'Model',dThProc:'Process',dThTeamCol:'Team',dThInQty:'Input Qty',dThGoodQty:'Good Qty',dThDefQty:'Def. Qty',dThYield:'Yield',
+    dThDate:'Date',dThModel:'Model',dThProc:'Process',dThTeamCol:'Team',dThInQty:'Input Qty',dThGoodQty:'Good Qty',dThDefQty:'Def. Qty',dThYield:'Yield',dThInQtyM:'Input Qty',dThGoodQtyM:'Good Qty',dThDefQtyM:'Def. Qty',
     btnToday:'Today',btnYesterday:'Yesterday',btnThisWeek:'This Week',btnThisMonth:'This Month',btnAllDate:'All',lblWeekNum:'Week#:',btnWeekGo:'Go',btnBackup:'💾 Backup',
     smtLblYield:'Yield',smtLblInput:'Input Qty',smtLblDefect:'Defects',testLblYield:'Yield',testLblInput:'Input Qty',testLblDefect:'Defects',
     dSortLabel:'Sort:',dSortDateDesc:'Date ↓',dSortDateAsc:'Date ↑',dSortYieldAsc:'Yield ↑',dSortYieldDesc:'Yield ↓',dSortDefectDesc:'Defect ↓',
@@ -2437,8 +2428,7 @@ function updateDailyUI(){
     }
     updateDailyTables(data,defData);
     drawDailyCharts(data);
-    updateAttendanceUI();
-    drawAttendanceCharts();
+    try{ updateAttendanceUI(); drawAttendanceCharts(); }catch(e){ console.error('Attendance UI error:',e); }
 }
 
 // Table-level filter state
