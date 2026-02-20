@@ -3343,27 +3343,33 @@ function drawAttendanceCharts(){
         });
     }
 
-    // ── Stacked Bar Chart: daily attendance by status ──
+    // ── Grouped Bar Chart: daily attendance by team ──
     const barCanvas=document.getElementById('attChartBar');
     if(barCanvas){
-        const statusColors=['#10b981','#3b82f6','#ef4444','#f59e0b'];
-        const statusLabels=ATT_STATUS.map(s=>getAttStatusLabel(s));
-        const datasets=ATT_STATUS.map((s,si)=>({
-            label:statusLabels[si],
-            backgroundColor:statusColors[si],
-            borderRadius:si===0?{topLeft:4,topRight:4}:0,
-            data:dates.map(dt=>data.filter(d=>d.date===dt&&d.status===s).length)
+        const teamColors={'DS TEST':'#6366f1','DS SMD':'#0891b2','DS Quality':'#10b981','DS Warehouse':'#f59e0b','DS Technical':'#ec4899'};
+        const datasets=ATT_TEAMS.map(team=>({
+            label:team,
+            backgroundColor:teamColors[team],
+            borderRadius:4,
+            data:dates.map(dt=>{
+                const td=data.filter(d=>d.date===dt&&d.team===team&&d.status==='Work');
+                return td.length;
+            })
         }));
         attCharts.bar=new Chart(barCanvas,{
             type:'bar',
             data:{labels:smartDateLabels(dates),datasets},
             options:{responsive:true,maintainAspectRatio:false,
-                layout:{padding:{top:20,left:10,right:10}},
+                layout:{padding:{top:25,left:10,right:10}},
                 plugins:{legend:{position:'bottom',labels:{font:{size:11,weight:'600',family:'Noto Sans KR,Inter,sans-serif'},usePointStyle:true,padding:10,boxWidth:10}},
-                    datalabels:{display:false}},
+                    datalabels:{display:ctx=>ctx.dataset.data[ctx.dataIndex]>0,
+                        color:ctx=>{const c=Object.values(teamColors);return c[ctx.datasetIndex%c.length];},
+                        font:{weight:'700',size:9,family:'JetBrains Mono,monospace'},
+                        anchor:'end',align:'top',offset:2,
+                        formatter:v=>v+(lang==='ko'?'명':'')}},
                 scales:{
-                    x:{stacked:true,grid:{display:false},ticks:{font:{size:10},color:'#94a3b8',maxRotation:45},border:{display:false}},
-                    y:{stacked:true,beginAtZero:true,grid:{color:'#f1f5f9'},ticks:{font:{size:11},color:'#94a3b8',stepSize:5,callback:v=>v+(lang==='ko'?'명':'')},border:{display:false},
+                    x:{grid:{display:false},ticks:{font:{size:10},color:'#94a3b8',maxRotation:45},border:{display:false}},
+                    y:{beginAtZero:true,grid:{color:'#f1f5f9'},ticks:{font:{size:11},color:'#94a3b8',stepSize:5,callback:v=>v+(lang==='ko'?'명':'')},border:{display:false},
                         afterFit:function(axis){axis.paddingLeft=10;}}
                 }}
         });
