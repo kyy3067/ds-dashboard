@@ -1465,6 +1465,24 @@ function fmtPeriod(p){
     if(lang==='en'){const ns=["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];return`${ns[mn]} ${y}`;}
     return`${y}년 ${mn}월`;
 }
+function smartMonthLabels(months){
+    let prevY='';
+    return months.map(m=>{
+        const f=fmtPeriod(m);
+        if(!/^\d{2}\.\d{2}$/.test(m))return f;
+        const[y,mo]=m.split('.');const mn=parseInt(mo);
+        if(y!==prevY){prevY=y;return lang==='en'?(["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][mn]+' \''+y):('\''+y+'-'+mn);}
+        return lang==='en'?["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][mn]:String(mn);
+    });
+}
+function smartDateLabels(dates){
+    let prevY='';
+    return dates.map(d=>{
+        const[y,m,day]=d.split('-');const sy=y.slice(2),mn=parseInt(m),dn=parseInt(day);
+        if(sy!==prevY){prevY=sy;return"'"+sy+'-'+mn+'-'+dn;}
+        return mn+'-'+dn;
+    });
+}
 function getPM(){return[...new Set(prodData.map(d=>d.month))].sort();}
 function getSM(){return[...new Set(shipData.map(d=>d.month))].sort();}
 function getDM(){return[...new Set(defectTypeData.map(d=>d.month))].sort();}
@@ -1667,9 +1685,9 @@ function updateTables(data){
 }
 
 function drawCharts(data){
-    const pm=getPM(), pl=pm.map(m=>fmtPeriod(m));
-    const sm=getSM(), sl=sm.map(m=>fmtPeriod(m));
-    const dm=getDM(), dl=dm.map(m=>fmtPeriod(m));
+    const pm=getPM(), pl=smartMonthLabels(pm);
+    const sm=getSM(), sl=smartMonthLabels(sm);
+    const dm=getDM(), dl=smartMonthLabels(dm);
     const reasons=[...new Set(defectTypeData.map(d=>d.reason))];
     Object.values(charts).forEach(c=>c&&c.destroy()); charts={};
 
@@ -2378,7 +2396,7 @@ function drawDailyCharts(data){
             yDS=models.map(p=>({label:p,borderColor:pColors[p]||'#6366f1',fill:false,tension:.4,borderWidth:2.5,pointRadius:4,pointBackgroundColor:'white',data:dates.map(dt=>{const d=data.filter(r=>r.date===dt&&r.model===p);const i=d.reduce((a,b)=>a+b.inspQty,0);const g=d.reduce((a,b)=>a+b.goodQty,0);return i>0?+(g/i*100).toFixed(2):null;})}));
         }
         const yLabelOpts={display:ctx=>ctx.dataset.data[ctx.dataIndex]!==null,color:ctx=>{const c=['#f43f5e','#0891b2','#f59e0b','#6366f1','#10b981'];return c[ctx.datasetIndex]||'#334155';},backgroundColor:'rgba(255,255,255,0.95)',borderRadius:6,padding:{top:3,right:8,bottom:3,left:8},font:{weight:'700',size:11,family:'JetBrains Mono,monospace'},anchor:'end',align:'top',offset:6,clip:false,formatter:v=>v?v.toFixed(2)+'%':''};
-        dCharts.yield=new Chart(document.getElementById('dChartYield'),{type:'line',data:{labels:dates,datasets:yDS},options:{...bOpts,layout:{padding:{top:40,right:50,bottom:10,left:20}},plugins:{...bOpts.plugins,datalabels:yLabelOpts},scales:{...bOpts.scales,x:{...bOpts.scales.x,offset:true},y:{...bOpts.scales.y,max:101,min:99,afterDataLimits:(axis)=>{
+        dCharts.yield=new Chart(document.getElementById('dChartYield'),{type:'line',data:{labels:smartDateLabels(dates),datasets:yDS},options:{...bOpts,layout:{padding:{top:40,right:50,bottom:10,left:20}},plugins:{...bOpts.plugins,datalabels:yLabelOpts},scales:{...bOpts.scales,x:{...bOpts.scales.x,offset:true},y:{...bOpts.scales.y,max:101,min:99,afterDataLimits:(axis)=>{
                         axis.max=101;
                         // 최솟값이 99 미만이면 데이터에 맞춰 살짝 조정
                         const allVals=[];
@@ -2402,7 +2420,7 @@ function drawDailyCharts(data){
         const vDS=models2.map(m=>({label:m,data:dates.map(dt=>getVolForDateModel(dt,m)),backgroundColor:vColors[m]||'#6366f1',borderRadius:4,borderSkipped:false,stack:'v0',
             datalabels:{display:ctx=>ctx.dataset.data[ctx.dataIndex]>0,anchor:'center',align:'center',color:'white',backgroundColor:'transparent',font:{weight:'700',size:10,family:'JetBrains Mono,monospace'},formatter:v=>v>0?v.toLocaleString():''}}));
         const vTotals=dates.map(dt=>models2.reduce((s,m)=>s+getVolForDateModel(dt,m),0));
-        dCharts.vol=new Chart(document.getElementById('dChartVol'),{type:'bar',data:{labels:dates,datasets:[...vDS,{type:'line',label:'Total',data:vTotals,borderColor:'transparent',backgroundColor:'transparent',pointRadius:0,order:-1,datalabels:{display:ctx=>ctx.dataset.data[ctx.dataIndex]>0,anchor:'end',align:'top',color:'#334155',backgroundColor:'rgba(255,255,255,0.95)',borderRadius:6,padding:{top:3,right:7,bottom:3,left:7},font:{weight:'700',size:11,family:'JetBrains Mono,monospace'},formatter:v=>v>0?v.toLocaleString():'',offset:6}}]},options:{...bOpts,layout:{padding:{top:36,right:10}},plugins:{...bOpts.plugins,legend:{...bOpts.plugins.legend,labels:{...bOpts.plugins.legend.labels,filter:item=>item.text!=='Total'}},datalabels:{display:false}},scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:10},color:'#94a3b8',maxRotation:45},border:{display:false}},y:{stacked:true,grid:{color:'#f1f5f9'},ticks:{font:{size:11},color:'#94a3b8'},border:{display:false}}}}});
+        dCharts.vol=new Chart(document.getElementById('dChartVol'),{type:'bar',data:{labels:smartDateLabels(dates),datasets:[...vDS,{type:'line',label:'Total',data:vTotals,borderColor:'transparent',backgroundColor:'transparent',pointRadius:0,order:-1,datalabels:{display:ctx=>ctx.dataset.data[ctx.dataIndex]>0,anchor:'end',align:'top',color:'#334155',backgroundColor:'rgba(255,255,255,0.95)',borderRadius:6,padding:{top:3,right:7,bottom:3,left:7},font:{weight:'700',size:11,family:'JetBrains Mono,monospace'},formatter:v=>v>0?v.toLocaleString():'',offset:6}}]},options:{...bOpts,layout:{padding:{top:36,right:10}},plugins:{...bOpts.plugins,legend:{...bOpts.plugins.legend,labels:{...bOpts.plugins.legend.labels,filter:item=>item.text!=='Total'}},datalabels:{display:false}},scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:10},color:'#94a3b8',maxRotation:45},border:{display:false}},y:{stacked:true,grid:{color:'#f1f5f9'},ticks:{font:{size:11},color:'#94a3b8'},border:{display:false}}}}});
         // ── Daily PPM Trend (shares dYieldFilter) ──
         if(document.getElementById('dChartPpm')){
             const isTeamPpm=['SMT','TEST'].includes(dYieldFilter);
@@ -2421,7 +2439,7 @@ function drawDailyCharts(data){
                 ppmDS=models.map(p=>({label:p+' PPM',borderColor:pColors[p]||'#6366f1',backgroundColor:(pColors[p]||'#6366f1')+'12',fill:true,tension:.4,borderWidth:2.5,pointRadius:4,pointBackgroundColor:'white',data:dates.map(dt=>{const d=data.filter(r=>r.date===dt&&r.model===p);const i=d.reduce((a,b)=>a+b.inspQty,0);const def=d.reduce((a,b)=>a+(b.defectQty||0),0);return i>0?Math.round(def/i*1000000):null;})}));
             }
             const ppmLabelOpts={display:ctx=>ctx.dataset.data[ctx.dataIndex]!==null,color:ctx=>{const c=['#f43f5e','#0891b2','#f59e0b','#6366f1','#10b981'];return c[ctx.datasetIndex]||'#334155';},backgroundColor:'rgba(255,255,255,0.95)',borderRadius:6,padding:{top:3,right:8,bottom:3,left:8},font:{weight:'700',size:11,family:'JetBrains Mono,monospace'},anchor:'end',align:'top',offset:6,clip:false,formatter:v=>v!==null?v.toLocaleString():''};
-            dCharts.ppm=new Chart(document.getElementById('dChartPpm'),{type:'line',data:{labels:dates,datasets:ppmDS},options:{...bOpts,layout:{padding:{top:40,right:50,bottom:10,left:20}},plugins:{...bOpts.plugins,datalabels:ppmLabelOpts},scales:{...bOpts.scales,x:{...bOpts.scales.x,offset:true},y:{...bOpts.scales.y,beginAtZero:true,grace:'20%'}}}});
+            dCharts.ppm=new Chart(document.getElementById('dChartPpm'),{type:'line',data:{labels:smartDateLabels(dates),datasets:ppmDS},options:{...bOpts,layout:{padding:{top:40,right:50,bottom:10,left:20}},plugins:{...bOpts.plugins,datalabels:ppmLabelOpts},scales:{...bOpts.scales,x:{...bOpts.scales.x,offset:true},y:{...bOpts.scales.y,beginAtZero:true,grace:'20%'}}}});
         }
 
         // ── FIX 8: Daily Production by Process chart ──
@@ -2431,7 +2449,7 @@ function drawDailyCharts(data){
             datalabels:{display:ctx=>ctx.dataset.data[ctx.dataIndex]>0,anchor:'center',align:'center',color:'white',backgroundColor:'transparent',font:{weight:'700',size:9,family:'JetBrains Mono,monospace'},formatter:v=>v>0?v.toLocaleString():''}}));
         if(document.getElementById('dChartProcVol')){
             if(dCharts.procVol) dCharts.procVol.destroy();
-            dCharts.procVol=new Chart(document.getElementById('dChartProcVol'),{type:'bar',data:{labels:dates,datasets:pDS},options:{...bOpts,layout:{padding:{top:10}},plugins:{...bOpts.plugins,datalabels:{display:false}},scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:10},color:'#94a3b8',maxRotation:45},border:{display:false}},y:{stacked:true,grid:{color:'#f1f5f9'},ticks:{font:{size:11},color:'#94a3b8'},border:{display:false}}}}});
+            dCharts.procVol=new Chart(document.getElementById('dChartProcVol'),{type:'bar',data:{labels:smartDateLabels(dates),datasets:pDS},options:{...bOpts,layout:{padding:{top:10}},plugins:{...bOpts.plugins,datalabels:{display:false}},scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:10},color:'#94a3b8',maxRotation:45},border:{display:false}},y:{stacked:true,grid:{color:'#f1f5f9'},ticks:{font:{size:11},color:'#94a3b8'},border:{display:false}}}}});
         }
 
         // ── Defect Bar & Pie ──
@@ -2460,7 +2478,7 @@ function drawDailyCharts(data){
             if(dCharts.prodByProc){dCharts.prodByProc.destroy();}
             if(document.getElementById('dChartProdByProc')){
                 dCharts.prodByProc=new Chart(document.getElementById('dChartProdByProc'),{
-                    type:'bar',data:{labels:allDates,datasets:procDS},
+                    type:'bar',data:{labels:smartDateLabels(allDates),datasets:procDS},
                     options:{...bOpts,layout:{padding:{top:10}},plugins:{...bOpts.plugins,datalabels:{display:false}},
                     scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:10},color:'#94a3b8',maxRotation:45},border:{display:false}},
                             y:{stacked:true,grid:{color:'#f1f5f9'},ticks:{font:{size:11},color:'#94a3b8'},border:{display:false}}}}
@@ -2485,7 +2503,7 @@ function drawDailyCharts(data){
             if(dCharts.prodByModel){dCharts.prodByModel.destroy();}
             if(document.getElementById('dChartProdByModel')){
                 dCharts.prodByModel=new Chart(document.getElementById('dChartProdByModel'),{
-                    type:'bar',data:{labels:allDates,datasets:modelDS2},
+                    type:'bar',data:{labels:smartDateLabels(allDates),datasets:modelDS2},
                     options:{...bOpts,layout:{padding:{top:10}},plugins:{...bOpts.plugins,datalabels:{display:false}},
                     scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:10},color:'#94a3b8',maxRotation:45},border:{display:false}},
                             y:{stacked:true,grid:{color:'#f1f5f9'},ticks:{font:{size:11},color:'#94a3b8'},border:{display:false}}}}
@@ -2535,7 +2553,7 @@ function drawProdYieldDefChart(modelFilter){
     const dateYield=allDates.map((dt,i)=>dateInsp[i]>0?+((dateInsp[i]-dateDef[i])/dateInsp[i]*100).toFixed(2):null);
     dCharts.prodYieldDef=new Chart(canvas,{
         type:'bar',
-        data:{labels:allDates,datasets:[
+        data:{labels:smartDateLabels(allDates),datasets:[
             {type:'line',label:lang==='ko'?'수율(%)':'Yield(%)',data:dateYield,borderColor:'#6366f1',backgroundColor:'rgba(99,102,241,0.05)',fill:true,tension:0.4,borderWidth:2.5,pointRadius:4,pointBackgroundColor:'white',pointBorderColor:'#6366f1',pointBorderWidth:2,yAxisID:'y1',
                 datalabels:{display:ctx=>ctx.dataset.data[ctx.dataIndex]!==null,anchor:'end',align:'top',color:'#6366f1',backgroundColor:'rgba(255,255,255,0.9)',borderRadius:5,padding:{top:2,right:6,bottom:2,left:6},font:{weight:'700',size:10,family:'JetBrains Mono,monospace'},formatter:v=>v?v.toFixed(2)+'%':'',offset:4,clip:false}},
             {type:'bar',label:lang==='ko'?'불량수':'Defects',data:dateDef,backgroundColor:'rgba(244,63,94,0.75)',borderRadius:4,borderSkipped:false,yAxisID:'y2',
