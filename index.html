@@ -246,10 +246,10 @@
         .filter-btns { display: flex; gap: 5px; flex-wrap: wrap; }
         .filter-btn {
             background: var(--surface2); border: 1.5px solid var(--border);
-            color: var(--text-sub); padding: 6px 14px; border-radius: 30px;
+            color: var(--text-sub); padding: 8px 14px; height:36px; box-sizing:border-box; border-radius: 30px;
             font-size: 12px; cursor: pointer; transition: all 0.18s ease;
             font-weight: 600; font-family: 'Noto Sans KR', 'Inter', sans-serif;
-            letter-spacing: 0; line-height: 1.4;
+            letter-spacing: 0; line-height: 1.2; display:inline-flex; align-items:center;
         }
         .filter-btn:hover { border-color: #3B8BF5; color: #2563EB; background: #EBF3FF; }
         .filter-btn.active {
@@ -559,10 +559,10 @@
         .team-test{background:#e0f7fa;color:#0891b2;}
         /* ─── Date range filter ─── */
         .date-range{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-        .date-input{padding:7px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--text);background:white;cursor:pointer;transition:all .2s;}
+        .date-input{padding:8px 12px;height:36px;box-sizing:border-box;border:1.5px solid var(--border);border-radius:10px;font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--text);background:white;cursor:pointer;transition:all .2s;}
         .date-input:focus{outline:none;border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,0.1);}
         .date-sep{color:var(--text-muted);font-size:12px;font-weight:600;}
-        .date-apply{padding:7px 14px;background:var(--navy);color:white;border:none;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;font-family:'Noto Sans KR',sans-serif;transition:all .2s;}
+        .date-apply{padding:8px 14px;height:36px;box-sizing:border-box;background:var(--navy);color:white;border:none;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;font-family:'Noto Sans KR',sans-serif;transition:all .2s;}
         .date-apply:hover{background:var(--navy-light);}
         /* ─── Daily Summary Cards ─── */
         .kpi-grid-6{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;margin-bottom:24px;}
@@ -1145,21 +1145,8 @@
     </div>
     <div class="att-team-grid" id="attTeamGrid"></div>
     <div class="g2">
-        <div class="card"><div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="attTitTrend">일별 출근율 트렌드</span></div></div><div class="card-body"><div class="ch-md"><canvas id="attChartTrend"></canvas></div></div></div>
         <div class="card"><div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="attTitDonut">출근 상태 비율</span></div></div><div class="card-body"><div style="position:relative;height:300px;"><canvas id="attChartDonut"></canvas></div></div></div>
-    </div>
-    <div class="g-full" style="margin-top:0;">
-        <div class="card">
-            <div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="attTitTable">출근 상세</span></div></div>
-            <div class="card-body" style="padding-top:0;">
-                <div class="tbl-wrap" style="max-height:350px;overflow-y:auto;">
-                    <table id="tblAttendance">
-                        <thead><tr><th id="attThDate">날짜</th><th id="attThTeam">팀</th><th id="attThName">이름</th><th id="attThPosition">직급</th><th id="attThStatus">상태</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+        <div class="card"><div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="attTitBar">날짜별 출근 현황</span></div></div><div class="card-body"><div style="position:relative;height:300px;"><canvas id="attChartBar"></canvas></div></div></div>
     </div>
 </div><!-- /viewAttendance -->
 
@@ -1573,8 +1560,7 @@ const T={ko:{mainTitle:'📊 DS Quality Performance',lblProd:'제품',lblPeriod:
     btnAttendance:'👥 출근 인원 등록',btnMemberMgmt:'👤 팀원 관리',
     attLblDate:'날짜',attBtnToday:'오늘',attBtnThisWeek:'이번 주',attBtnThisMonth:'이번 달',
     attSection:'📍 출근 현황',attKpiRate:'출근율',attKpiWork:'출근',attKpiVacation:'휴가',attKpiAbsent:'결근·조퇴',
-    attTitTrend:'일별 출근율 트렌드',attTitDonut:'출근 상태 비율',attTitTable:'출근 상세',
-    attThDate:'날짜',attThTeam:'팀',attThName:'이름',attThPosition:'직급',attThStatus:'상태',
+    attTitDonut:'출근 상태 비율',attTitBar:'날짜별 출근 현황',
     attModalTitle:'👥 출근 인원 등록',attModalDesc:'날짜와 팀을 선택하고 각 팀원의 출근 상태를 입력하세요.',
     attSetAllWork:'✅ 전체 출근',attSetAllVacation:'🏖️ 전체 휴가',memberModalTitle:'👤 팀원 관리'},en:{mainTitle:'📊 DS Quality Performance',lblProd:'Product',lblPeriod:'Period',lblProcess:'Process',btnProd:'✏️ Production',btnShip:'📦 Shipment',btnDefect:'🛠️ Defect Types',lblKpiYield:'Overall Yield',lblKpiPPM:'Company Defect PPM',lblKpiInput:'Total Input',lblKpiOutput:'Total Output',lblKpiDefect:'Total Defects',lblKpiDefectPPM:'Total Defect PPM',lblKpiCompDefect:'Company Defect Qty',titProcYield:'Process Yield',titMonthYield:'Monthly Process Yield',titProdYield:'Product Yield',titTotalTrend:'Overall Yield Trend (%)',titPpmTrend:'Overall PPM Trend',titProdTrend:'Product Yield Trend (%)',titProcTrend:'Process Yield Trend (%)',titProdVol:'Production Volume',titTotalDefect:'Total Defect Trend',titCompDefect:'Company Defect Trend',titDefectType:'Defect Type Chart',titDefectTable:'Defect Type Details',titDefectSection:'📉 Defect Analysis',titShipSection:'📦 Shipment Performance',titShipTable:'Monthly Shipment',titShipChart:'Shipment Trend',thProc:'Process',thIn:'Input',thOut:'Output',thFail:'Defect',thYld:'Yield',thStat:'Status',thMonth:'Period',thProd:'Product',thIn2:'Input',thOut2:'Output',thFail2:'Defect',thYld2:'Yield',thStat2:'Status',thShipMonth:'Period',thTotal:'Total',moTitProd:'✏️ Production Data Entry',moTitShip:'📦 Shipment Data Entry',moTitDefect:'🛠️ Defect Type Data Entry',all:'All',good:'Good',warn:'Warning',
     btnViewMonthly:'📅 Monthly',btnViewDaily:'📆 Daily',btnViewAtt:'👥 Attendance',btnDailyProd:'📅 Daily Prod Entry',btnDailyDef:'🔴 Defect Code Entry',
@@ -1595,8 +1581,7 @@ const T={ko:{mainTitle:'📊 DS Quality Performance',lblProd:'제품',lblPeriod:
     btnAttendance:'👥 Attendance Entry',btnMemberMgmt:'👤 Member Mgmt',
     attLblDate:'Date',attBtnToday:'Today',attBtnThisWeek:'This Week',attBtnThisMonth:'This Month',
     attSection:'📍 Attendance',attKpiRate:'Attendance Rate',attKpiWork:'Present',attKpiVacation:'Vacation',attKpiAbsent:'Absent/Early',
-    attTitTrend:'Daily Attendance Trend',attTitDonut:'Status Distribution',attTitTable:'Attendance Details',
-    attThDate:'Date',attThTeam:'Team',attThName:'Name',attThPosition:'Position',attThStatus:'Status',
+    attTitDonut:'Status Distribution',attTitBar:'Daily Attendance',
     attModalTitle:'👥 Attendance Entry',attModalDesc:'Select date and team, then set attendance status for each member.',
     attSetAllWork:'✅ All Present',attSetAllVacation:'🏖️ All Vacation',memberModalTitle:'👤 Member Management'}};
 
@@ -3301,9 +3286,9 @@ function updateAttendanceUI(){
     // KPI cards
     const el=id=>document.getElementById(id);
     if(el('attKpiRateVal')) el('attKpiRateVal').innerText=latestRate+'%';
-    if(el('attKpiWorkVal')) el('attKpiWorkVal').innerText=latestWork+(lang==='ko'?'명':' ppl');
-    if(el('attKpiVacationVal')) el('attKpiVacationVal').innerText=latestVac+(lang==='ko'?'명':' ppl');
-    if(el('attKpiAbsentVal')) el('attKpiAbsentVal').innerText=(latestAbs)+(lang==='ko'?'명':' ppl');
+    if(el('attKpiWorkVal')) el('attKpiWorkVal').innerText=latestWork+(lang==='ko'?'명':' persons');
+    if(el('attKpiVacationVal')) el('attKpiVacationVal').innerText=latestVac+(lang==='ko'?'명':' persons');
+    if(el('attKpiAbsentVal')) el('attKpiAbsentVal').innerText=(latestAbs)+(lang==='ko'?'명':' persons');
 
     // Team cards
     const grid=el('attTeamGrid');
@@ -3329,19 +3314,6 @@ function updateAttendanceUI(){
         }).join('');
     }
 
-    // Detail table
-    const tbody=document.querySelector('#tblAttendance tbody');
-    if(tbody){
-        const statusBadge=s=>{
-            const cls={'Work':'work','Vacation':'vacation','Unauthorized absence':'absence','Early retirement':'early'}[s]||'work';
-            return `<span class="att-badge att-badge-${cls}" style="display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px"></span>${getAttStatusLabel(s)}`;
-        };
-        const sorted=[...data].sort((a,b)=>b.date.localeCompare(a.date)||a.team.localeCompare(b.team)||a.name.localeCompare(b.name));
-        tbody.innerHTML=sorted.slice(0,200).map(d=>
-            `<tr><td>${d.date}</td><td>${d.team}</td><td style="font-weight:600">${d.name}</td><td style="font-size:12px;color:#64748b">${d.position||''}</td><td>${statusBadge(d.status)}</td></tr>`
-        ).join('');
-        if(!sorted.length) tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:24px">${lang==='ko'?'출근 데이터가 없습니다':'No attendance data'}</td></tr>`;
-    }
 }
 
 function drawAttendanceCharts(){
@@ -3350,45 +3322,6 @@ function drawAttendanceCharts(){
     if(!data.length) return;
 
     const dates=[...new Set(data.map(d=>d.date))].sort();
-    const attColors={'DS TEST':'#6366f1','DS SMD':'#0891b2','DS Quality':'#10b981','DS Warehouse':'#f59e0b','DS Technical':'#ec4899'};
-
-    // ── Trend Chart: daily attendance rate per team ──
-    const trendCanvas=document.getElementById('attChartTrend');
-    if(trendCanvas){
-        const datasets=ATT_TEAMS.map(team=>({
-            label:team,
-            borderColor:attColors[team],
-            backgroundColor:attColors[team]+'15',
-            fill:false,
-            tension:0.4,
-            borderWidth:2.5,
-            pointRadius:4,
-            pointBackgroundColor:'white',
-            pointBorderColor:attColors[team],
-            pointBorderWidth:2,
-            data:dates.map(dt=>{
-                const td=data.filter(d=>d.date===dt&&d.team===team);
-                const w=td.filter(d=>d.status==='Work').length;
-                return td.length>0?+(w/td.length*100).toFixed(1):null;
-            })
-        }));
-        attCharts.trend=new Chart(trendCanvas,{
-            type:'line',
-            data:{labels:smartDateLabels(dates),datasets},
-            options:{responsive:true,maintainAspectRatio:false,
-                layout:{padding:{top:30,right:30}},
-                plugins:{legend:{position:'bottom',labels:{font:{size:11,weight:'600',family:'Noto Sans KR,Inter,sans-serif'},usePointStyle:true,padding:10,boxWidth:10}},
-                    datalabels:{display:ctx=>ctx.dataset.data[ctx.dataIndex]!==null,
-                        color:ctx=>{const c=Object.values(attColors);return c[ctx.datasetIndex%c.length];},
-                        backgroundColor:'rgba(255,255,255,0.9)',borderRadius:5,
-                        padding:{top:2,right:6,bottom:2,left:6},
-                        font:{weight:'700',size:10,family:'JetBrains Mono,monospace'},
-                        anchor:'end',align:'top',offset:4,clip:false,
-                        formatter:v=>v!==null?v.toFixed(1)+'%':''}},
-                scales:{x:{grid:{display:false},ticks:{font:{size:10},color:'#94a3b8',maxRotation:45},border:{display:false}},
-                    y:{min:0,max:105,grid:{color:'#f1f5f9'},ticks:{font:{size:11},color:'#94a3b8',callback:v=>v+'%'},border:{display:false}}}}
-        });
-    }
 
     // ── Donut Chart: overall status distribution ──
     const donutCanvas=document.getElementById('attChartDonut');
@@ -3407,6 +3340,32 @@ function drawAttendanceCharts(){
                         textStrokeColor:'rgba(0,0,0,0.4)',textStrokeWidth:2,
                         formatter:(v,ctx)=>{const total=ctx.chart.data.datasets[0].data.reduce((a,b)=>a+b,0);return total>0?(v*100/total).toFixed(1)+'%':'';},
                         anchor:'center',align:'center'}}}
+        });
+    }
+
+    // ── Stacked Bar Chart: daily attendance by status ──
+    const barCanvas=document.getElementById('attChartBar');
+    if(barCanvas){
+        const statusColors=['#10b981','#3b82f6','#ef4444','#f59e0b'];
+        const statusLabels=ATT_STATUS.map(s=>getAttStatusLabel(s));
+        const datasets=ATT_STATUS.map((s,si)=>({
+            label:statusLabels[si],
+            backgroundColor:statusColors[si],
+            borderRadius:si===0?{topLeft:4,topRight:4}:0,
+            data:dates.map(dt=>data.filter(d=>d.date===dt&&d.status===s).length)
+        }));
+        attCharts.bar=new Chart(barCanvas,{
+            type:'bar',
+            data:{labels:smartDateLabels(dates),datasets},
+            options:{responsive:true,maintainAspectRatio:false,
+                layout:{padding:{top:20,left:10,right:10}},
+                plugins:{legend:{position:'bottom',labels:{font:{size:11,weight:'600',family:'Noto Sans KR,Inter,sans-serif'},usePointStyle:true,padding:10,boxWidth:10}},
+                    datalabels:{display:false}},
+                scales:{
+                    x:{stacked:true,grid:{display:false},ticks:{font:{size:10},color:'#94a3b8',maxRotation:45},border:{display:false}},
+                    y:{stacked:true,beginAtZero:true,grid:{color:'#f1f5f9'},ticks:{font:{size:11},color:'#94a3b8',stepSize:5,callback:v=>v+(lang==='ko'?'명':'')},border:{display:false},
+                        afterFit:function(axis){axis.paddingLeft=10;}}
+                }}
         });
     }
 }
