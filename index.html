@@ -321,6 +321,13 @@
             font-size: 11px; color: var(--text-muted); font-weight: 500;
             letter-spacing: 0.3px; font-family: 'Noto Sans KR', sans-serif;
         }
+        .kpi-ppm {
+            font-size: 11px; font-weight: 700; font-family: 'JetBrains Mono', monospace;
+            color: #64748b; background: #f1f5f9; padding: 4px 10px; border-radius: 8px;
+            white-space: nowrap; flex-shrink: 0; margin-left: auto;
+        }
+        .c-orange .kpi-ppm { color: #b45309; background: #fef3c7; }
+        .c-red .kpi-ppm { color: #dc2626; background: #fee2e2; }
 
         /* ─── Section Header ─── */
         .section-hd {
@@ -802,11 +809,11 @@
 
 <!-- KPI -->
 <div class="kpi-grid">
-    <div class="kpi-card c-blue"><div class="kpi-icon">📈</div><div class="kpi-info"><div class="kpi-value" id="kpiYield">—</div><div class="kpi-label" id="lblKpiYield">종합 수율</div></div></div>
+    <div class="kpi-card c-orange"><div class="kpi-icon">🏭</div><div class="kpi-info"><div class="kpi-value" id="kpiCompDefect">—</div><div class="kpi-label" id="lblKpiCompDefect">당사 귀책 불량 수</div></div><div class="kpi-ppm" id="kpiPPM">— PPM</div></div>
+    <div class="kpi-card c-red"><div class="kpi-icon">❌</div><div class="kpi-info"><div class="kpi-value" id="kpiDefect">—</div><div class="kpi-label" id="lblKpiDefect">총 불량 수량</div></div><div class="kpi-ppm" id="kpiDefectPPM">— PPM</div></div>
+    <div class="kpi-card c-blue"><div class="kpi-icon">📈</div><div class="kpi-info"><div class="kpi-value" id="kpiYield">—</div><div class="kpi-sub-value" id="kpiCompYield">—</div><div class="kpi-label" id="lblKpiYield">종합 수율 / 당사 귀책</div></div></div>
     <div class="kpi-card c-slate"><div class="kpi-icon">📥</div><div class="kpi-info"><div class="kpi-value" id="kpiInput">—</div><div class="kpi-label" id="lblKpiInput">총 투입 수량</div></div></div>
-    <div class="kpi-card c-slate"><div class="kpi-icon">📤</div><div class="kpi-info"><div class="kpi-value" id="kpiOutput">—</div><div class="kpi-label" id="lblKpiOutput">총 산출 수량</div></div></div>
-    <div class="kpi-card c-red"><div class="kpi-icon">❌</div><div class="kpi-info"><div class="kpi-value" id="kpiDefect">—</div><div class="kpi-sub-value" id="kpiDefectPPM">— PPM</div><div class="kpi-label" id="lblKpiDefect">총 불량 수량</div></div></div>
-    <div class="kpi-card c-orange"><div class="kpi-icon">🏭</div><div class="kpi-info"><div class="kpi-value" id="kpiCompDefect">—</div><div class="kpi-sub-value" id="kpiPPM">— PPM</div><div class="kpi-label" id="lblKpiCompDefect">당사 귀책 불량 수</div></div></div>
+    <div class="kpi-card c-slate"><div class="kpi-icon">📤</div><div class="kpi-info"><div class="kpi-value" id="kpiOutput">—</div><div class="kpi-label" id="lblKpiOutput">총 양품 수량</div></div></div>
 </div>
 
 <!-- Tables row -->
@@ -997,10 +1004,10 @@
 
     <!-- Daily KPIs -->
     <div class="kpi-grid" style="grid-template-columns:repeat(auto-fit, minmax(190px, 1fr))">
-        <div class="kpi-card c-blue"><div class="kpi-icon">📈</div><div class="kpi-info"><div class="kpi-value" id="dKpiYield">—</div><div class="kpi-label" id="dLblYield">종합 수율</div></div></div>
+        <div class="kpi-card c-orange"><div class="kpi-icon">🏭</div><div class="kpi-info"><div class="kpi-value" id="dKpiCompDefect">—</div><div class="kpi-label" id="dLblCompDefect">당사 귀책 불량 수</div></div><div class="kpi-ppm" id="dKpiPpm">— PPM</div></div>
+        <div class="kpi-card c-red"><div class="kpi-icon">❌</div><div class="kpi-info"><div class="kpi-value" id="dKpiDefect">—</div><div class="kpi-label" id="dLblDefect">총 불량 수량</div></div><div class="kpi-ppm" id="dKpiDefectPPM">— PPM</div></div>
+        <div class="kpi-card c-blue"><div class="kpi-icon">📈</div><div class="kpi-info"><div class="kpi-value" id="dKpiYield">—</div><div class="kpi-sub-value" id="dKpiCompYield">—</div><div class="kpi-label" id="dLblYield">종합 수율 / 당사 귀책</div></div></div>
         <div class="kpi-card c-slate"><div class="kpi-icon">📥</div><div class="kpi-info"><div class="kpi-value" id="dKpiInput">—</div><div class="kpi-label" id="dLblInput">총 투입 수량</div></div></div>
-        <div class="kpi-card c-red"><div class="kpi-icon">❌</div><div class="kpi-info"><div class="kpi-value" id="dKpiDefect">—</div><div class="kpi-sub-value" id="dKpiDefectPPM">— PPM</div><div class="kpi-label" id="dLblDefect">총 불량 수량</div></div></div>
-        <div class="kpi-card c-orange"><div class="kpi-icon">🏭</div><div class="kpi-info"><div class="kpi-value" id="dKpiCompDefect">—</div><div class="kpi-sub-value" id="dKpiPpm">— PPM</div><div class="kpi-label" id="dLblCompDefect">당사 귀책 불량 수</div></div></div>
     </div>
 
     <!-- SMT vs TEST Summary -->
@@ -1035,7 +1042,7 @@
 
     <!-- Daily Charts -->
     <div class="g2">
-        <div class="card"><div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="dTitYieldTrend">일별 수율 트렌드 (%)</span></div></div><div class="card-body"><div class="mini-filters" id="dYieldFilter"></div><div class="ch-md"><canvas id="dChartYield"></canvas></div></div></div>
+        <div class="card"><div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="dTitYieldTrend">일별 수율 트렌드</span></div></div><div class="card-body"><div class="mini-filters" id="dYieldFilter"></div><div class="ch-md"><canvas id="dChartYield"></canvas></div></div></div>
         <div class="card"><div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="dTitVolTrend">일별 투입량 트렌드</span></div></div><div class="card-body"><div class="mini-filters" id="dVolFilter"></div><div class="ch-md"><canvas id="dChartVol"></canvas></div></div></div>
     </div>
     <div class="g-full">
@@ -1532,11 +1539,11 @@ function getDefaultProdData(){return[{"prod":"RDIMM","month":"10월","proc":"SMD
 function getDefaultShipData(){return[{"model":"RDIMM","name":"M321R8GA0EB2-CWMXJ-IRB","date":"2025-10-28","qty":1026,"reason":"Mass Production","month":"25.10"},{"model":"RDIMM","name":"M321R8GA0EB2-CWMXJ-IRB","date":"2025-11-06","qty":4304,"reason":"Mass Production","month":"25.11"},{"model":"UDIMM","name":"M323R2GA3EB0-CWMOL-IYB","date":"2025-11-25","qty":2000,"reason":"Mass Production","month":"25.11"},{"model":"RDIMM","name":"M321R8GA0EB2-CWMXJ-IRB","date":"2025-12-16","qty":2344,"reason":"Mass Production","month":"25.12"},{"model":"SODIMM","name":"M425R2GA3EB0-CWMOL-IYB","date":"2025-12-16","qty":1935,"reason":"Mass Production","month":"25.12"}];}
 function getDefaultDefectData(){return[{"reason":"Human Error","month":"25.10","qty":0},{"reason":"Human Error","month":"25.11","qty":3},{"reason":"Human Error","month":"25.12","qty":1},{"reason":"Human Error","month":"26.01","qty":0},{"reason":"Handling Damage","month":"25.10","qty":5},{"reason":"Handling Damage","month":"25.11","qty":3},{"reason":"Handling Damage","month":"25.12","qty":8},{"reason":"Handling Damage","month":"26.01","qty":0},{"reason":"Component Lifting","month":"25.10","qty":0},{"reason":"Component Lifting","month":"25.11","qty":0},{"reason":"Component Lifting","month":"25.12","qty":1},{"reason":"Component Lifting","month":"26.01","qty":0}];}
 
-const T={ko:{mainTitle:'📊 DS Quality Performance',lblProd:'제품',lblPeriod:'기간',lblProcess:'공정',btnProd:'✏️ 생산 입력',btnShip:'📦 출하 입력',btnDefect:'🛠️ 불량 유형 입력',lblKpiYield:'종합 수율',lblKpiPPM:'당사 귀책 PPM',lblKpiInput:'총 투입 수량',lblKpiOutput:'총 산출 수량',lblKpiDefect:'총 불량 수량',lblKpiDefectPPM:'총 불량 PPM',lblKpiCompDefect:'당사 귀책 불량 수',titProcYield:'공정별 수율 현황',titMonthYield:'공정별 월별 수율 추이',titProdYield:'제품별 수율 현황',titTotalTrend:'종합 수율 월별 트렌드 (%)',titPpmTrend:'종합 PPM 월별 트렌드',titProdTrend:'제품별 수율 추이 (%)',titProcTrend:'공정별 수율 추이 (%)',titProdVol:'DS 생산 실적',titTotalDefect:'월별 불량 수 트렌드',titCompDefect:'당사 귀책 불량 수 트렌드',titDefectType:'불량 유형 차트',titDefectTable:'불량 유형 상세 현황',titDefectSection:'📉 불량 분석 및 상세 현황',titShipSection:'📦 출하 실적',titShipTable:'월별 출하 수량',titShipChart:'월별 출하 실적 추이',thProc:'공정',thIn:'투입',thOut:'산출',thFail:'불량',thYld:'수율',thStat:'판정',thMonth:'기간',thProd:'제품',thIn2:'투입',thOut2:'산출',thFail2:'불량',thYld2:'수율',thStat2:'판정',thShipMonth:'기간',thTotal:'합계',moTitProd:'✏️ 생산 데이터 입력',moTitShip:'📦 출하 데이터 입력',moTitDefect:'🛠️ 불량 유형 데이터 입력',all:'전체',good:'양호',warn:'경고',
+const T={ko:{mainTitle:'📊 DS Quality Performance',lblProd:'제품',lblPeriod:'기간',lblProcess:'공정',btnProd:'✏️ 생산 입력',btnShip:'📦 출하 입력',btnDefect:'🛠️ 불량 유형 입력',lblKpiYield:'종합 수율',lblKpiPPM:'당사 귀책 PPM',lblKpiInput:'총 투입 수량',lblKpiOutput:'총 양품 수량',lblKpiDefect:'총 불량 수량',lblKpiDefectPPM:'총 불량 PPM',lblKpiCompDefect:'당사 귀책 불량 수',titProcYield:'공정별 수율 현황',titMonthYield:'공정별 월별 수율 추이',titProdYield:'제품별 수율 현황',titTotalTrend:'종합 수율 월별 트렌드 (%)',titPpmTrend:'종합 PPM 월별 트렌드',titProdTrend:'제품별 수율 추이 (%)',titProcTrend:'공정별 수율 추이 (%)',titProdVol:'DS 생산 실적',titTotalDefect:'월별 불량 수 트렌드',titCompDefect:'당사 귀책 불량 수 트렌드',titDefectType:'불량 유형 차트',titDefectTable:'불량 유형 상세 현황',titDefectSection:'📉 불량 분석 및 상세 현황',titShipSection:'📦 출하 실적',titShipTable:'월별 출하 수량',titShipChart:'월별 출하 실적 추이',thProc:'공정',thIn:'투입',thOut:'산출',thFail:'불량',thYld:'수율',thStat:'판정',thMonth:'기간',thProd:'제품',thIn2:'투입',thOut2:'산출',thFail2:'불량',thYld2:'수율',thStat2:'판정',thShipMonth:'기간',thTotal:'합계',moTitProd:'✏️ 생산 데이터 입력',moTitShip:'📦 출하 데이터 입력',moTitDefect:'🛠️ 불량 유형 데이터 입력',all:'전체',good:'양호',warn:'경고',
     btnViewMonthly:'📅 월별',btnViewDaily:'📆 일별',btnViewAtt:'👥 출퇴근',btnDailyProd:'📅 일별 생산 입력',btnDailyDef:'🔴 불량 코드 입력',
     dlblDate:'날짜',dlblProd:'제품',dlblTeam:'팀',dlblProcess:'공정',
     dLblYield:'종합 수율',dLblInput:'총 투입 수량',dLblDefect:'총 불량 수량',dLblDefectPPM:'총 불량 PPM',dLblCompDefect:'당사 귀책 불량 수',dLblPpm:'당사 귀책 PPM',
-    dTitYieldTrend:'일별 수율 트렌드 (%)',dTitPpmTrend:'일별 당사 귀책 PPM 트렌드',dTitVolTrend:'일별 투입량 트렌드',
+    dTitYieldTrend:'일별 수율 트렌드',dTitPpmTrend:'일별 당사 귀책 PPM 트렌드',dTitVolTrend:'일별 투입량 트렌드',
     dTitDefectSection:'📉 불량 코드 분석',dTitDefectBar:'불량 코드 TOP 10',dTitDefectPie:'불량 코드 비율',dTitDefectTable:'불량 코드 상세',
     dTitProdSection:'📋 일별 생산 데이터',dTitProcVolTrend:'공정별 일별 생산수량',dTitProdBarProc:'공정별 투입수량',dTitProdBarModel:'모델별 투입수량',dTitProdYieldDefect:'날짜별 수율 & 불량 추이',
     dTblDefThCode:'코드',dTblDefThName:'불량명',dTblDefThTeam:'팀',dTblDefThQty:'수량',
@@ -1553,11 +1560,11 @@ const T={ko:{mainTitle:'📊 DS Quality Performance',lblProd:'제품',lblPeriod:
     attSection:'📍 출근 현황',attKpiRate:'출근율',attKpiWork:'출근',attKpiVacation:'휴가',attKpiAbsent:'결근·조퇴',
     attTitDonut:'출근 상태 비율',attTitBar:'날짜별 출근 현황',
     attModalTitle:'👥 출근 인원 등록',attModalDesc:'날짜와 팀을 선택하고 각 팀원의 출근 상태를 입력하세요.',
-    attSetAllWork:'✅ 전체 출근',attSetAllVacation:'🏖️ 전체 휴가',memberModalTitle:'👤 팀원 관리'},en:{mainTitle:'📊 DS Quality Performance',lblProd:'Product',lblPeriod:'Period',lblProcess:'Process',btnProd:'✏️ Production',btnShip:'📦 Shipment',btnDefect:'🛠️ Defect Types',lblKpiYield:'Overall Yield',lblKpiPPM:'Company Defect PPM',lblKpiInput:'Total Input',lblKpiOutput:'Total Output',lblKpiDefect:'Total Defects',lblKpiDefectPPM:'Total Defect PPM',lblKpiCompDefect:'Company Defect Qty',titProcYield:'Process Yield',titMonthYield:'Monthly Process Yield',titProdYield:'Product Yield',titTotalTrend:'Overall Yield Trend (%)',titPpmTrend:'Overall PPM Trend',titProdTrend:'Product Yield Trend (%)',titProcTrend:'Process Yield Trend (%)',titProdVol:'Production Volume',titTotalDefect:'Total Defect Trend',titCompDefect:'Company Defect Trend',titDefectType:'Defect Type Chart',titDefectTable:'Defect Type Details',titDefectSection:'📉 Defect Analysis',titShipSection:'📦 Shipment Performance',titShipTable:'Monthly Shipment',titShipChart:'Shipment Trend',thProc:'Process',thIn:'Input',thOut:'Output',thFail:'Defect',thYld:'Yield',thStat:'Status',thMonth:'Period',thProd:'Product',thIn2:'Input',thOut2:'Output',thFail2:'Defect',thYld2:'Yield',thStat2:'Status',thShipMonth:'Period',thTotal:'Total',moTitProd:'✏️ Production Data Entry',moTitShip:'📦 Shipment Data Entry',moTitDefect:'🛠️ Defect Type Data Entry',all:'All',good:'Good',warn:'Warning',
+    attSetAllWork:'✅ 전체 출근',attSetAllVacation:'🏖️ 전체 휴가',memberModalTitle:'👤 팀원 관리'},en:{mainTitle:'📊 DS Quality Performance',lblProd:'Product',lblPeriod:'Period',lblProcess:'Process',btnProd:'✏️ Production',btnShip:'📦 Shipment',btnDefect:'🛠️ Defect Types',lblKpiYield:'Overall Yield',lblKpiPPM:'Company Defect PPM',lblKpiInput:'Total Input',lblKpiOutput:'Good Qty',lblKpiDefect:'Total Defects',lblKpiDefectPPM:'Total Defect PPM',lblKpiCompDefect:'Company Defect Qty',titProcYield:'Process Yield',titMonthYield:'Monthly Process Yield',titProdYield:'Product Yield',titTotalTrend:'Overall Yield Trend (%)',titPpmTrend:'Overall PPM Trend',titProdTrend:'Product Yield Trend (%)',titProcTrend:'Process Yield Trend (%)',titProdVol:'Production Volume',titTotalDefect:'Total Defect Trend',titCompDefect:'Company Defect Trend',titDefectType:'Defect Type Chart',titDefectTable:'Defect Type Details',titDefectSection:'📉 Defect Analysis',titShipSection:'📦 Shipment Performance',titShipTable:'Monthly Shipment',titShipChart:'Shipment Trend',thProc:'Process',thIn:'Input',thOut:'Output',thFail:'Defect',thYld:'Yield',thStat:'Status',thMonth:'Period',thProd:'Product',thIn2:'Input',thOut2:'Output',thFail2:'Defect',thYld2:'Yield',thStat2:'Status',thShipMonth:'Period',thTotal:'Total',moTitProd:'✏️ Production Data Entry',moTitShip:'📦 Shipment Data Entry',moTitDefect:'🛠️ Defect Type Data Entry',all:'All',good:'Good',warn:'Warning',
     btnViewMonthly:'📅 Monthly',btnViewDaily:'📆 Daily',btnViewAtt:'👥 Attendance',btnDailyProd:'📅 Daily Prod Entry',btnDailyDef:'🔴 Defect Code Entry',
     dlblDate:'Date',dlblProd:'Product',dlblTeam:'Team',dlblProcess:'Process',
     dLblYield:'Overall Yield',dLblInput:'Total Input Qty',dLblDefect:'Total Defects',dLblDefectPPM:'Total Defect PPM',dLblCompDefect:'Company Defect Qty',dLblPpm:'Company Defect PPM',
-    dTitYieldTrend:'Daily Yield Trend (%)',dTitPpmTrend:'Daily Overall PPM Trend',dTitVolTrend:'Daily Input Volume Trend',
+    dTitYieldTrend:'Daily Yield Trend',dTitPpmTrend:'Daily Overall PPM Trend',dTitVolTrend:'Daily Input Volume Trend',
     dTitDefectSection:'📉 Defect Code Analysis',dTitDefectBar:'Top 10 Defect Codes',dTitDefectPie:'Defect Code Distribution',dTitDefectTable:'Defect Code Details',
     dTitProdSection:'📋 Daily Production Data',dTitProcVolTrend:'Daily Volume by Process',dTitProdBarProc:'Input Qty by Process',dTitProdBarModel:'Input Qty by Model',dTitProdYieldDefect:'Daily Yield & Defect Trend',
     dTblDefThCode:'Code',dTblDefThName:'Defect Name',dTblDefThTeam:'Team',dTblDefThQty:'Qty',
@@ -1783,7 +1790,9 @@ function updateUI(){
     tF=data.reduce((a,b)=>a+b.fail,0);
     cF=data.filter(d=>['SMD','ROUTER','AVI'].includes(d.proc)).reduce((a,b)=>a+b.fail,0);
     const yv=tI>0?tO/tI*100:0, ppm=tI>0?cF/tI*1000000:0;
+    const compYield=tI>0?(tI-cF)/tI*100:0;
     document.getElementById('kpiYield').innerText=yv.toFixed(2)+'%';
+    document.getElementById('kpiCompYield').innerText=(lang==='ko'?'당사 귀책 ':'Co. ')+ compYield.toFixed(2)+'%';
     document.getElementById('kpiPPM').innerText=Math.round(ppm).toLocaleString()+' PPM';
     document.getElementById('kpiInput').innerText=tI.toLocaleString();
     document.getElementById('kpiOutput').innerText=tO.toLocaleString();
@@ -1853,8 +1862,11 @@ function drawCharts(data){
 
     try{
         const totalY=pm.map(m=>{const d=data.filter(r=>r.month===m);const i=d.filter(r=>r.proc==='SMD').reduce((a,b)=>a+b.in,0);const o=d.filter(r=>r.proc==='AVI').reduce((a,b)=>a+b.out,0);return i>0?o/i*100:null;});
-        // Fix 1: Much more padding so labels never overlap Y axis
-        charts.totalYield=new Chart(document.getElementById('chartTotalYield'),{type:'line',data:{labels:pl,datasets:[{label:T[lang].lblKpiYield,data:totalY,borderColor:'#3B8BF5',backgroundColor:'rgba(59,139,245,0.06)',fill:true,tension:0.4,pointBackgroundColor:'white',pointBorderColor:'#3B8BF5',pointBorderWidth:2.5,pointRadius:5,borderWidth:2.5}]},options:{...baseOpts,layout:{padding:{left:10,right:50,top:38,bottom:6}},plugins:{...baseOpts.plugins,legend:{display:false},datalabels:{color:'#2563EB',backgroundColor:'rgba(255,255,255,0.95)',borderRadius:6,padding:{top:4,right:9,bottom:4,left:9},font:{weight:'700',size:12,family:'JetBrains Mono, monospace'},anchor:'end',align:'end',offset:12,clip:false,display:true,formatter:v=>v?v.toFixed(2)+'%':''}},scales:{...baseOpts.scales,x:{...baseOpts.scales.x,offset:true},y:{...baseOpts.scales.y,min:97,max:101}}}});
+        const compY=pm.map(m=>{const d=data.filter(r=>r.month===m);const i=d.filter(r=>r.proc==='SMD').reduce((a,b)=>a+b.in,0);const cf=d.filter(r=>['SMD','ROUTER','AVI'].includes(r.proc)).reduce((a,b)=>a+b.fail,0);return i>0?(i-cf)/i*100:null;});
+        charts.totalYield=new Chart(document.getElementById('chartTotalYield'),{type:'line',data:{labels:pl,datasets:[
+            {label:lang==='ko'?'종합 수율':'Overall Yield',data:totalY,borderColor:'#3B8BF5',backgroundColor:'rgba(59,139,245,0.06)',fill:true,tension:0.4,pointBackgroundColor:'white',pointBorderColor:'#3B8BF5',pointBorderWidth:2.5,pointRadius:5,borderWidth:2.5},
+            {label:lang==='ko'?'당사 귀책 수율':'Company Yield',data:compY,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.06)',fill:true,tension:0.4,pointBackgroundColor:'white',pointBorderColor:'#f59e0b',pointBorderWidth:2.5,pointRadius:5,borderWidth:2.5,borderDash:[6,3]}
+        ]},options:{...baseOpts,layout:{padding:{left:10,right:50,top:38,bottom:6}},plugins:{...baseOpts.plugins,legend:{display:true,position:'bottom',labels:{boxWidth:10,boxHeight:10,padding:12,font:{size:11,weight:'600',family:'Noto Sans KR, Inter, sans-serif'},usePointStyle:true,pointStyleWidth:8}},datalabels:{color:ctx=>ctx.datasetIndex===0?'#2563EB':'#d97706',backgroundColor:'rgba(255,255,255,0.95)',borderRadius:6,padding:{top:4,right:9,bottom:4,left:9},font:{weight:'700',size:11,family:'JetBrains Mono, monospace'},anchor:'end',align:ctx=>ctx.datasetIndex===0?'top':'bottom',offset:8,clip:false,display:true,formatter:v=>v?v.toFixed(2)+'%':''}},scales:{...baseOpts.scales,x:{...baseOpts.scales.x,offset:true},y:{...baseOpts.scales.y,min:97,max:101}}}});
 
         // PPM Monthly Trend Chart
         const ppmTrendData=pm.map(m=>{
@@ -1863,7 +1875,16 @@ function drawCharts(data){
             const tf=d.reduce((a,b)=>a+b.fail,0);
             return ti>0?Math.round(tf/ti*1000000):null;
         });
-        charts.ppmTrend=new Chart(document.getElementById('chartPpmTrend'),{type:'line',data:{labels:pl,datasets:[{label:T[lang].titPpmTrend||'종합 PPM',data:ppmTrendData,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.07)',fill:true,tension:0.4,pointBackgroundColor:'white',pointBorderColor:'#f59e0b',pointBorderWidth:2.5,pointRadius:5,borderWidth:2.5}]},options:{...baseOpts,layout:{padding:{left:10,right:50,top:38,bottom:6}},plugins:{...baseOpts.plugins,legend:{display:false},datalabels:{color:'#d97706',backgroundColor:'rgba(255,255,255,0.95)',borderRadius:6,padding:{top:4,right:9,bottom:4,left:9},font:{weight:'700',size:12,family:'JetBrains Mono, monospace'},anchor:'end',align:'end',offset:12,clip:false,display:true,formatter:v=>v!==null?v.toLocaleString()+' PPM':''}},scales:{...baseOpts.scales,x:{...baseOpts.scales.x,offset:true},y:{...baseOpts.scales.y,afterDataLimits:(axis)=>{const vals=[];axis.chart.data.datasets.forEach(ds=>{ds.data.forEach(v=>{if(v!==null&&v!==undefined)vals.push(v);});});if(vals.length){const mn=Math.min(...vals),mx=Math.max(...vals),pad=Math.max(500,Math.round((mx-mn)*0.15));axis.min=Math.max(0,Math.floor((mn-pad)/500)*500);axis.max=Math.ceil((mx+pad)/500)*500;}else{axis.min=0;axis.max=1000;}}}}}});
+        const compPpmData=pm.map(m=>{
+            const d=data.filter(r=>r.month===m);
+            const ti=d.filter(r=>r.proc==='SMD').reduce((a,b)=>a+b.in,0);
+            const cf=d.filter(r=>['SMD','ROUTER','AVI'].includes(r.proc)).reduce((a,b)=>a+b.fail,0);
+            return ti>0?Math.round(cf/ti*1000000):null;
+        });
+        charts.ppmTrend=new Chart(document.getElementById('chartPpmTrend'),{type:'line',data:{labels:pl,datasets:[
+            {label:lang==='ko'?'종합 PPM':'Overall PPM',data:ppmTrendData,borderColor:'#f43f5e',backgroundColor:'rgba(244,63,94,0.07)',fill:true,tension:0.4,pointBackgroundColor:'white',pointBorderColor:'#f43f5e',pointBorderWidth:2.5,pointRadius:5,borderWidth:2.5},
+            {label:lang==='ko'?'당사 귀책 PPM':'Company PPM',data:compPpmData,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.07)',fill:true,tension:0.4,pointBackgroundColor:'white',pointBorderColor:'#f59e0b',pointBorderWidth:2.5,pointRadius:5,borderWidth:2.5,borderDash:[6,3]}
+        ]},options:{...baseOpts,layout:{padding:{left:10,right:50,top:38,bottom:6}},plugins:{...baseOpts.plugins,legend:{display:true,position:'bottom',labels:{boxWidth:10,boxHeight:10,padding:12,font:{size:11,weight:'600',family:'Noto Sans KR, Inter, sans-serif'},usePointStyle:true,pointStyleWidth:8}},datalabels:{color:ctx=>ctx.datasetIndex===0?'#f43f5e':'#d97706',backgroundColor:'rgba(255,255,255,0.95)',borderRadius:6,padding:{top:4,right:9,bottom:4,left:9},font:{weight:'700',size:11,family:'JetBrains Mono, monospace'},anchor:'end',align:ctx=>ctx.datasetIndex===0?'top':'bottom',offset:8,clip:false,display:true,formatter:v=>v!==null?v.toLocaleString()+' PPM':''}},scales:{...baseOpts.scales,x:{...baseOpts.scales.x,offset:true},y:{...baseOpts.scales.y,afterDataLimits:(axis)=>{const vals=[];axis.chart.data.datasets.forEach(ds=>{ds.data.forEach(v=>{if(v!==null&&v!==undefined)vals.push(v);});});if(vals.length){const mn=Math.min(...vals),mx=Math.max(...vals),pad=Math.max(500,Math.round((mx-mn)*0.15));axis.min=Math.max(0,Math.floor((mn-pad)/500)*500);axis.max=Math.ceil((mx+pad)/500)*500;}else{axis.min=0;axis.max=1000;}}}}}});
 
         // Fix 2: legend ON, Fix 3: datalabels only when single filter
         const prodSingle = prodChartFilter!=='전체';
@@ -2396,7 +2417,9 @@ function updateDailyUI(){
     const ppm = ppmIn>0 ? ppmDef/ppmIn*1000000 : 0;
 
     // KPI 카드
+    const dCompYield=totalIn>0?(totalIn-ppmDef)/totalIn*100:0;
     document.getElementById('dKpiYield').innerText=overallYield.toFixed(2)+'%';
+    document.getElementById('dKpiCompYield').innerText=(lang==='ko'?'당사 귀책 ':'Co. ')+dCompYield.toFixed(2)+'%';
     document.getElementById('dKpiInput').innerText=totalIn.toLocaleString();
     document.getElementById('dKpiDefect').innerText=totalDef.toLocaleString();
     const dailyTotalDefPpm=totalIn>0?totalDef/totalIn*1000000:0;
@@ -2550,7 +2573,7 @@ function drawDailyCharts(data){
             const pColors={RDIMM:'#f43f5e',SODIMM:'#0891b2',UDIMM:'#f59e0b'};
             yDS=models.map(p=>({label:p,borderColor:pColors[p]||'#6366f1',fill:false,tension:.4,borderWidth:2.5,pointRadius:4,pointBackgroundColor:'white',data:dates.map(dt=>{const d=data.filter(r=>r.date===dt&&r.model===p);const i=d.reduce((a,b)=>a+b.inspQty,0);const g=d.reduce((a,b)=>a+b.goodQty,0);return i>0?+(g/i*100).toFixed(2):null;})}));
         }
-        const yLabelOpts={display:ctx=>ctx.dataset.data[ctx.dataIndex]!==null,color:ctx=>{const c=['#f43f5e','#0891b2','#f59e0b','#6366f1','#10b981'];return c[ctx.datasetIndex]||'#334155';},backgroundColor:'rgba(255,255,255,0.95)',borderRadius:6,padding:{top:3,right:8,bottom:3,left:8},font:{weight:'700',size:11,family:'JetBrains Mono,monospace'},anchor:'end',align:'top',offset:6,clip:false,formatter:v=>v?v.toFixed(2)+'%':''};
+        const yLabelOpts={display:ctx=>ctx.dataset.data[ctx.dataIndex]!==null,color:ctx=>{const c=['#f43f5e','#0891b2','#f59e0b','#6366f1','#10b981'];return c[ctx.datasetIndex]||'#334155';},backgroundColor:'rgba(255,255,255,0.95)',borderRadius:6,padding:{top:3,right:8,bottom:3,left:8},font:{weight:'700',size:11,family:'JetBrains Mono,monospace'},anchor:'end',align:'top',offset:6,clip:false,formatter:v=>v?v.toFixed(2):''};
         dCharts.yield=new Chart(document.getElementById('dChartYield'),{type:'line',data:{labels:smartDateLabels(dates),datasets:yDS},options:{...bOpts,layout:{padding:{top:40,right:50,bottom:10,left:20}},plugins:{...bOpts.plugins,datalabels:yLabelOpts},scales:{...bOpts.scales,x:{...bOpts.scales.x,offset:true},y:{...bOpts.scales.y,max:101,min:99,afterDataLimits:(axis)=>{
                         axis.max=101;
                         // 최솟값이 99 미만이면 데이터에 맞춰 살짝 조정
