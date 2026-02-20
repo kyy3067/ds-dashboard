@@ -726,7 +726,7 @@
             <button class="btn btn-daily-def"  onclick="openDailyDefModal()" id="btnDailyDef">🔴 불량 코드 입력</button>
         </span>
         <button class="btn btn-excel" onclick="exportExcel()">📊 Excel</button>
-        <button class="btn btn-backup" onclick="openBackupModal()">💾 백업</button>
+        <button class="btn btn-backup" onclick="openBackupModal()" id="btnBackup">💾 백업</button>
     </div>
 </div>
 
@@ -948,7 +948,7 @@
                 <button class="date-apply" onclick="setDailyDatePreset('all')" id="btnAllDate" style="background:#475569;">전체</button>
                 <span class="date-sep" id="lblWeekNum" style="font-size:11px;white-space:nowrap;">주차:</span>
                 <input type="number" id="weekNumInput" min="1" max="53" placeholder="예) 8" style="width:70px;padding:6px 10px;border:1.5px solid var(--border);border-radius:10px;font-size:12px;font-family:'JetBrains Mono',monospace;" onkeydown="if(event.key==='Enter')setDailyDatePreset('weeknum')">
-                <button class="date-apply" onclick="setDailyDatePreset('weeknum')" style="background:#6366f1;">이동</button>
+                <button class="date-apply" onclick="setDailyDatePreset('weeknum')" style="background:#6366f1;" id="btnWeekGo">이동</button>
             </div>
         </div>
         <div class="filter-row">
@@ -1413,7 +1413,7 @@ const T={ko:{mainTitle:'📊 DS Quality Performance',lblProd:'제품',lblPeriod:
     dThRate:'수율',
     dProdTblThDate:'날짜',dProdTblThModel:'모델',dProdTblThProc:'공정',dProdTblThTeam:'팀',dProdTblThYield:'수율',
     dThDate:'날짜',dThModel:'모델',dThProc:'공정',dThTeamCol:'팀',dThInQty:'투입수량',dThGoodQty:'양품수량',dThDefQty:'불량수량',dThYield:'수율',
-    btnToday:'오늘',btnYesterday:'어제',btnThisWeek:'이번주',btnThisMonth:'이번달',btnAllDate:'전체',lblWeekNum:'주차 검색:',
+    btnToday:'오늘',btnYesterday:'어제',btnThisWeek:'이번주',btnThisMonth:'이번달',btnAllDate:'전체',lblWeekNum:'주차 검색:',btnWeekGo:'이동',btnBackup:'💾 백업',
     smtLblYield:'수율',smtLblInput:'투입 수량',smtLblDefect:'불량',testLblYield:'수율',testLblInput:'투입 수량',testLblDefect:'불량',
     dSortLabel:'정렬:',dSortDateDesc:'날짜 ↓',dSortDateAsc:'날짜 ↑',dSortYieldAsc:'수율 ↑',dSortYieldDesc:'수율 ↓',dSortDefectDesc:'불량 ↓',
     modalDailyProdTitle:'📅 일별 생산 데이터 입력',modalDailyProdDesc:'붙여넣기 순서: 날짜(YYYY-MM-DD) | 모델 | 공정 | 팀 | 투입수량 | 양품수량 | 불량수량',
@@ -1428,7 +1428,7 @@ const T={ko:{mainTitle:'📊 DS Quality Performance',lblProd:'제품',lblPeriod:
     dThRate:'Yield',
     dProdTblThDate:'Date',dProdTblThModel:'Model',dProdTblThProc:'Process',dProdTblThTeam:'Team',dProdTblThYield:'Yield',
     dThDate:'Date',dThModel:'Model',dThProc:'Process',dThTeamCol:'Team',dThInQty:'Input Qty',dThGoodQty:'Good Qty',dThDefQty:'Def. Qty',dThYield:'Yield',
-    btnToday:'Today',btnYesterday:'Yesterday',btnThisWeek:'This Week',btnThisMonth:'This Month',btnAllDate:'All',lblWeekNum:'Week#:',
+    btnToday:'Today',btnYesterday:'Yesterday',btnThisWeek:'This Week',btnThisMonth:'This Month',btnAllDate:'All',lblWeekNum:'Week#:',btnWeekGo:'Go',btnBackup:'💾 Backup',
     smtLblYield:'Yield',smtLblInput:'Input Qty',smtLblDefect:'Defects',testLblYield:'Yield',testLblInput:'Input Qty',testLblDefect:'Defects',
     dSortLabel:'Sort:',dSortDateDesc:'Date ↓',dSortDateAsc:'Date ↑',dSortYieldAsc:'Yield ↑',dSortYieldDesc:'Yield ↓',dSortDefectDesc:'Defect ↓',
     modalDailyProdTitle:'📅 Daily Production Entry',modalDailyProdDesc:'Paste order: Date(YYYY-MM-DD) | Model | Process | Team | InputQty | GoodQty | DefectQty',
@@ -1495,7 +1495,9 @@ function setLang(l){
     document.getElementById('btnKo').className=l==='ko'?'lang-btn active':'lang-btn';
     document.getElementById('btnEn').className=l==='en'?'lang-btn active':'lang-btn';
     for(let k in T[lang]){const e=document.getElementById(k);if(e)e.innerText=T[lang][k];}
+    const wni=document.getElementById('weekNumInput');if(wni)wni.placeholder=lang==='ko'?'예) 8':'e.g. 8';
     updateUI(); updateLastUpdate(); updateModalLang();
+    if(typeof currentView!=='undefined'&&currentView==='daily') updateDailyUI();
 }
 function filter(t,v){filters[t]=v; updateUI();}
 
