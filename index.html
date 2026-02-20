@@ -797,7 +797,7 @@
         <div class="card-body">
             <div class="tbl-wrap">
                 <table id="tblMonthYield">
-                    <thead><tr><th id="thMonth">기간</th><th>SMD</th><th>ROUTER</th><th>ATE</th><th>PCT</th><th>AVI</th></tr></thead>
+                    <thead><tr><th id="thMonth">기간</th><th>SMD</th><th>ROUTER</th><th>ATE</th><th>PCT</th><th>AVI</th><th>TC</th></tr></thead>
                     <tbody></tbody>
                 </table>
             </div>
@@ -982,22 +982,22 @@
                 <span class="team-badge team-smt" style="margin-left:auto;">SMT</span>
             </div>
             <div class="team-stat-grid">
-                <div class="team-stat"><div class="team-stat-value" id="smtYield" style="color:#6366f1;">—</div><div class="team-stat-label">수율</div></div>
+                <div class="team-stat"><div class="team-stat-value" id="smtYield" style="color:#6366f1;">—</div><div class="team-stat-label" id="smtLblYield">수율</div></div>
                 <div class="team-stat"><div class="team-stat-value" id="smtInput" style="color:#334155;">—</div><div class="team-stat-label" id="smtLblInput">투입 수량</div></div>
-                <div class="team-stat"><div class="team-stat-value" id="smtDefect" style="color:#e11d48;">—</div><div class="team-stat-label">불량</div></div>
+                <div class="team-stat"><div class="team-stat-value" id="smtDefect" style="color:#e11d48;">—</div><div class="team-stat-label" id="smtLblDefect">불량</div></div>
             </div>
             <div id="smtProcDetail" style="margin-top:10px;padding-top:10px;border-top:1px dashed #e0e8f5;"></div>
         </div>
         <div class="team-card">
             <div class="team-card-header">
                 <span style="font-size:28px;">🔬</span>
-                <div><div style="font-size:15px;font-weight:700;font-family:'Noto Sans KR',sans-serif;">TEST Team</div><div style="font-size:11px;color:var(--text-muted);">ATE + PCT + AVI</div></div>
+                <div><div style="font-size:15px;font-weight:700;font-family:'Noto Sans KR',sans-serif;">TEST Team</div><div style="font-size:11px;color:var(--text-muted);">ATE + PCT + AVI + TC</div></div>
                 <span class="team-badge team-test" style="margin-left:auto;">TEST</span>
             </div>
             <div class="team-stat-grid">
-                <div class="team-stat"><div class="team-stat-value" id="testYield" style="color:#0891b2;">—</div><div class="team-stat-label">수율</div></div>
-                <div class="team-stat"><div class="team-stat-value" id="testInput" style="color:#334155;">—</div><div class="team-stat-label" id="smtLblInput">투입 수량</div></div>
-                <div class="team-stat"><div class="team-stat-value" id="testDefect" style="color:#e11d48;">—</div><div class="team-stat-label">불량</div></div>
+                <div class="team-stat"><div class="team-stat-value" id="testYield" style="color:#0891b2;">—</div><div class="team-stat-label" id="testLblYield">수율</div></div>
+                <div class="team-stat"><div class="team-stat-value" id="testInput" style="color:#334155;">—</div><div class="team-stat-label" id="testLblInput">투입 수량</div></div>
+                <div class="team-stat"><div class="team-stat-value" id="testDefect" style="color:#e11d48;">—</div><div class="team-stat-label" id="testLblDefect">불량</div></div>
             </div>
             <div id="testProcDetail" style="margin-top:10px;padding-top:10px;border-top:1px dashed #e0e8f5;"></div>
         </div>
@@ -1013,7 +1013,7 @@
     </div>
 
     <!-- Defect Code Analysis -->
-    <div class="section-hd"><div class="section-hd-title">📉 불량 코드 분석</div><div class="section-hd-line"></div></div>
+    <div class="section-hd"><div class="section-hd-title" id="dTitDefectSection">📉 불량 코드 분석</div><div class="section-hd-line"></div></div>
     <div class="g3">
         <div class="card"><div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="dTitDefectBar">불량 코드 TOP 10</span></div></div><div class="card-body"><div class="mini-filters" id="dDefectTeamFilter"></div><div style="position:relative;height:340px;"><canvas id="dChartDefectBar"></canvas></div></div></div>
         <div class="card"><div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="dTitDefectPie">불량 코드 비율</span></div></div><div class="card-body"><div style="position:relative;height:420px;"><canvas id="dChartDefectPie"></canvas></div></div></div>
@@ -1038,19 +1038,19 @@
                 <div style="width:1px;height:20px;background:var(--border);margin:0 4px;"></div>
                 <div class="filter-btns" id="dTblTeamFilter"></div>
                 <div style="margin-left:auto;display:flex;align-items:center;gap:6px;">
-                    <span style="font-size:11px;color:var(--text-muted);">정렬:</span>
+                    <span style="font-size:11px;color:var(--text-muted);" id="dSortLabel">정렬:</span>
                     <select id="dTblSort" style="padding:5px 10px;border:1px solid var(--border);border-radius:8px;font-size:11px;font-family:'Noto Sans KR',sans-serif;" onchange="updateDailyTables(getDailyFiltered(),getDailyDefFiltered())">
-                        <option value="date-desc">날짜 ↓</option>
-                        <option value="date-asc">날짜 ↑</option>
-                        <option value="yield-asc">수율 ↑</option>
-                        <option value="yield-desc">수율 ↓</option>
-                        <option value="defect-desc">불량 ↓</option>
+                        <option value="date-desc" id="dSortDateDesc">날짜 ↓</option>
+                        <option value="date-asc" id="dSortDateAsc">날짜 ↑</option>
+                        <option value="yield-asc" id="dSortYieldAsc">수율 ↑</option>
+                        <option value="yield-desc" id="dSortYieldDesc">수율 ↓</option>
+                        <option value="defect-desc" id="dSortDefectDesc">불량 ↓</option>
                     </select>
                 </div>
             </div>
             <div class="tbl-wrap" style="max-height:400px;overflow-y:auto;">
                 <table id="dTblProd">
-                    <thead><tr><th>날짜</th><th>모델</th><th>공정</th><th>팀</th><th id="dThInQty">투입수량</th><th id="dThGoodQty">양품수량</th><th id="dThDefQty">불량수량</th><th id="dThRate">수율</th></tr></thead>
+                    <thead><tr><th id="dProdTblThDate">날짜</th><th id="dProdTblThModel">모델</th><th id="dProdTblThProc">공정</th><th id="dProdTblThTeam">팀</th><th id="dThInQty">투입수량</th><th id="dThGoodQty">양품수량</th><th id="dThDefQty">불량수량</th><th id="dThRate">수율</th></tr></thead>
                     <tbody></tbody>
                 </table>
             </div>
@@ -1179,7 +1179,7 @@
     <div class="modal-box" style="max-width:920px;">
         <div class="modal-title" id="ddefModalTitle">🔴 일별 불량 코드 입력</div>
         <div class="modal-desc" id="ddefModalDesc">공정별 <strong>불량 수량 내에서만</strong> 입력 가능합니다. 공정 선택 시 해당 불량 수량이 자동으로 표시됩니다.<br>
-        <span style="color:#6366f1;font-weight:700;">🔵 SMT (SMD/ROUTER): 1000번대</span> &nbsp;|&nbsp; <span style="color:#0891b2;font-weight:700;">🔬 TEST (ATE/PCT/AVI): 4000번대</span></div>
+        <span style="color:#6366f1;font-weight:700;">🔵 SMT (SMD/ROUTER): 1000번대</span> &nbsp;|&nbsp; <span style="color:#0891b2;font-weight:700;">🔬 TEST (ATE/PCT/AVI/TC): 4000번대</span></div>
         <div id="ddefAvailPanel" style="background:#f0f4fb;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:12px;font-family:'Noto Sans KR',sans-serif;">
             <strong>📋 현재 날짜 범위 미입력 불량:</strong> <span id="ddefAvailList" style="color:var(--text-sub);">생산 데이터에서 불량 수량을 가져옵니다</span>
         </div>
@@ -1415,6 +1415,7 @@ const T={ko:{mainTitle:'📊 DS Quality Performance',lblProd:'제품',lblPeriod:
     dThDate:'날짜',dThModel:'모델',dThProc:'공정',dThTeamCol:'팀',dThInQty:'투입수량',dThGoodQty:'양품수량',dThDefQty:'불량수량',dThYield:'수율',
     btnToday:'오늘',btnYesterday:'어제',btnThisWeek:'이번주',btnThisMonth:'이번달',btnAllDate:'전체',lblWeekNum:'주차 검색:',
     smtLblYield:'수율',smtLblInput:'투입 수량',smtLblDefect:'불량',testLblYield:'수율',testLblInput:'투입 수량',testLblDefect:'불량',
+    dSortLabel:'정렬:',dSortDateDesc:'날짜 ↓',dSortDateAsc:'날짜 ↑',dSortYieldAsc:'수율 ↑',dSortYieldDesc:'수율 ↓',dSortDefectDesc:'불량 ↓',
     modalDailyProdTitle:'📅 일별 생산 데이터 입력',modalDailyProdDesc:'붙여넣기 순서: 날짜(YYYY-MM-DD) | 모델 | 공정 | 팀 | 투입수량 | 양품수량 | 불량수량',
     modalDailyDefTitle:'🔴 일별 불량 코드 입력',modalDailyDefDesc:'공정별 불량 수량 내에서만 코드를 입력할 수 있습니다'},en:{mainTitle:'📊 DS Quality Performance',lblProd:'Product',lblPeriod:'Period',lblProcess:'Process',btnProd:'✏️ Production',btnShip:'📦 Shipment',btnDefect:'🛠️ Defect Types',lblKpiYield:'Overall Yield',lblKpiPPM:'Company Defect PPM',lblKpiInput:'Total Input',lblKpiOutput:'Total Output',lblKpiDefect:'Total Defects',lblKpiDefectPPM:'Total Defect PPM',lblKpiCompDefect:'Company Defect Qty',titProcYield:'Process Yield',titMonthYield:'Monthly Process Yield',titProdYield:'Product Yield',titTotalTrend:'Overall Yield Trend (%)',titPpmTrend:'Overall PPM Trend',titProdTrend:'Product Yield Trend (%)',titProcTrend:'Process Yield Trend (%)',titProdVol:'Production Volume',titTotalDefect:'Total Defect Trend',titCompDefect:'Company Defect Trend',titDefectType:'Defect Type Chart',titDefectTable:'Defect Type Details',titDefectSection:'📉 Defect Analysis',titShipSection:'📦 Shipment Performance',titShipTable:'Monthly Shipment',titShipChart:'Shipment Trend',thProc:'Process',thIn:'Input',thOut:'Output',thFail:'Defect',thYld:'Yield',thStat:'Status',thMonth:'Period',thProd:'Product',thIn2:'Input',thOut2:'Output',thFail2:'Defect',thYld2:'Yield',thStat2:'Status',thShipMonth:'Period',thTotal:'Total',moTitProd:'✏️ Production Data Entry',moTitShip:'📦 Shipment Data Entry',moTitDefect:'🛠️ Defect Type Data Entry',all:'All',good:'Good',warn:'Warning',
     btnViewMonthly:'📅 Monthly',btnViewDaily:'📆 Daily',btnDailyProd:'📅 Daily Prod Entry',btnDailyDef:'🔴 Defect Code Entry',
@@ -1429,6 +1430,7 @@ const T={ko:{mainTitle:'📊 DS Quality Performance',lblProd:'제품',lblPeriod:
     dThDate:'Date',dThModel:'Model',dThProc:'Process',dThTeamCol:'Team',dThInQty:'Input Qty',dThGoodQty:'Good Qty',dThDefQty:'Def. Qty',dThYield:'Yield',
     btnToday:'Today',btnYesterday:'Yesterday',btnThisWeek:'This Week',btnThisMonth:'This Month',btnAllDate:'All',lblWeekNum:'Week#:',
     smtLblYield:'Yield',smtLblInput:'Input Qty',smtLblDefect:'Defects',testLblYield:'Yield',testLblInput:'Input Qty',testLblDefect:'Defects',
+    dSortLabel:'Sort:',dSortDateDesc:'Date ↓',dSortDateAsc:'Date ↑',dSortYieldAsc:'Yield ↑',dSortYieldDesc:'Yield ↓',dSortDefectDesc:'Defect ↓',
     modalDailyProdTitle:'📅 Daily Production Entry',modalDailyProdDesc:'Paste order: Date(YYYY-MM-DD) | Model | Process | Team | InputQty | GoodQty | DefectQty',
     modalDailyDefTitle:'🔴 Daily Defect Code Entry',modalDailyDefDesc:'Defect codes must be within the defect quantity already recorded for that date/model/process'}};
 
@@ -1517,7 +1519,7 @@ function setPCF(v){
 }
 function renderProcChartBtns(){
     const c=document.getElementById('procChartFilter'); if(!c)return; c.innerHTML='';
-    ['전체','SMD','ROUTER','ATE','PCT','AVI'].forEach(p=>{
+    ['전체','SMD','ROUTER','ATE','PCT','AVI','TC'].forEach(p=>{
         const b=document.createElement('button'); b.className='mini-btn'+(procChartFilter===p?' active':'');
         b.innerText=p==='전체'?T[lang].all:p; b.onclick=()=>setRCF(p); c.appendChild(b);
     });
@@ -1602,7 +1604,7 @@ function renderFilterButtons(){
     const mc=document.getElementById('filterMonth'); mc.innerHTML='';
     ['',...getAM()].forEach((m,i)=>{const b=document.createElement('button');const v=i===0?'전체':m;b.className='filter-btn'+(filters.month===v?' active':'');b.innerText=i===0?T[lang].all:fmtPeriod(m);b.onclick=()=>filter('month',v);mc.appendChild(b);});
     const proc=document.getElementById('filterProcess'); proc.innerHTML='';
-    ['전체','SMD','ROUTER','ATE','PCT','AVI'].forEach(p=>{const b=document.createElement('button');b.className='filter-btn'+(filters.process===p?' active':'');b.innerText=p==='전체'?T[lang].all:p;b.onclick=()=>filter('process',p);proc.appendChild(b);});
+    ['전체','SMD','ROUTER','ATE','PCT','AVI','TC'].forEach(p=>{const b=document.createElement('button');b.className='filter-btn'+(filters.process===p?' active':'');b.innerText=p==='전체'?T[lang].all:p;b.onclick=()=>filter('process',p);proc.appendChild(b);});
 }
 
 function updateUI(){
@@ -1628,7 +1630,7 @@ function updateUI(){
 function updateTables(data){
     const t=T[lang];
     const pb=document.querySelector('#tblProcYield tbody'); pb.innerHTML='';
-    ['SMD','ROUTER','ATE','PCT','AVI'].forEach(p=>{
+    ['SMD','ROUTER','ATE','PCT','AVI','TC'].forEach(p=>{
         const d=data.filter(r=>r.proc===p);
         const ti=d.reduce((a,b)=>a+b.in,0),to=d.reduce((a,b)=>a+b.out,0),tf=d.reduce((a,b)=>a+b.fail,0);
         const y=ti>0?to/ti*100:0, ok=y>=99.5;
@@ -1638,7 +1640,7 @@ function updateTables(data){
     getPM().forEach(m=>{
         const d=data.filter(r=>r.month===m); if(!d.length)return;
         let row=`<tr><td><strong>${fmtPeriod(m)}</strong></td>`;
-        ['SMD','ROUTER','ATE','PCT','AVI'].forEach(p=>{
+        ['SMD','ROUTER','ATE','PCT','AVI','TC'].forEach(p=>{
             const pd=d.filter(r=>r.proc===p);
             const ti=pd.reduce((a,b)=>a+b.in,0),to=pd.reduce((a,b)=>a+b.out,0);
             row+=`<td class="${ti>0&&to/ti*100>=99.5?'yield-good':'yield-bad'}">${ti>0?(to/ti*100).toFixed(2)+'%':'-'}</td>`;
@@ -1710,7 +1712,7 @@ function drawCharts(data){
         charts.prodYield=new Chart(document.getElementById('chartProdYield'),{type:'line',data:{labels:pl,datasets:['RDIMM','SODIMM','UDIMM'].map((p,i)=>({label:p,borderColor:['#f43f5e','#0891b2','#f59e0b'][i],backgroundColor:['rgba(244,63,94,0.05)','rgba(8,145,178,0.05)','rgba(245,158,11,0.05)'][i],fill:true,tension:0.4,borderWidth:2.5,pointRadius:4,pointBorderWidth:2,pointBackgroundColor:'white',hidden:prodSingle&&p!==prodChartFilter,data:pm.map(m=>{const d=data.filter(r=>r.month===m&&r.prod===p);const ti=d.filter(r=>r.proc==='SMD').reduce((a,b)=>a+b.in,0);const to=d.filter(r=>r.proc==='AVI').reduce((a,b)=>a+b.out,0);return ti>0?to/ti*100:null;})}))},options:{...baseOpts,layout:{padding:{top:prodSingle?38:16,right:prodSingle?50:14,bottom:8,left:8}},plugins:{...baseOpts.plugins,legend:{position:'bottom',display:true,labels:{boxWidth:10,boxHeight:10,padding:12,font:{size:11,weight:'600',family:'Noto Sans KR, Inter, sans-serif'},usePointStyle:true,pointStyleWidth:8}},datalabels:prodYieldLabelOpts},scales:{...baseOpts.scales,y:{...baseOpts.scales.y,min:97,max:101}}}});
 
         const procSingle = procChartFilter!=='전체';
-        const procColors=['#8b5cf6','#ec4899','#6366f1','#f59e0b','#10b981'];
+        const procColors=['#8b5cf6','#ec4899','#6366f1','#f59e0b','#10b981','#f97316'];
         const procYieldLabelOpts = {
             display: procSingle ? ctx=>ctx.dataset.data[ctx.dataIndex]!==null : false,
             color: ctx=>procColors[ctx.datasetIndex]||'#0c1e3e',
@@ -1720,7 +1722,7 @@ function drawCharts(data){
             anchor:'end',align:'end',offset:8,clip:false,
             formatter:v=>v?v.toFixed(2)+'%':''
         };
-        charts.procYield=new Chart(document.getElementById('chartProcYield'),{type:'line',data:{labels:pl,datasets:['SMD','ROUTER','ATE','PCT','AVI'].map((p,i)=>({label:p,borderColor:procColors[i],tension:0.4,borderWidth:2.5,pointRadius:4,pointBorderWidth:2,pointBackgroundColor:'white',hidden:procSingle&&p!==procChartFilter,data:pm.map(m=>{const d=data.filter(r=>r.month===m&&r.proc===p);const ti=d.reduce((a,b)=>a+b.in,0);const to=d.reduce((a,b)=>a+b.out,0);return ti>0?to/ti*100:null;})}))},options:{...baseOpts,layout:{padding:{top:procSingle?38:16,right:procSingle?50:14,bottom:8,left:8}},plugins:{...baseOpts.plugins,legend:{position:'bottom',display:true,labels:{boxWidth:10,boxHeight:10,padding:12,font:{size:11,weight:'600',family:'Noto Sans KR, Inter, sans-serif'},usePointStyle:true,pointStyleWidth:8}},datalabels:procYieldLabelOpts},scales:{...baseOpts.scales,y:{...baseOpts.scales.y,min:97,max:101}}}});
+        charts.procYield=new Chart(document.getElementById('chartProcYield'),{type:'line',data:{labels:pl,datasets:['SMD','ROUTER','ATE','PCT','AVI','TC'].map((p,i)=>({label:p,borderColor:procColors[i],tension:0.4,borderWidth:2.5,pointRadius:4,pointBorderWidth:2,pointBackgroundColor:'white',hidden:procSingle&&p!==procChartFilter,data:pm.map(m=>{const d=data.filter(r=>r.month===m&&r.proc===p);const ti=d.reduce((a,b)=>a+b.in,0);const to=d.reduce((a,b)=>a+b.out,0);return ti>0?to/ti*100:null;})}))},options:{...baseOpts,layout:{padding:{top:procSingle?38:16,right:procSingle?50:14,bottom:8,left:8}},plugins:{...baseOpts.plugins,legend:{position:'bottom',display:true,labels:{boxWidth:10,boxHeight:10,padding:12,font:{size:11,weight:'600',family:'Noto Sans KR, Inter, sans-serif'},usePointStyle:true,pointStyleWidth:8}},datalabels:procYieldLabelOpts},scales:{...baseOpts.scales,y:{...baseOpts.scales.y,min:97,max:101}}}});
 
         // Fix 4: prodVol by model RDIMM/SODIMM/UDIMM stacked with filter
         const pvColors=['#6366f1','#0891b2','#f59e0b'];
@@ -1868,7 +1870,7 @@ function renderEntryTable(type){
     const src=type==='prod'?prodData:type==='ship'?shipData:defectTypeData;
     src.forEach(d=>{
         const tr=document.createElement('tr');
-        if(type==='prod'){tr.innerHTML=`<td><select><option value="">선택</option><option value="RDIMM"${d.prod==='RDIMM'?' selected':''}>RDIMM</option><option value="SODIMM"${d.prod==='SODIMM'?' selected':''}>SODIMM</option><option value="UDIMM"${d.prod==='UDIMM'?' selected':''}>UDIMM</option></select></td><td><input list="list-months" value="${d.month}"></td><td><select><option value="">선택</option><option value="SMD"${d.proc==='SMD'?' selected':''}>SMD</option><option value="ROUTER"${d.proc==='ROUTER'?' selected':''}>ROUTER</option><option value="ATE"${d.proc==='ATE'?' selected':''}>ATE</option><option value="PCT"${d.proc==='PCT'?' selected':''}>PCT</option><option value="AVI"${d.proc==='AVI'?' selected':''}>AVI</option></select></td><td><input type="number" value="${d.in}"></td><td><input type="number" value="${d.out}"></td><td><input type="number" value="${d.fail}"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">삭제</button></td>`;}
+        if(type==='prod'){tr.innerHTML=`<td><select><option value="">선택</option><option value="RDIMM"${d.prod==='RDIMM'?' selected':''}>RDIMM</option><option value="SODIMM"${d.prod==='SODIMM'?' selected':''}>SODIMM</option><option value="UDIMM"${d.prod==='UDIMM'?' selected':''}>UDIMM</option></select></td><td><input list="list-months" value="${d.month}"></td><td><select><option value="">선택</option><option value="SMD"${d.proc==='SMD'?' selected':''}>SMD</option><option value="ROUTER"${d.proc==='ROUTER'?' selected':''}>ROUTER</option><option value="ATE"${d.proc==='ATE'?' selected':''}>ATE</option><option value="PCT"${d.proc==='PCT'?' selected':''}>PCT</option><option value="AVI"${d.proc==='AVI'?' selected':''}>AVI</option><option value="TC"${d.proc==='TC'?' selected':''}>TC</option></select></td><td><input type="number" value="${d.in}"></td><td><input type="number" value="${d.out}"></td><td><input type="number" value="${d.fail}"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">삭제</button></td>`;}
         else if(type==='ship'){tr.innerHTML=`<td><input list="list-products" value="${d.model}"></td><td><input list="list-model-names" value="${d.name}"></td><td><input type="date" value="${d.date}"></td><td><input type="number" value="${d.qty}"></td><td><input list="list-ship-reasons" value="${d.reason}"></td><td><input list="list-months" value="${d.month}"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">삭제</button></td>`;}
         else{tr.innerHTML=`<td><input list="list-defect-reasons" value="${d.reason||''}"></td><td><input list="list-months" value="${d.month||''}"></td><td><input type="number" value="${d.qty||0}"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">삭제</button></td>`;}
         tbody.appendChild(tr);
@@ -1879,7 +1881,7 @@ function addRow(type){
     const tid=type==='prod'?'tblEntryProd':type==='ship'?'tblEntryShip':'tblEntryDefect';
     const tbody=document.querySelector(`#${tid} tbody`);
     const tr=document.createElement('tr');
-    if(type==='prod'){tr.innerHTML=`<td><select><option value="">선택</option><option value="RDIMM">RDIMM</option><option value="SODIMM">SODIMM</option><option value="UDIMM">UDIMM</option></select></td><td><input list="list-months" placeholder="26.02" value="26.02"></td><td><select><option value="">선택</option><option value="SMD">SMD</option><option value="ROUTER">ROUTER</option><option value="ATE">ATE</option><option value="PCT">PCT</option><option value="AVI">AVI</option></select></td><td><input type="number" placeholder="1000"></td><td><input type="number" placeholder="995"></td><td><input type="number" value="0"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">삭제</button></td>`;}
+    if(type==='prod'){tr.innerHTML=`<td><select><option value="">선택</option><option value="RDIMM">RDIMM</option><option value="SODIMM">SODIMM</option><option value="UDIMM">UDIMM</option></select></td><td><input list="list-months" placeholder="26.02" value="26.02"></td><td><select><option value="">선택</option><option value="SMD">SMD</option><option value="ROUTER">ROUTER</option><option value="ATE">ATE</option><option value="PCT">PCT</option><option value="AVI">AVI</option><option value="TC">TC</option></select></td><td><input type="number" placeholder="1000"></td><td><input type="number" placeholder="995"></td><td><input type="number" value="0"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">삭제</button></td>`;}
     else if(type==='ship'){tr.innerHTML=`<td><input list="list-products" placeholder="RDIMM"></td><td><input list="list-model-names" placeholder="모델명"></td><td><input type="date"></td><td><input type="number" placeholder="1000"></td><td><input list="list-ship-reasons" placeholder="Mass Production"></td><td><input list="list-months" placeholder="26.02" value="26.02"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">삭제</button></td>`;}
     else{tr.innerHTML=`<td><input list="list-defect-reasons" placeholder="Human Error"></td><td><input list="list-months" placeholder="26.02" value="26.02"></td><td><input type="number" value="0"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">삭제</button></td>`;}
     tbody.appendChild(tr); tr.scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -1893,7 +1895,7 @@ function parsePaste(type){
     const tbody=document.querySelector(`#${tid} tbody`); let cnt=0;
     txt.split('\n').forEach(row=>{
         const c=row.split(/\t/); const tr=document.createElement('tr');
-        if(type==='prod'&&c.length>=6){const mv=extractYM(c[1].trim());tr.innerHTML=`<td><select><option value="">선택</option><option value="RDIMM"${c[0].trim()==='RDIMM'?' selected':''}>RDIMM</option><option value="SODIMM"${c[0].trim()==='SODIMM'?' selected':''}>SODIMM</option><option value="UDIMM"${c[0].trim()==='UDIMM'?' selected':''}>UDIMM</option></select></td><td><input list="list-months" value="${mv}"></td><td><select><option value="">선택</option><option value="SMD"${c[2].trim()==='SMD'?' selected':''}>SMD</option><option value="ROUTER"${c[2].trim()==='ROUTER'?' selected':''}>ROUTER</option><option value="ATE"${c[2].trim()==='ATE'?' selected':''}>ATE</option><option value="PCT"${c[2].trim()==='PCT'?' selected':''}>PCT</option><option value="AVI"${c[2].trim()==='AVI'?' selected':''}>AVI</option></select></td><td><input type="number" value="${cleanNum(c[3])}"></td><td><input type="number" value="${cleanNum(c[4])}"></td><td><input type="number" value="${cleanNum(c[5])}"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">삭제</button></td>`;tbody.appendChild(tr);cnt++;}
+        if(type==='prod'&&c.length>=6){const mv=extractYM(c[1].trim());tr.innerHTML=`<td><select><option value="">선택</option><option value="RDIMM"${c[0].trim()==='RDIMM'?' selected':''}>RDIMM</option><option value="SODIMM"${c[0].trim()==='SODIMM'?' selected':''}>SODIMM</option><option value="UDIMM"${c[0].trim()==='UDIMM'?' selected':''}>UDIMM</option></select></td><td><input list="list-months" value="${mv}"></td><td><select><option value="">선택</option><option value="SMD"${c[2].trim()==='SMD'?' selected':''}>SMD</option><option value="ROUTER"${c[2].trim()==='ROUTER'?' selected':''}>ROUTER</option><option value="ATE"${c[2].trim()==='ATE'?' selected':''}>ATE</option><option value="PCT"${c[2].trim()==='PCT'?' selected':''}>PCT</option><option value="AVI"${c[2].trim()==='AVI'?' selected':''}>AVI</option><option value="TC"${c[2].trim()==='TC'?' selected':''}>TC</option></select></td><td><input type="number" value="${cleanNum(c[3])}"></td><td><input type="number" value="${cleanNum(c[4])}"></td><td><input type="number" value="${cleanNum(c[5])}"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">삭제</button></td>`;tbody.appendChild(tr);cnt++;}
         else if(type==='ship'&&c.length>=5){const mv=c.length>=6&&c[5].trim()?extractYM(c[5].trim()):extractYM(c[2].trim());tr.innerHTML=`<td><input list="list-products" value="${c[0].trim()}"></td><td><input list="list-model-names" value="${c[1].trim()}"></td><td><input type="date" value="${c[2].trim()}"></td><td><input type="number" value="${cleanNum(c[3])}"></td><td><input list="list-ship-reasons" value="${c[4].trim()}"></td><td><input list="list-months" value="${mv}"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">삭제</button></td>`;tbody.appendChild(tr);cnt++;}
         else if(type==='defect'&&c.length>=3){const mv=extractYM(c[1].trim());tr.innerHTML=`<td><input list="list-defect-reasons" value="${c[0].trim()}"></td><td><input list="list-months" value="${mv}"></td><td><input type="number" value="${cleanNum(c[2])}"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">삭제</button></td>`;tbody.appendChild(tr);cnt++;}
     });
@@ -1966,12 +1968,12 @@ let CUSTOM_DEFECTS=[];
 function getDefectsForProc(proc){
     const c=CUSTOM_DEFECTS;
     if(['SMD','ROUTER'].includes(proc)) return [...SMD_DEFECTS,...c.filter(d=>d.team==='SMT')];
-    if(['ATE','PCT','AVI'].includes(proc)) return [...TEST_DEFECTS,...c.filter(d=>d.team==='TEST')];
+    if(['ATE','PCT','AVI','TC'].includes(proc)) return [...TEST_DEFECTS,...c.filter(d=>d.team==='TEST')];
     return [...SMD_DEFECTS,...TEST_DEFECTS,...c];
 }
 function getTeam(proc){
     if(['SMD','ROUTER'].includes(proc)) return 'SMT';
-    if(['ATE','PCT','AVI'].includes(proc)) return 'TEST';
+    if(['ATE','PCT','AVI','TC'].includes(proc)) return 'TEST';
     return '—';
 }
 function getTeamBadge(proc){
@@ -2073,7 +2075,7 @@ function renderDailyFilterBtns(){
         b.innerText=label;b.onclick=()=>dFilter('team',v);tp.appendChild(b);
     });
     const pr=document.getElementById('dFilterProcess');pr.innerHTML='';
-    ['전체','SMD','ROUTER','ATE','PCT','AVI'].forEach(p=>{
+    ['전체','SMD','ROUTER','ATE','PCT','AVI','TC'].forEach(p=>{
         const b=document.createElement('button');
         b.className='filter-btn'+(dFilters.process===p?' active':'');
         b.innerText=p==='전체'?all:p;b.onclick=()=>dFilter('process',p);pr.appendChild(b);
@@ -2085,9 +2087,9 @@ function renderDailyFilterBtns(){
             {items:['SMT','TEST'],color:'#6366f1',label:'Team'},
             {items:['RDIMM','SODIMM','UDIMM'],color:'#f43f5e',label:'Model'},
             {items:['SMD','ROUTER'],color:'#8b5cf6',label:'SMT-Proc'},
-            {items:['ATE','PCT','AVI'],color:'#0891b2',label:'TEST-Proc'}
+            {items:['ATE','PCT','AVI','TC'],color:'#0891b2',label:'TEST-Proc'}
         ];
-        const yGroupColors={'SMT':'#6366f1','TEST':'#6366f1','RDIMM':'#f43f5e','SODIMM':'#0891b2','UDIMM':'#f59e0b','SMD':'#8b5cf6','ROUTER':'#ec4899','ATE':'#6366f1','PCT':'#f59e0b','AVI':'#10b981'};
+        const yGroupColors={'SMT':'#6366f1','TEST':'#6366f1','RDIMM':'#f43f5e','SODIMM':'#0891b2','UDIMM':'#f59e0b','SMD':'#8b5cf6','ROUTER':'#ec4899','ATE':'#6366f1','PCT':'#f59e0b','AVI':'#10b981','TC':'#f97316'};
         yGroups.forEach(g=>{
             if(g.label){const sep=document.createElement('span');sep.style.cssText='display:inline-flex;align-items:center;margin:0 4px 0 6px;font-size:9px;font-weight:700;color:'+g.color+';letter-spacing:.5px;';sep.innerText=g.label.toUpperCase();dyf.appendChild(sep);}
             g.items.forEach(p=>{
@@ -2110,9 +2112,9 @@ function renderDailyFilterBtns(){
             {items:['SMT','TEST'],color:'#6366f1',label:'Team'},
             {items:['RDIMM','SODIMM','UDIMM'],color:'#f43f5e',label:'Model'},
             {items:['SMD','ROUTER'],color:'#8b5cf6',label:'SMT-Proc'},
-            {items:['ATE','PCT','AVI'],color:'#0891b2',label:'TEST-Proc'}
+            {items:['ATE','PCT','AVI','TC'],color:'#0891b2',label:'TEST-Proc'}
         ];
-        const ppmGC={'SMT':'#6366f1','TEST':'#6366f1','RDIMM':'#f43f5e','SODIMM':'#0891b2','UDIMM':'#f59e0b','SMD':'#8b5cf6','ROUTER':'#ec4899','ATE':'#6366f1','PCT':'#f59e0b','AVI':'#10b981'};
+        const ppmGC={'SMT':'#6366f1','TEST':'#6366f1','RDIMM':'#f43f5e','SODIMM':'#0891b2','UDIMM':'#f59e0b','SMD':'#8b5cf6','ROUTER':'#ec4899','ATE':'#6366f1','PCT':'#f59e0b','AVI':'#10b981','TC':'#f97316'};
         ppmGroups.forEach(g=>{
             if(g.label){const sep=document.createElement('span');sep.style.cssText='display:inline-flex;align-items:center;margin:0 4px 0 6px;font-size:9px;font-weight:700;color:'+g.color+';letter-spacing:.5px;';sep.innerText=g.label.toUpperCase();dpf.appendChild(sep);}
             g.items.forEach(p=>{
@@ -2138,7 +2140,7 @@ function renderDailyFilterBtns(){
             b.innerText=t==='전체'?all:t;b.onclick=()=>{dDefectTeamFilter=t;renderDailyFilterBtns();drawDailyCharts(getDailyFiltered());};ddf.appendChild(b);});}
     // 공정별 투입수량 필터
     const dpvf=document.getElementById('dProcVolFilter');if(dpvf){dpvf.innerHTML='';
-        ['전체','SMD','ROUTER','ATE','PCT','AVI'].forEach(p=>{
+        ['전체','SMD','ROUTER','ATE','PCT','AVI','TC'].forEach(p=>{
             const b=document.createElement('button');b.className='mini-btn'+(dProcVolFilter===p?' active':'');
             b.innerText=p==='전체'?all:p;b.onclick=()=>{dProcVolFilter=p;renderDailyFilterBtns();drawDailyCharts(getDailyFiltered());};dpvf.appendChild(b);});}
     // 모델별 투입수량 필터
@@ -2179,7 +2181,7 @@ function updateDailyUI(){
     renderDailyFilterBtns();
     const data=getDailyFiltered(), defData=getDailyDefFiltered();
     const smtData=data.filter(d=>['SMD','ROUTER'].includes(d.proc));
-    const testData=data.filter(d=>['ATE','PCT','AVI'].includes(d.proc));
+    const testData=data.filter(d=>['ATE','PCT','AVI','TC'].includes(d.proc));
     // 투입수량: SMD 기준 (첫 공정)으로만 집계
     const smdData=data.filter(d=>d.proc==='SMD');
     const totalIn=smdData.length>0 ? smdData.reduce((a,b)=>a+b.inspQty,0)
@@ -2241,7 +2243,7 @@ function updateDailyUI(){
     // SMT 공정별 (SMD, ROUTER)
     const smtDetail=document.getElementById('smtProcDetail');
     if(smtDetail){
-        let smtHtml='<div style="'+procDetailStyle+'"><div style="'+procHeaderStyle+'">공정</div><div style="'+procHeaderStyle+'">수율</div><div style="'+procHeaderStyle+'">투입/불량</div>';
+        let smtHtml='<div style="'+procDetailStyle+'"><div style="'+procHeaderStyle+'">'+(lang==='ko'?'공정':'Process')+'</div><div style="'+procHeaderStyle+'">'+(lang==='ko'?'수율':'Yield')+'</div><div style="'+procHeaderStyle+'">'+(lang==='ko'?'투입/불량':'Input/Defect')+'</div>';
         ['SMD','ROUTER'].forEach(proc=>{
             const pd=data.filter(d=>d.proc===proc);
             const pi=pd.reduce((a,b)=>a+b.inspQty,0);
@@ -2258,8 +2260,8 @@ function updateDailyUI(){
     // TEST 공정별 (ATE, PCT, AVI)
     const testDetail=document.getElementById('testProcDetail');
     if(testDetail){
-        let testHtml='<div style="'+procDetailStyle+'"><div style="'+procHeaderStyle+'">공정</div><div style="'+procHeaderStyle+'">수율</div><div style="'+procHeaderStyle+'">투입/불량</div>';
-        ['ATE','PCT','AVI'].forEach(proc=>{
+        let testHtml='<div style="'+procDetailStyle+'"><div style="'+procHeaderStyle+'">'+(lang==='ko'?'공정':'Process')+'</div><div style="'+procHeaderStyle+'">'+(lang==='ko'?'수율':'Yield')+'</div><div style="'+procHeaderStyle+'">'+(lang==='ko'?'투입/불량':'Input/Defect')+'</div>';
+        ['ATE','PCT','AVI','TC'].forEach(proc=>{
             const pd=data.filter(d=>d.proc===proc);
             const pi=pd.reduce((a,b)=>a+b.inspQty,0);
             const pdef=pd.reduce((a,b)=>a+(b.defectQty||0),0);
@@ -2283,7 +2285,7 @@ function renderTblFilterBtns(){
     const mf=document.getElementById('dTblModelFilter');
     if(mf){mf.innerHTML='';['전체','RDIMM','SODIMM','UDIMM'].forEach(v=>{const b=document.createElement('button');b.className='filter-btn filter-btn-sm'+(tblFilters.model===v?' active':'');b.innerText=v==='전체'?all:v;b.onclick=()=>{tblFilters.model=v;renderTblFilterBtns();updateDailyTables(getDailyFiltered(),getDailyDefFiltered());};mf.appendChild(b);});}
     const pf=document.getElementById('dTblProcFilter');
-    if(pf){pf.innerHTML='';['전체','SMD','ROUTER','ATE','PCT','AVI'].forEach(v=>{const b=document.createElement('button');b.className='filter-btn filter-btn-sm'+(tblFilters.proc===v?' active':'');b.innerText=v==='전체'?all:v;b.onclick=()=>{tblFilters.proc=v;renderTblFilterBtns();updateDailyTables(getDailyFiltered(),getDailyDefFiltered());};pf.appendChild(b);});}
+    if(pf){pf.innerHTML='';['전체','SMD','ROUTER','ATE','PCT','AVI','TC'].forEach(v=>{const b=document.createElement('button');b.className='filter-btn filter-btn-sm'+(tblFilters.proc===v?' active':'');b.innerText=v==='전체'?all:v;b.onclick=()=>{tblFilters.proc=v;renderTblFilterBtns();updateDailyTables(getDailyFiltered(),getDailyDefFiltered());};pf.appendChild(b);});}
     const tf=document.getElementById('dTblTeamFilter');
     if(tf){tf.innerHTML='';[['전체',all],['SMT','SMT'],['TEST','TEST']].forEach(([v,l])=>{const b=document.createElement('button');b.className='filter-btn filter-btn-sm'+(tblFilters.team===v?(v==='SMT'?' active-smt':v==='TEST'?' active-test':' active'):'');b.innerText=l;b.onclick=()=>{tblFilters.team=v;renderTblFilterBtns();updateDailyTables(getDailyFiltered(),getDailyDefFiltered());};tf.appendChild(b);});}
 }
@@ -2359,14 +2361,14 @@ function drawDailyCharts(data){
         if(!dates.length) return;
         // ── Yield Trend with DATA LABELS ──
         const isTeam=['SMT','TEST'].includes(dYieldFilter);
-        const isProc=['SMD','ROUTER','ATE','PCT','AVI'].includes(dYieldFilter);
+        const isProc=['SMD','ROUTER','ATE','PCT','AVI','TC'].includes(dYieldFilter);
         let yDS;
         if(isTeam){
-            const procs=dYieldFilter==='SMT'?['SMD','ROUTER']:['ATE','PCT','AVI'];
+            const procs=dYieldFilter==='SMT'?['SMD','ROUTER']:['ATE','PCT','AVI','TC'];
             const c=dYieldFilter==='SMT'?'#6366f1':'#0891b2';
             yDS=[{label:dYieldFilter,data:dates.map(dt=>{const d=data.filter(r=>r.date===dt&&procs.includes(r.proc));const i=d.reduce((a,b)=>a+b.inspQty,0);const g=d.reduce((a,b)=>a+b.goodQty,0);return i>0?+(g/i*100).toFixed(2):null;}),borderColor:c,fill:false,tension:.4,borderWidth:2.5,pointRadius:5,pointBackgroundColor:'white',pointBorderColor:c,pointBorderWidth:2.5}];
         } else if(isProc){
-            const c={SMD:'#8b5cf6',ROUTER:'#ec4899',ATE:'#6366f1',PCT:'#f59e0b',AVI:'#10b981'}[dYieldFilter]||'#6366f1';
+            const c={SMD:'#8b5cf6',ROUTER:'#ec4899',ATE:'#6366f1',PCT:'#f59e0b',AVI:'#10b981',TC:'#f97316'}[dYieldFilter]||'#6366f1';
             yDS=[{label:dYieldFilter,data:dates.map(dt=>{const d=data.filter(r=>r.date===dt&&r.proc===dYieldFilter);const i=d.reduce((a,b)=>a+b.inspQty,0);const g=d.reduce((a,b)=>a+b.goodQty,0);return i>0?+(g/i*100).toFixed(2):null;}),borderColor:c,fill:false,tension:.4,borderWidth:2.5,pointRadius:5,pointBackgroundColor:'white',pointBorderColor:c,pointBorderWidth:2.5}];
         } else {
             const models=dYieldFilter==='전체'?['RDIMM','SODIMM','UDIMM']:[dYieldFilter];
@@ -2392,7 +2394,7 @@ function drawDailyCharts(data){
             if(smdRow) return smdRow.inspQty;
             const rows=data.filter(r=>r.date===dt&&r.model===model);
             if(!rows.length) return 0;
-            rows.sort((a,b)=>['SMD','ROUTER','ATE','PCT','AVI'].indexOf(a.proc)-['SMD','ROUTER','ATE','PCT','AVI'].indexOf(b.proc));
+            rows.sort((a,b)=>['SMD','ROUTER','ATE','PCT','AVI','TC'].indexOf(a.proc)-['SMD','ROUTER','ATE','PCT','AVI','TC'].indexOf(b.proc));
             return rows[0].inspQty;
         };
         const vDS=models2.map(m=>({label:m,data:dates.map(dt=>getVolForDateModel(dt,m)),backgroundColor:vColors[m]||'#6366f1',borderRadius:4,borderSkipped:false,stack:'v0',
@@ -2402,14 +2404,14 @@ function drawDailyCharts(data){
         // ── Daily PPM Trend (shares dYieldFilter) ──
         if(document.getElementById('dChartPpm')){
             const isTeamPpm=['SMT','TEST'].includes(dYieldFilter);
-            const isProcPpm=['SMD','ROUTER','ATE','PCT','AVI'].includes(dYieldFilter);
+            const isProcPpm=['SMD','ROUTER','ATE','PCT','AVI','TC'].includes(dYieldFilter);
             let ppmDS;
             if(isTeamPpm){
-                const procs=dYieldFilter==='SMT'?['SMD','ROUTER']:['ATE','PCT','AVI'];
+                const procs=dYieldFilter==='SMT'?['SMD','ROUTER']:['ATE','PCT','AVI','TC'];
                 const c=dYieldFilter==='SMT'?'#6366f1':'#0891b2';
                 ppmDS=[{label:dYieldFilter+' PPM',data:dates.map(dt=>{const d=data.filter(r=>r.date===dt&&procs.includes(r.proc));const i=d.reduce((a,b)=>a+b.inspQty,0);const def=d.reduce((a,b)=>a+(b.defectQty||0),0);return i>0?Math.round(def/i*1000000):null;}),borderColor:c,backgroundColor:c+'12',fill:true,tension:.4,borderWidth:2.5,pointRadius:5,pointBackgroundColor:'white',pointBorderColor:c,pointBorderWidth:2.5}];
             } else if(isProcPpm){
-                const c={SMD:'#8b5cf6',ROUTER:'#ec4899',ATE:'#6366f1',PCT:'#f59e0b',AVI:'#10b981'}[dYieldFilter]||'#6366f1';
+                const c={SMD:'#8b5cf6',ROUTER:'#ec4899',ATE:'#6366f1',PCT:'#f59e0b',AVI:'#10b981',TC:'#f97316'}[dYieldFilter]||'#6366f1';
                 ppmDS=[{label:dYieldFilter+' PPM',data:dates.map(dt=>{const d=data.filter(r=>r.date===dt&&r.proc===dYieldFilter);const i=d.reduce((a,b)=>a+b.inspQty,0);const def=d.reduce((a,b)=>a+(b.defectQty||0),0);return i>0?Math.round(def/i*1000000):null;}),borderColor:c,backgroundColor:c+'12',fill:true,tension:.4,borderWidth:2.5,pointRadius:5,pointBackgroundColor:'white',pointBorderColor:c,pointBorderWidth:2.5}];
             } else {
                 const models=dYieldFilter==='전체'?['RDIMM','SODIMM','UDIMM']:[dYieldFilter];
@@ -2421,8 +2423,8 @@ function drawDailyCharts(data){
         }
 
         // ── FIX 8: Daily Production by Process chart ──
-        const procColors={SMD:'#8b5cf6',ROUTER:'#ec4899',ATE:'#6366f1',PCT:'#f59e0b',AVI:'#10b981'};
-        const procs2=['SMD','ROUTER','ATE','PCT','AVI'];
+        const procColors={SMD:'#8b5cf6',ROUTER:'#ec4899',ATE:'#6366f1',PCT:'#f59e0b',AVI:'#10b981',TC:'#f97316'};
+        const procs2=['SMD','ROUTER','ATE','PCT','AVI','TC'];
         const pDS=procs2.map(p=>({label:p,data:dates.map(dt=>data.filter(r=>r.date===dt&&r.proc===p).reduce((a,b)=>a+b.inspQty,0)),backgroundColor:procColors[p],borderRadius:3,borderSkipped:false,stack:'p0',
             datalabels:{display:ctx=>ctx.dataset.data[ctx.dataIndex]>0,anchor:'center',align:'center',color:'white',backgroundColor:'transparent',font:{weight:'700',size:9,family:'JetBrains Mono,monospace'},formatter:v=>v>0?v.toLocaleString():''}}));
         if(document.getElementById('dChartProcVol')){
@@ -2445,9 +2447,9 @@ function drawDailyCharts(data){
         const tblData2 = getDailyFiltered(); // 테이블 필터와 무관하게 전체 사용
         if(tblData2.length){
             // (1) 공정별 투입수량 (날짜 x축, 공정 스택)
-            const pColors2={SMD:'#8b5cf6',ROUTER:'#ec4899',ATE:'#6366f1',PCT:'#f59e0b',AVI:'#10b981'};
+            const pColors2={SMD:'#8b5cf6',ROUTER:'#ec4899',ATE:'#6366f1',PCT:'#f59e0b',AVI:'#10b981',TC:'#f97316'};
             const allDates=[...new Set(tblData2.map(d=>d.date))].sort();
-            const procDS=['SMD','ROUTER','ATE','PCT','AVI'].map(p=>({
+            const procDS=['SMD','ROUTER','ATE','PCT','AVI','TC'].map(p=>({
                 label:p, backgroundColor:pColors2[p], borderRadius:3, borderSkipped:false, stack:'pp',
                 hidden:dProcVolFilter!=='전체'&&p!==dProcVolFilter,
                 data:allDates.map(dt=>tblData2.filter(r=>r.date===dt&&r.proc===p).reduce((a,b)=>a+b.inspQty,0)),
@@ -2473,7 +2475,7 @@ function drawDailyCharts(data){
                     if(smdRow) return smdRow.inspQty;
                     const rows=tblData2.filter(r=>r.date===dt&&r.model===m);
                     if(!rows.length) return 0;
-                    rows.sort((a,b)=>['SMD','ROUTER','ATE','PCT','AVI'].indexOf(a.proc)-['SMD','ROUTER','ATE','PCT','AVI'].indexOf(b.proc));
+                    rows.sort((a,b)=>['SMD','ROUTER','ATE','PCT','AVI','TC'].indexOf(a.proc)-['SMD','ROUTER','ATE','PCT','AVI','TC'].indexOf(b.proc));
                     return rows[0].inspQty;
                 }),
                 datalabels:{display:ctx=>ctx.dataset.data[ctx.dataIndex]>0,anchor:'center',align:'center',color:'white',font:{weight:'700',size:9,family:'JetBrains Mono,monospace'},formatter:v=>v>0?v.toLocaleString():''}
@@ -2517,7 +2519,7 @@ function drawProdYieldDefChart(modelFilter){
     const data=getDailyFiltered().filter(d=>modelFilter==='전체'||d.model===modelFilter);
     const allDates=[...new Set(data.map(d=>d.date))].sort();
     if(!allDates.length) return;
-    const procOrder=['SMD','ROUTER','ATE','PCT','AVI'];
+    const procOrder=['SMD','ROUTER','ATE','PCT','AVI','TC'];
     // 날짜별 SMD 기준 투입, 전체 불량
     const dateInsp=allDates.map(dt=>{
         const smdRows=data.filter(r=>r.date===dt&&r.proc==='SMD');
@@ -2543,7 +2545,7 @@ function drawProdYieldDefChart(modelFilter){
                      datalabels:{display:false}},
             scales:{
                 x:{grid:{display:false},ticks:{font:{size:10},color:'#94a3b8',maxRotation:45},border:{display:false}},
-                y1:{position:'left',min:90,max:101,grid:{color:'#f1f5f9'},ticks:{font:{size:10},color:'#6366f1'},border:{display:false},title:{display:true,text:'수율(%)',color:'#6366f1',font:{size:10,weight:'700'}}},
+                y1:{position:'left',min:90,max:101,grid:{color:'#f1f5f9'},ticks:{font:{size:10},color:'#6366f1'},border:{display:false},title:{display:true,text:lang==='ko'?'수율(%)':'Yield(%)',color:'#6366f1',font:{size:10,weight:'700'}}},
                 y2:{position:'right',min:0,grid:{display:false},ticks:{font:{size:10},color:'#e11d48'},border:{display:false},title:{display:true,text:lang==='ko'?'불량수':'Defects',color:'#e11d48',font:{size:10,weight:'700'}}}
             }
         }
@@ -2579,6 +2581,7 @@ function addDailyProdRow(date='',model='',proc='',insp='',good='',def=''){
             <option value="ATE"${proc==='ATE'?' selected':''}>ATE</option>
             <option value="PCT"${proc==='PCT'?' selected':''}>PCT</option>
             <option value="AVI"${proc==='AVI'?' selected':''}>AVI</option>
+            <option value="TC"${proc==='TC'?' selected':''}>TC</option>
         </select></td>
         <td class="tc">${getTeamBadge(proc)}</td>
         <td><input type="number" style="width:88px;padding:6px 8px;border:1px solid var(--border);border-radius:7px;font-family:'JetBrains Mono',monospace;" value="${insp}" placeholder="${lang==='ko'?'투입':'Input'}" min="0"></td>
@@ -2727,6 +2730,7 @@ function addDailyDefRow(model='',date='',proc='',defCode='',defName='',qty=''){
             <option value="ATE"${proc==='ATE'?' selected':''}>ATE</option>
             <option value="PCT"${proc==='PCT'?' selected':''}>PCT</option>
             <option value="AVI"${proc==='AVI'?' selected':''}>AVI</option>
+            <option value="TC"${proc==='TC'?' selected':''}>TC</option>
         </select></td>
         <td class="tc-${rowId}">${getTeamBadge(proc)}</td>
         <td><div class="search-select-wrap" id="ssw_${rowId}">
