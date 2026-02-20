@@ -1604,14 +1604,14 @@ function renderDefectBtns(){
 function updateDefectTable(){
     const tbl=document.getElementById('tblDefectType'); if(!tbl)return;
     const thead=tbl.querySelector('thead'), tbody=tbl.querySelector('tbody');
-    const months=getDM(), reasons=[...new Set(defectTypeData.map(d=>d.reason))].sort();
-    thead.innerHTML=`<tr><th>${lang==='ko'?'기간':'Period'}</th>${reasons.map(r=>`<th>${r}</th>`).join('')}<th>${lang==='ko'?'합계':'Total'}</th></tr>`;
-    if(!months.length||!reasons.length){tbody.innerHTML=`<tr><td colspan="${reasons.length+2}" style="text-align:center;color:#94a3b8;padding:30px;">${lang==='ko'?'데이터 없음':'No data'}</td></tr>`;return;}
-    const rt={};reasons.forEach(r=>rt[r]=defectTypeData.filter(d=>d.reason===r).reduce((a,b)=>a+b.qty,0));
+    const months=getDM(), ml=smartMonthLabels(months), reasons=[...new Set(defectTypeData.map(d=>d.reason))].sort();
+    thead.innerHTML=`<tr><th>${lang==='ko'?'구분':'Type'}</th>${ml.map(l=>`<th>${l}</th>`).join('')}<th>${lang==='ko'?'합계':'Total'}</th></tr>`;
+    if(!months.length||!reasons.length){tbody.innerHTML=`<tr><td colspan="${months.length+2}" style="text-align:center;color:#94a3b8;padding:30px;">${lang==='ko'?'데이터 없음':'No data'}</td></tr>`;return;}
+    const mt={};months.forEach(m=>mt[m]=defectTypeData.filter(d=>d.month===m).reduce((a,b)=>a+b.qty,0));
     tbody.innerHTML=''; let grand=0;
-    months.forEach(m=>{
-        let rt2=0,row=`<tr><td><strong>${fmtPeriod(m)}</strong></td>`;
-        reasons.forEach(r=>{
+    reasons.forEach(r=>{
+        let rt2=0,row=`<tr><td><strong>${r}</strong></td>`;
+        months.forEach(m=>{
             const item=defectTypeData.find(d=>d.month===m&&d.reason===r), q=item?item.qty:0; rt2+=q;
             let cls='',dsp='';
             if(q===0){cls='d-zero';dsp='-';}else if(q<=2){cls='d-low';dsp=q.toLocaleString();}else if(q<=5){cls='d-med';dsp=q.toLocaleString();}else{cls='d-high';dsp=q.toLocaleString();}
@@ -1620,7 +1620,7 @@ function updateDefectTable(){
         row+=`<td>${rt2.toLocaleString()}</td></tr>`;
         tbody.innerHTML+=row; grand+=rt2;
     });
-    tbody.innerHTML+=`<tr class="grand-row"><td>${lang==='ko'?'전체 합계':'Grand Total'}</td>${reasons.map(r=>`<td>${rt[r].toLocaleString()}</td>`).join('')}<td>${grand.toLocaleString()}</td></tr>`;
+    tbody.innerHTML+=`<tr class="grand-row"><td>${lang==='ko'?'전체 합계':'Grand Total'}</td>${months.map(m=>`<td>${mt[m].toLocaleString()}</td>`).join('')}<td>${grand.toLocaleString()}</td></tr>`;
 }
 
 function renderFilterButtons(){
