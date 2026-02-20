@@ -782,8 +782,9 @@
             <button class="btn btn-daily-def"  onclick="openDailyDefModal()" id="btnDailyDef">🔴 불량 코드 입력</button>
         </span>
         <span id="attBtns" style="display:none;gap:8px;align-items:center;">
-            <button class="btn btn-daily-att"  onclick="openAttendanceModal()" id="btnAttendance">👥 출근 인원 등록</button>
-            <button class="btn btn-daily-member" onclick="openMemberModal()" id="btnMemberMgmt">👤 팀원 관리</button>
+            <button class="btn btn-daily-att"  onclick="openAttendanceModal()" id="btnAttendance">👥 출근 등록 Register</button>
+            <button class="btn btn-daily-def"  onclick="openAttEditModal()" id="btnAttEdit">✏️ 출근 수정 Edit</button>
+            <button class="btn btn-daily-member" onclick="openMemberModal()" id="btnMemberMgmt">👤 팀원 관리 Members</button>
         </span>
         <button class="btn btn-excel" onclick="exportExcel()">📊 Excel</button>
         <button class="btn btn-backup" onclick="openBackupModal()" id="btnBackup">💾 백업</button>
@@ -1284,6 +1285,34 @@
     </div>
 </div>
 
+<!-- ═══ Attendance Edit Modal ═══ -->
+<div id="modalAttEdit" class="modal">
+    <div class="modal-box">
+        <div class="modal-title">✏️ 출근 데이터 수정 Edit Attendance</div>
+        <div class="modal-desc">날짜와 팀을 선택하여 기존 데이터를 수정하거나 삭제하세요.<br>Select date and team to edit or delete existing data.</div>
+        <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap;">
+            <input type="date" id="attEditDate" onchange="renderAttEditList()" style="padding:8px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'JetBrains Mono',monospace;font-size:13px;">
+            <div id="attEditTeamTabs" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
+        </div>
+        <div id="attEditInfo" style="margin-bottom:10px;font-size:12px;color:#64748b;"></div>
+        <div style="max-height:400px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;">
+            <table class="entry-tbl" id="tblAttEdit">
+                <thead><tr><th style="min-width:120px;">이름 Name</th><th style="min-width:80px;">직급 Position</th><th style="min-width:160px;">상태 Status</th><th style="width:50px;">삭제</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div id="attEditDates" style="margin-top:14px;padding:12px;background:#f8fafc;border-radius:10px;border:1px solid var(--border);">
+            <div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:8px;">📋 등록된 날짜 Registered Dates</div>
+            <div id="attEditDateList" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-save btn-full" onclick="saveAttEdit()">💾 수정 저장 Save Changes</button>
+            <button class="btn-clr" onclick="deleteAttDate()" style="width:100%;padding:12px;border-radius:10px;font-size:13px;font-weight:700;">🗑️ 이 날짜 전체 삭제 Delete This Date</button>
+            <button class="btn-cancel btn-full" onclick="document.getElementById('modalAttEdit').style.display='none'">닫기 Close</button>
+        </div>
+    </div>
+</div>
+
 <!-- ═══ Member Management Modal ═══ -->
 <div id="modalMemberMgmt" class="modal">
     <div class="modal-box">
@@ -1556,7 +1585,7 @@ const T={ko:{mainTitle:'📊 DS Quality Performance',lblProd:'제품',lblPeriod:
     dSortLabel:'정렬:',dSortDateDesc:'날짜 ↓',dSortDateAsc:'날짜 ↑',dSortYieldAsc:'수율 ↑',dSortYieldDesc:'수율 ↓',dSortDefectDesc:'불량 ↓',
     modalDailyProdTitle:'📅 일별 생산 데이터 입력',modalDailyProdDesc:'붙여넣기 순서: 날짜(YYYY-MM-DD) | 모델 | 공정 | 팀 | 투입수량 | 양품수량 | 불량수량',
     modalDailyDefTitle:'🔴 일별 불량 코드 입력',modalDailyDefDesc:'공정별 불량 수량 내에서만 코드를 입력할 수 있습니다',
-    btnAttendance:'👥 출근 인원 등록',btnMemberMgmt:'👤 팀원 관리',
+    btnAttendance:'👥 출근 등록 Register',btnAttEdit:'✏️ 출근 수정 Edit',btnMemberMgmt:'👤 팀원 관리 Members',
     attLblDate:'날짜',attBtnToday:'오늘',attBtnThisWeek:'이번 주',attBtnThisMonth:'이번 달',
     attSection:'📍 출근 현황',attKpiRate:'출근율',attKpiWork:'출근',attKpiVacation:'휴가',attKpiAbsent:'결근·조퇴',
     attTitDonut:'출근 상태 비율',attTitBar:'날짜별 출근 현황',
@@ -1577,7 +1606,7 @@ const T={ko:{mainTitle:'📊 DS Quality Performance',lblProd:'제품',lblPeriod:
     dSortLabel:'Sort:',dSortDateDesc:'Date ↓',dSortDateAsc:'Date ↑',dSortYieldAsc:'Yield ↑',dSortYieldDesc:'Yield ↓',dSortDefectDesc:'Defect ↓',
     modalDailyProdTitle:'📅 Daily Production Entry',modalDailyProdDesc:'Paste order: Date(YYYY-MM-DD) | Model | Process | Team | InputQty | GoodQty | DefectQty',
     modalDailyDefTitle:'🔴 Daily Defect Code Entry',modalDailyDefDesc:'Defect codes must be within the defect quantity already recorded for that date/model/process',
-    btnAttendance:'👥 Attendance Entry',btnMemberMgmt:'👤 Member Mgmt',
+    btnAttendance:'👥 출근 등록 Register',btnAttEdit:'✏️ 출근 수정 Edit',btnMemberMgmt:'👤 팀원 관리 Members',
     attLblDate:'Date',attBtnToday:'Today',attBtnThisWeek:'This Week',attBtnThisMonth:'This Month',
     attSection:'📍 Attendance',attKpiRate:'Attendance Rate',attKpiWork:'Present',attKpiVacation:'Vacation',attKpiAbsent:'Absent/Early',
     attTitDonut:'Status Distribution',attTitBar:'Daily Attendance',
@@ -3220,6 +3249,123 @@ function saveAttendance(){
         alert(lang==='ko'?`✅ ${team} ${date} 출근 데이터 저장 완료 (${newRecords.length}명)`:`✅ ${team} ${date} attendance saved (${newRecords.length} members)`);
         document.getElementById('modalAttendance').style.display='none';
     });
+}
+
+// ══════════════════════════════════════════════════════
+// ATTENDANCE EDIT / DELETE
+// ══════════════════════════════════════════════════════
+let attEditTeam=null;
+
+function openAttEditModal(){
+    document.getElementById('modalAttEdit').style.display='block';
+    const di=document.getElementById('attEditDate');
+    if(di&&!di.value) di.value=new Date().toISOString().slice(0,10);
+    attEditTeam=ATT_TEAMS[0];
+    renderAttEditTeamTabs();
+    renderAttEditList();
+    renderAttEditDates();
+}
+
+function renderAttEditTeamTabs(){
+    const c=document.getElementById('attEditTeamTabs');
+    if(!c) return;
+    c.innerHTML=ATT_TEAMS.map(t=>{
+        const cnt=attendanceData.filter(d=>d.date===document.getElementById('attEditDate')?.value&&d.team===t).length;
+        return `<button class="att-tab${t===attEditTeam?' active':''}" onclick="attEditTeam='${t}';renderAttEditTeamTabs();renderAttEditList()">${t} (${cnt})</button>`;
+    }).join('');
+}
+
+function renderAttEditList(){
+    const tbody=document.querySelector('#tblAttEdit tbody');
+    if(!tbody) return;
+    const date=document.getElementById('attEditDate')?.value||'';
+    const team=attEditTeam;
+    const records=attendanceData.filter(d=>d.date===date&&d.team===team);
+    const info=document.getElementById('attEditInfo');
+    if(info) info.innerText=records.length>0
+        ?(lang==='ko'?`📌 ${date} ${team} — ${records.length}명 등록됨`:`📌 ${date} ${team} — ${records.length} records`)
+        :(lang==='ko'?`⚠️ ${date} ${team} — 등록된 데이터 없음`:`⚠️ ${date} ${team} — No data`);
+    if(!records.length){
+        tbody.innerHTML=`<tr><td colspan="4" style="text-align:center;color:#94a3b8;padding:24px;">${lang==='ko'?'이 날짜/팀에 등록된 데이터가 없습니다.':'No data for this date/team.'}</td></tr>`;
+        return;
+    }
+    tbody.innerHTML=records.map((r,i)=>{
+        return `<tr data-edit-idx="${i}">
+            <td style="font-weight:600">${r.name}</td>
+            <td style="color:#64748b;font-size:12px">${r.position||''}</td>
+            <td><select class="att-edit-sel" style="padding:5px 8px;border:1px solid var(--border);border-radius:7px;font-size:12px;background:white;">
+                ${ATT_STATUS.map(s=>`<option value="${s}"${s===r.status?' selected':''}>${getAttStatusLabel(s)}</option>`).join('')}
+            </select></td>
+            <td style="text-align:center"><button onclick="markAttEditDel(this)" style="background:#fee2e2;color:#dc2626;border:none;border-radius:6px;padding:4px 8px;cursor:pointer;font-size:11px;font-weight:700;">✕</button></td>
+        </tr>`;
+    }).join('');
+    renderAttEditTeamTabs();
+    renderAttEditDates();
+}
+
+function markAttEditDel(btn){
+    const tr=btn.closest('tr');
+    if(tr.style.opacity==='0.3'){
+        tr.style.opacity='1';tr.style.textDecoration='none';
+        btn.innerText='✕';btn.style.background='#fee2e2';btn.style.color='#dc2626';
+    } else {
+        tr.style.opacity='0.3';tr.style.textDecoration='line-through';
+        btn.innerText='↩';btn.style.background='#dbeafe';btn.style.color='#2563eb';
+    }
+}
+
+function saveAttEdit(){
+    const date=document.getElementById('attEditDate')?.value;
+    if(!date){alert(lang==='ko'?'날짜를 선택하세요':'Select a date');return;}
+    const team=attEditTeam;
+    const records=attendanceData.filter(d=>d.date===date&&d.team===team);
+    const rows=document.querySelectorAll('#tblAttEdit tbody tr[data-edit-idx]');
+    const kept=attendanceData.filter(d=>!(d.date===date&&d.team===team));
+    const updated=[];
+    rows.forEach((tr,i)=>{
+        if(tr.style.opacity==='0.3') return; // deleted
+        const sel=tr.querySelector('.att-edit-sel');
+        if(sel&&i<records.length){
+            updated.push({...records[i],status:sel.value});
+        }
+    });
+    const merged=[...kept,...updated];
+    saveToFirebase('att',merged).then(()=>{
+        const delCnt=records.length-updated.length;
+        const msg=lang==='ko'
+            ?`✅ ${team} ${date} 수정 완료 (${updated.length}명 저장, ${delCnt}명 삭제)`
+            :`✅ ${team} ${date} updated (${updated.length} saved, ${delCnt} deleted)`;
+        alert(msg);
+        renderAttEditList();
+    });
+}
+
+function deleteAttDate(){
+    const date=document.getElementById('attEditDate')?.value;
+    if(!date){alert(lang==='ko'?'날짜를 선택하세요':'Select a date');return;}
+    const cnt=attendanceData.filter(d=>d.date===date).length;
+    if(!cnt){alert(lang==='ko'?'해당 날짜에 데이터가 없습니다.':'No data for this date.');return;}
+    const ok=confirm(lang==='ko'
+        ?`⚠️ ${date} 전체 팀 출근 데이터(${cnt}건)를 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`
+        :`⚠️ Delete all attendance data for ${date} (${cnt} records)?\nThis cannot be undone.`);
+    if(!ok) return;
+    const kept=attendanceData.filter(d=>d.date!==date);
+    saveToFirebase('att',kept).then(()=>{
+        alert(lang==='ko'?`✅ ${date} 출근 데이터 삭제 완료`:`✅ ${date} attendance data deleted`);
+        renderAttEditList();
+    });
+}
+
+function renderAttEditDates(){
+    const list=document.getElementById('attEditDateList');
+    if(!list) return;
+    const dates=[...new Set(attendanceData.map(d=>d.date))].sort().reverse();
+    if(!dates.length){list.innerHTML=`<span style="color:#94a3b8;font-size:11px;">${lang==='ko'?'등록된 날짜 없음':'No dates registered'}</span>`;return;}
+    list.innerHTML=dates.slice(0,30).map(dt=>{
+        const cnt=attendanceData.filter(d=>d.date===dt).length;
+        const isSelected=dt===document.getElementById('attEditDate')?.value;
+        return `<button onclick="document.getElementById('attEditDate').value='${dt}';renderAttEditList();" style="padding:4px 10px;border-radius:8px;border:1.5px solid ${isSelected?'#3b82f6':'var(--border)'};background:${isSelected?'#eff6ff':'white'};color:${isSelected?'#2563eb':'#334155'};font-size:11px;font-weight:600;font-family:'JetBrains Mono',monospace;cursor:pointer;transition:all .15s;">${dt} <span style="color:#94a3b8;font-size:10px;">(${cnt})</span></button>`;
+    }).join('');
 }
 
 function openMemberModal(){
