@@ -1473,14 +1473,30 @@ function initFirebase(){
     try{
         firebase.initializeApp(FIREBASE_CONFIG); db=firebase.database();
         setupListeners();
+        // 10초 후에도 로딩 미완료 시 강제 진행
+        setTimeout(()=>{
+            if(!Object.values(dataLoaded).every(v=>v)){
+                console.warn('Timeout: forcing load. Missing:',Object.entries(dataLoaded).filter(([k,v])=>!v).map(([k])=>k));
+                // 미로드 데이터에 기본값 적용
+                if(!dataLoaded.att){ attendanceData=[]; dataLoaded.att=true; }
+                if(!dataLoaded.members){ teamMembers=getDefaultTeamMembers(); dataLoaded.members=true; }
+                if(!dataLoaded.prod){ prodData=getDefaultProdData(); dataLoaded.prod=true; }
+                if(!dataLoaded.ship){ shipData=getDefaultShipData(); dataLoaded.ship=true; }
+                if(!dataLoaded.defect){ defectTypeData=getDefaultDefectData(); dataLoaded.defect=true; }
+                if(!dataLoaded.dprod){ dailyProdData=[]; dataLoaded.dprod=true; }
+                if(!dataLoaded.ddef){ dailyDefectData=[]; dataLoaded.ddef=true; }
+                document.getElementById('loadingOverlay').style.display='none';
+                initUI();
+            }
+        },10000);
     }catch(e){ setSyncStatus('offline','연결 오류'); document.getElementById('loadingOverlay').style.display='none'; }
 }
 
 function setupListeners(){
     setSyncStatus('saving','데이터 로딩 중...');
-    db.ref('prodData').on('value',s=>{ prodData=s.val()?Object.values(s.val()):getDefaultProdData(); dataLoaded.prod=true; checkLoaded(); });
-    db.ref('shipData').on('value',s=>{ shipData=s.val()?Object.values(s.val()):getDefaultShipData(); dataLoaded.ship=true; checkLoaded(); });
-    db.ref('defectTypeData').on('value',s=>{ defectTypeData=s.val()?Object.values(s.val()):getDefaultDefectData(); dataLoaded.defect=true; checkLoaded(); });
+    db.ref('prodData').on('value',s=>{ prodData=s.val()?Object.values(s.val()):getDefaultProdData(); dataLoaded.prod=true; checkLoaded(); },e=>{ console.error('prodData error:',e); prodData=getDefaultProdData(); dataLoaded.prod=true; checkLoaded(); });
+    db.ref('shipData').on('value',s=>{ shipData=s.val()?Object.values(s.val()):getDefaultShipData(); dataLoaded.ship=true; checkLoaded(); },e=>{ console.error('shipData error:',e); shipData=getDefaultShipData(); dataLoaded.ship=true; checkLoaded(); });
+    db.ref('defectTypeData').on('value',s=>{ defectTypeData=s.val()?Object.values(s.val()):getDefaultDefectData(); dataLoaded.defect=true; checkLoaded(); },e=>{ console.error('defectTypeData error:',e); defectTypeData=getDefaultDefectData(); dataLoaded.defect=true; checkLoaded(); });
     db.ref('dailyProdData').on('value',s=>{
         const raw=s.val()?Object.values(s.val()):[];
         // 데이터 로드: inspQty > 0인 행만, defectQty는 저장값 그대로 신뢰
@@ -1495,14 +1511,17 @@ function setupListeners(){
             return {...d, inspQty, goodQty, defectQty};
         });
         dataLoaded.dprod=true; checkLoaded(); if(currentView==='daily') updateDailyUI();
-    });
-    db.ref('dailyDefectData').on('value',s=>{ dailyDefectData=s.val()?Object.values(s.val()):[]; dataLoaded.ddef=true; checkLoaded(); if(currentView==='daily') updateDailyUI(); });
-    db.ref('teamMembers').on('value',s=>{ teamMembers=s.val()||getDefaultTeamMembers(); dataLoaded.members=true; checkLoaded(); if(currentView==='daily') updateDailyUI(); });
-    db.ref('attendanceData').on('value',s=>{ attendanceData=s.val()?Object.values(s.val()):[]; dataLoaded.att=true; checkLoaded(); if(currentView==='daily') updateDailyUI(); });
+    },e=>{ console.error('dailyProdData error:',e); dailyProdData=[]; dataLoaded.dprod=true; checkLoaded(); });
+    db.ref('dailyDefectData').on('value',s=>{ dailyDefectData=s.val()?Object.values(s.val()):[]; dataLoaded.ddef=true; checkLoaded(); if(currentView==='daily') updateDailyUI(); },e=>{ console.error('dailyDefectData error:',e); dailyDefectData=[]; dataLoaded.ddef=true; checkLoaded(); });
+    db.ref('teamMembers').on('value',s=>{ teamMembers=s.val()||getDefaultTeamMembers(); dataLoaded.members=true; checkLoaded(); if(currentView==='daily') updateDailyUI(); },e=>{ console.error('teamMembers listener error:',e); teamMembers=getDefaultTeamMembers(); dataLoaded.members=true; checkLoaded(); });
+    db.ref('attendanceData').on('value',s=>{ attendanceData=s.val()?Object.values(s.val()):[]; dataLoaded.att=true; checkLoaded(); if(currentView==='daily') updateDailyUI(); },e=>{ console.error('attendanceData listener error:',e); attendanceData=[]; dataLoaded.att=true; checkLoaded(); });
     firebase.database().ref('.info/connected').on('value',s=>setSyncStatus(s.val()?'online':'offline',s.val()?'실시간 연결됨':'오프라인'));
 }
 
-function checkLoaded(){ if(Object.values(dataLoaded).every(v=>v)){ document.getElementById('loadingOverlay').style.display='none'; initUI(); } }
+function checkLoaded(){
+    console.log('dataLoaded:',JSON.stringify(dataLoaded));
+    if(Object.values(dataLoaded).every(v=>v)){ document.getElementById('loadingOverlay').style.display='none'; initUI(); }
+}
 function initUI(){ updateSmartLists(); renderFilterButtons(); updateUI(); updateLastUpdate(); }
 function setSyncStatus(t,x){ const e=document.getElementById('syncStatus'); e.className='sync-'+t; document.getElementById('syncText').textContent=x; }
 
