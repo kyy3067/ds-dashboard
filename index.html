@@ -611,6 +611,8 @@
         .login-err{font-size:12px;color:#F87171;margin-bottom:14px;height:16px;font-family:'Noto Sans KR',sans-serif;transition:all .2s;}
         .login-btn{width:100%;padding:15px;background:linear-gradient(135deg,#3B8BF5,#5BA0F7);color:white;border:none;border-radius:12px;cursor:pointer;font-size:15px;font-weight:700;font-family:'Noto Sans KR',sans-serif;transition:all .2s;letter-spacing:1px;}
         .login-btn:hover{box-shadow:0 8px 20px rgba(59,139,245,0.35);transform:translateY(-2px);}
+        .login-att-btn{width:100%;padding:12px;background:rgba(255,255,255,0.15);color:white;border:1.5px solid rgba(255,255,255,0.35);border-radius:12px;cursor:pointer;font-size:13px;font-weight:600;font-family:'Noto Sans KR',sans-serif;transition:all .2s;letter-spacing:0.5px;backdrop-filter:blur(4px);}
+        .login-att-btn:hover{background:rgba(255,255,255,0.25);box-shadow:0 4px 12px rgba(0,0,0,0.15);transform:translateY(-1px);}
         .login-hint{font-size:11px;color:var(--text-muted);margin-top:16px;font-family:'Noto Sans KR',sans-serif;position:relative;z-index:1;}
 
         @media(max-width:768px){
@@ -697,6 +699,8 @@
         <input type="password" class="login-input" id="loginInput" placeholder="••••" maxlength="20" onkeydown="if(event.key==='Enter')doLogin()">
         <div class="login-err" id="loginErr"></div>
         <button class="login-btn" onclick="doLogin()">접속 Connect</button>
+        <div class="login-divider" style="margin:16px 0 12px;"></div>
+        <button class="login-att-btn" onclick="goAttendance()">👥 출퇴근 관리 (비밀번호 불필요)</button>
         <div class="login-hint">🔑 접속 Access: <code>LOGIN_PASSWORD</code> &nbsp;|&nbsp; 데이터입력 Data: <code>DATA_PASSWORD</code></div>
     </div>
 </div>
@@ -745,6 +749,7 @@
         <div class="view-switch">
             <button class="lang-btn active" onclick="setView('monthly')" id="btnViewMonthly">📅 월별</button>
             <button class="lang-btn" onclick="setView('daily')" id="btnViewDaily">📆 일별</button>
+            <button class="lang-btn" onclick="setView('attendance')" id="btnViewAtt">👥 출퇴근</button>
         </div>
         <span id="monthlyBtns" style="display:inline-flex;gap:8px;align-items:center;">
             <button class="btn btn-prod" onclick="openModal('prod')" id="btnProd">✏️ 생산 입력</button>
@@ -754,6 +759,8 @@
         <span id="dailyBtns" style="display:none;gap:8px;align-items:center;">
             <button class="btn btn-daily-prod" onclick="openDailyProdModal()" id="btnDailyProd">📅 일별 생산 입력</button>
             <button class="btn btn-daily-def"  onclick="openDailyDefModal()" id="btnDailyDef">🔴 불량 코드 입력</button>
+        </span>
+        <span id="attBtns" style="display:none;gap:8px;align-items:center;">
             <button class="btn btn-daily-att"  onclick="openAttendanceModal()" id="btnAttendance">👥 출근 인원 등록</button>
             <button class="btn btn-daily-member" onclick="openMemberModal()" id="btnMemberMgmt">👤 팀원 관리</button>
         </span>
@@ -1005,39 +1012,6 @@
         <div class="kpi-card c-orange"><div class="kpi-icon">🏭</div><div class="kpi-value" id="dKpiCompDefect">—</div><div class="kpi-sub-value" id="dKpiPpm">— PPM</div><div class="kpi-label" id="dLblCompDefect">당사 귀책 불량 수</div></div>
     </div>
 
-    <!-- ═══ ATTENDANCE SECTION (collapsible) ═══ -->
-    <div class="section-hd" style="cursor:pointer;user-select:none;" onclick="toggleSection('attBody',this)">
-        <div class="section-hd-title" id="attSection">📍 출근 현황</div>
-        <span class="section-toggle" id="attToggleIcon">▼</span>
-        <div class="section-hd-line"></div>
-    </div>
-    <div id="attBody">
-        <div class="kpi-grid" style="grid-template-columns:repeat(auto-fit, minmax(180px, 1fr))">
-            <div class="kpi-card c-green"><div class="kpi-icon">✅</div><div class="kpi-value" id="attKpiRateVal">—</div><div class="kpi-label" id="attKpiRate">출근율</div></div>
-            <div class="kpi-card c-blue"><div class="kpi-icon">👥</div><div class="kpi-value" id="attKpiWorkVal">—</div><div class="kpi-label" id="attKpiWork">출근</div></div>
-            <div class="kpi-card c-slate"><div class="kpi-icon">🏖️</div><div class="kpi-value" id="attKpiVacationVal">—</div><div class="kpi-label" id="attKpiVacation">휴가</div></div>
-            <div class="kpi-card c-red"><div class="kpi-icon">⚠️</div><div class="kpi-value" id="attKpiAbsentVal">—</div><div class="kpi-label" id="attKpiAbsent">결근·조퇴</div></div>
-        </div>
-        <div class="att-team-grid" id="attTeamGrid"></div>
-        <div class="g2">
-            <div class="card"><div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="attTitTrend">일별 출근율 트렌드</span></div></div><div class="card-body"><div class="ch-md"><canvas id="attChartTrend"></canvas></div></div></div>
-            <div class="card"><div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="attTitDonut">출근 상태 비율</span></div></div><div class="card-body"><div style="position:relative;height:300px;"><canvas id="attChartDonut"></canvas></div></div></div>
-        </div>
-        <div class="g-full" style="margin-top:0;">
-            <div class="card">
-                <div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="attTitTable">출근 상세</span></div></div>
-                <div class="card-body" style="padding-top:0;">
-                    <div class="tbl-wrap" style="max-height:350px;overflow-y:auto;">
-                        <table id="tblAttendance">
-                            <thead><tr><th id="attThDate">날짜</th><th id="attThTeam">팀</th><th id="attThName">이름</th><th id="attThPosition">직급</th><th id="attThStatus">상태</th></tr></thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- SMT vs TEST Summary -->
     <div class="daily-summary-row">
         <div class="team-card">
@@ -1149,6 +1123,45 @@
     </div>
 
 </div><!-- /viewDaily -->
+
+<!-- ═══ ATTENDANCE VIEW ═══ -->
+<div id="viewAttendance" style="display:none;">
+    <div class="filter-section">
+        <div class="filter-row">
+            <div class="filter-label" id="attLblDate">날짜</div>
+            <input type="date" id="attFilterFrom" class="date-input" onchange="updateAttendanceUI();drawAttendanceCharts();">
+            <span class="date-sep">~</span>
+            <input type="date" id="attFilterTo" class="date-input" onchange="updateAttendanceUI();drawAttendanceCharts();">
+            <button class="date-apply" onclick="setAttDatePreset('today')" id="attBtnToday">오늘</button>
+            <button class="date-apply" onclick="setAttDatePreset('thisWeek')" id="attBtnThisWeek">이번 주</button>
+            <button class="date-apply" onclick="setAttDatePreset('thisMonth')" id="attBtnThisMonth">이번 달</button>
+        </div>
+    </div>
+    <div class="kpi-grid" style="grid-template-columns:repeat(auto-fit, minmax(180px, 1fr))">
+        <div class="kpi-card c-green"><div class="kpi-icon">✅</div><div class="kpi-value" id="attKpiRateVal">—</div><div class="kpi-label" id="attKpiRate">출근율</div></div>
+        <div class="kpi-card c-blue"><div class="kpi-icon">👥</div><div class="kpi-value" id="attKpiWorkVal">—</div><div class="kpi-label" id="attKpiWork">출근</div></div>
+        <div class="kpi-card c-slate"><div class="kpi-icon">🏖️</div><div class="kpi-value" id="attKpiVacationVal">—</div><div class="kpi-label" id="attKpiVacation">휴가</div></div>
+        <div class="kpi-card c-red"><div class="kpi-icon">⚠️</div><div class="kpi-value" id="attKpiAbsentVal">—</div><div class="kpi-label" id="attKpiAbsent">결근·조퇴</div></div>
+    </div>
+    <div class="att-team-grid" id="attTeamGrid"></div>
+    <div class="g2">
+        <div class="card"><div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="attTitTrend">일별 출근율 트렌드</span></div></div><div class="card-body"><div class="ch-md"><canvas id="attChartTrend"></canvas></div></div></div>
+        <div class="card"><div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="attTitDonut">출근 상태 비율</span></div></div><div class="card-body"><div style="position:relative;height:300px;"><canvas id="attChartDonut"></canvas></div></div></div>
+    </div>
+    <div class="g-full" style="margin-top:0;">
+        <div class="card">
+            <div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="attTitTable">출근 상세</span></div></div>
+            <div class="card-body" style="padding-top:0;">
+                <div class="tbl-wrap" style="max-height:350px;overflow-y:auto;">
+                    <table id="tblAttendance">
+                        <thead><tr><th id="attThDate">날짜</th><th id="attThTeam">팀</th><th id="attThName">이름</th><th id="attThPosition">직급</th><th id="attThStatus">상태</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div><!-- /viewAttendance -->
 
 <!-- Modals -->
 <div id="modalProd" class="modal">
@@ -1524,7 +1537,10 @@ function checkLoaded(){
     console.log('dataLoaded:',JSON.stringify(dataLoaded));
     if(Object.values(dataLoaded).every(v=>v)){ document.getElementById('loadingOverlay').style.display='none'; initUI(); }
 }
-function initUI(){ updateSmartLists(); renderFilterButtons(); updateUI(); updateLastUpdate(); }
+function initUI(){
+    updateSmartLists(); renderFilterButtons(); updateUI(); updateLastUpdate();
+    if(attOnlyMode){ setView('attendance'); }
+}
 function setSyncStatus(t,x){ const e=document.getElementById('syncStatus'); e.className='sync-'+t; document.getElementById('syncText').textContent=x; }
 
 function saveToFirebase(type,data){
@@ -1539,7 +1555,7 @@ function getDefaultShipData(){return[{"model":"RDIMM","name":"M321R8GA0EB2-CWMXJ
 function getDefaultDefectData(){return[{"reason":"Human Error","month":"25.10","qty":0},{"reason":"Human Error","month":"25.11","qty":3},{"reason":"Human Error","month":"25.12","qty":1},{"reason":"Human Error","month":"26.01","qty":0},{"reason":"Handling Damage","month":"25.10","qty":5},{"reason":"Handling Damage","month":"25.11","qty":3},{"reason":"Handling Damage","month":"25.12","qty":8},{"reason":"Handling Damage","month":"26.01","qty":0},{"reason":"Component Lifting","month":"25.10","qty":0},{"reason":"Component Lifting","month":"25.11","qty":0},{"reason":"Component Lifting","month":"25.12","qty":1},{"reason":"Component Lifting","month":"26.01","qty":0}];}
 
 const T={ko:{mainTitle:'📊 DS Quality Performance',lblProd:'제품',lblPeriod:'기간',lblProcess:'공정',btnProd:'✏️ 생산 입력',btnShip:'📦 출하 입력',btnDefect:'🛠️ 불량 유형 입력',lblKpiYield:'종합 수율',lblKpiPPM:'당사 귀책 PPM',lblKpiInput:'총 투입 수량',lblKpiOutput:'총 산출 수량',lblKpiDefect:'총 불량 수량',lblKpiDefectPPM:'총 불량 PPM',lblKpiCompDefect:'당사 귀책 불량 수',titProcYield:'공정별 수율 현황',titMonthYield:'공정별 월별 수율 추이',titProdYield:'제품별 수율 현황',titTotalTrend:'종합 수율 월별 트렌드 (%)',titPpmTrend:'종합 PPM 월별 트렌드',titProdTrend:'제품별 수율 추이 (%)',titProcTrend:'공정별 수율 추이 (%)',titProdVol:'DS 생산 실적',titTotalDefect:'월별 불량 수 트렌드',titCompDefect:'당사 귀책 불량 수 트렌드',titDefectType:'불량 유형 차트',titDefectTable:'불량 유형 상세 현황',titDefectSection:'📉 불량 분석 및 상세 현황',titShipSection:'📦 출하 실적',titShipTable:'월별 출하 수량',titShipChart:'월별 출하 실적 추이',thProc:'공정',thIn:'투입',thOut:'산출',thFail:'불량',thYld:'수율',thStat:'판정',thMonth:'기간',thProd:'제품',thIn2:'투입',thOut2:'산출',thFail2:'불량',thYld2:'수율',thStat2:'판정',thShipMonth:'기간',thTotal:'합계',moTitProd:'✏️ 생산 데이터 입력',moTitShip:'📦 출하 데이터 입력',moTitDefect:'🛠️ 불량 유형 데이터 입력',all:'전체',good:'양호',warn:'경고',
-    btnViewMonthly:'📅 월별',btnViewDaily:'📆 일별',btnDailyProd:'📅 일별 생산 입력',btnDailyDef:'🔴 불량 코드 입력',
+    btnViewMonthly:'📅 월별',btnViewDaily:'📆 일별',btnViewAtt:'👥 출퇴근',btnDailyProd:'📅 일별 생산 입력',btnDailyDef:'🔴 불량 코드 입력',
     dlblDate:'날짜',dlblProd:'제품',dlblTeam:'팀',dlblProcess:'공정',
     dLblYield:'종합 수율',dLblInput:'총 투입 수량',dLblDefect:'총 불량 수량',dLblDefectPPM:'총 불량 PPM',dLblCompDefect:'당사 귀책 불량 수',dLblPpm:'당사 귀책 PPM',
     dTitYieldTrend:'일별 수율 트렌드 (%)',dTitPpmTrend:'일별 당사 귀책 PPM 트렌드',dTitVolTrend:'일별 투입량 트렌드',
@@ -1555,12 +1571,13 @@ const T={ko:{mainTitle:'📊 DS Quality Performance',lblProd:'제품',lblPeriod:
     modalDailyProdTitle:'📅 일별 생산 데이터 입력',modalDailyProdDesc:'붙여넣기 순서: 날짜(YYYY-MM-DD) | 모델 | 공정 | 팀 | 투입수량 | 양품수량 | 불량수량',
     modalDailyDefTitle:'🔴 일별 불량 코드 입력',modalDailyDefDesc:'공정별 불량 수량 내에서만 코드를 입력할 수 있습니다',
     btnAttendance:'👥 출근 인원 등록',btnMemberMgmt:'👤 팀원 관리',
+    attLblDate:'날짜',attBtnToday:'오늘',attBtnThisWeek:'이번 주',attBtnThisMonth:'이번 달',
     attSection:'📍 출근 현황',attKpiRate:'출근율',attKpiWork:'출근',attKpiVacation:'휴가',attKpiAbsent:'결근·조퇴',
     attTitTrend:'일별 출근율 트렌드',attTitDonut:'출근 상태 비율',attTitTable:'출근 상세',
     attThDate:'날짜',attThTeam:'팀',attThName:'이름',attThPosition:'직급',attThStatus:'상태',
     attModalTitle:'👥 출근 인원 등록',attModalDesc:'날짜와 팀을 선택하고 각 팀원의 출근 상태를 입력하세요.',
     attSetAllWork:'✅ 전체 출근',attSetAllVacation:'🏖️ 전체 휴가',memberModalTitle:'👤 팀원 관리'},en:{mainTitle:'📊 DS Quality Performance',lblProd:'Product',lblPeriod:'Period',lblProcess:'Process',btnProd:'✏️ Production',btnShip:'📦 Shipment',btnDefect:'🛠️ Defect Types',lblKpiYield:'Overall Yield',lblKpiPPM:'Company Defect PPM',lblKpiInput:'Total Input',lblKpiOutput:'Total Output',lblKpiDefect:'Total Defects',lblKpiDefectPPM:'Total Defect PPM',lblKpiCompDefect:'Company Defect Qty',titProcYield:'Process Yield',titMonthYield:'Monthly Process Yield',titProdYield:'Product Yield',titTotalTrend:'Overall Yield Trend (%)',titPpmTrend:'Overall PPM Trend',titProdTrend:'Product Yield Trend (%)',titProcTrend:'Process Yield Trend (%)',titProdVol:'Production Volume',titTotalDefect:'Total Defect Trend',titCompDefect:'Company Defect Trend',titDefectType:'Defect Type Chart',titDefectTable:'Defect Type Details',titDefectSection:'📉 Defect Analysis',titShipSection:'📦 Shipment Performance',titShipTable:'Monthly Shipment',titShipChart:'Shipment Trend',thProc:'Process',thIn:'Input',thOut:'Output',thFail:'Defect',thYld:'Yield',thStat:'Status',thMonth:'Period',thProd:'Product',thIn2:'Input',thOut2:'Output',thFail2:'Defect',thYld2:'Yield',thStat2:'Status',thShipMonth:'Period',thTotal:'Total',moTitProd:'✏️ Production Data Entry',moTitShip:'📦 Shipment Data Entry',moTitDefect:'🛠️ Defect Type Data Entry',all:'All',good:'Good',warn:'Warning',
-    btnViewMonthly:'📅 Monthly',btnViewDaily:'📆 Daily',btnDailyProd:'📅 Daily Prod Entry',btnDailyDef:'🔴 Defect Code Entry',
+    btnViewMonthly:'📅 Monthly',btnViewDaily:'📆 Daily',btnViewAtt:'👥 Attendance',btnDailyProd:'📅 Daily Prod Entry',btnDailyDef:'🔴 Defect Code Entry',
     dlblDate:'Date',dlblProd:'Product',dlblTeam:'Team',dlblProcess:'Process',
     dLblYield:'Overall Yield',dLblInput:'Total Input Qty',dLblDefect:'Total Defects',dLblDefectPPM:'Total Defect PPM',dLblCompDefect:'Company Defect Qty',dLblPpm:'Company Defect PPM',
     dTitYieldTrend:'Daily Yield Trend (%)',dTitPpmTrend:'Daily Overall PPM Trend',dTitVolTrend:'Daily Input Volume Trend',
@@ -1576,6 +1593,7 @@ const T={ko:{mainTitle:'📊 DS Quality Performance',lblProd:'제품',lblPeriod:
     modalDailyProdTitle:'📅 Daily Production Entry',modalDailyProdDesc:'Paste order: Date(YYYY-MM-DD) | Model | Process | Team | InputQty | GoodQty | DefectQty',
     modalDailyDefTitle:'🔴 Daily Defect Code Entry',modalDailyDefDesc:'Defect codes must be within the defect quantity already recorded for that date/model/process',
     btnAttendance:'👥 Attendance Entry',btnMemberMgmt:'👤 Member Mgmt',
+    attLblDate:'Date',attBtnToday:'Today',attBtnThisWeek:'This Week',attBtnThisMonth:'This Month',
     attSection:'📍 Attendance',attKpiRate:'Attendance Rate',attKpiWork:'Present',attKpiVacation:'Vacation',attKpiAbsent:'Absent/Early',
     attTitTrend:'Daily Attendance Trend',attTitDonut:'Status Distribution',attTitTable:'Attendance Details',
     attThDate:'Date',attThTeam:'Team',attThName:'Name',attThPosition:'Position',attThStatus:'Status',
@@ -2169,14 +2187,22 @@ let dCharts={}, currentView='monthly';
 // VIEW SWITCH
 // ══════════════════════════════════════════════════════
 function setView(v){
+    if((v==='monthly'||v==='daily')&&!loggedIn){
+        document.getElementById('loginModal').style.display='flex';
+        return;
+    }
     currentView=v;
     document.getElementById('viewMonthly').style.display=v==='monthly'?'block':'none';
     document.getElementById('viewDaily').style.display=v==='daily'?'block':'none';
+    document.getElementById('viewAttendance').style.display=v==='attendance'?'block':'none';
     document.getElementById('monthlyBtns').style.display=v==='monthly'?'inline-flex':'none';
     document.getElementById('dailyBtns').style.display=v==='daily'?'inline-flex':'none';
+    document.getElementById('attBtns').style.display=v==='attendance'?'inline-flex':'none';
     document.getElementById('btnViewMonthly').className='lang-btn'+(v==='monthly'?' active':'');
     document.getElementById('btnViewDaily').className='lang-btn'+(v==='daily'?' active':'');
+    document.getElementById('btnViewAtt').className='lang-btn'+(v==='attendance'?' active':'');
     if(v==='daily'){initDailyFilters();updateDailyUI();}
+    if(v==='attendance'){initAttFilters();updateAttendanceUI();drawAttendanceCharts();}
 }
 
 // ══════════════════════════════════════════════════════
@@ -2449,7 +2475,6 @@ function updateDailyUI(){
     }
     updateDailyTables(data,defData);
     drawDailyCharts(data);
-    try{ updateAttendanceUI(); drawAttendanceCharts(); }catch(e){ console.error('Attendance UI error:',e); }
 }
 
 // Table-level filter state
@@ -3070,11 +3095,55 @@ function toggleSection(bodyId, hdEl){
 }
 
 // ══════════════════════════════════════════════════════
+// ATTENDANCE VIEW - LOGIN BYPASS
+// ══════════════════════════════════════════════════════
+
+let attOnlyMode=false;
+function goAttendance(){
+    document.getElementById('loginModal').style.display='none';
+    document.getElementById('loadingOverlay').style.display='flex';
+    attOnlyMode=true;
+    initFirebase();
+}
+
+function initAttFilters(){
+    const now=new Date(),y=now.getFullYear(),m=String(now.getMonth()+1).padStart(2,'0');
+    const from=document.getElementById('attFilterFrom');
+    const to=document.getElementById('attFilterTo');
+    if(!from.value){
+        from.value=`${y}-${m}-01`;
+        const last=new Date(y,now.getMonth()+1,0);
+        to.value=`${y}-${m}-${String(last.getDate()).padStart(2,'0')}`;
+    }
+}
+
+function setAttDatePreset(p){
+    const now=new Date(),y=now.getFullYear(),m=now.getMonth(),d=now.getDate();
+    const from=document.getElementById('attFilterFrom');
+    const to=document.getElementById('attFilterTo');
+    const fmt=dt=>`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+    if(p==='today'){from.value=to.value=fmt(now);}
+    else if(p==='thisWeek'){
+        const day=now.getDay()||7;
+        const mon=new Date(y,m,d-day+1);
+        const sun=new Date(y,m,d-day+7);
+        from.value=fmt(mon);to.value=fmt(sun);
+    } else if(p==='thisMonth'){
+        from.value=`${y}-${String(m+1).padStart(2,'0')}-01`;
+        const last=new Date(y,m+1,0);
+        to.value=fmt(last);
+    }
+    updateAttendanceUI();drawAttendanceCharts();
+}
+
+// ══════════════════════════════════════════════════════
 // ATTENDANCE MANAGEMENT
 // ══════════════════════════════════════════════════════
 
 function getAttFiltered(){
-    const from=dFilters.dateFrom, to=dFilters.dateTo;
+    const fromEl=document.getElementById('attFilterFrom');
+    const toEl=document.getElementById('attFilterTo');
+    const from=fromEl?fromEl.value:'', to=toEl?toEl.value:'';
     return attendanceData.filter(d=>{
         if(from&&d.date<from) return false;
         if(to&&d.date>to) return false;
@@ -3083,14 +3152,12 @@ function getAttFiltered(){
 }
 
 function openAttendanceModal(){
-    requirePassword(()=>{
-        document.getElementById('modalAttendance').style.display='block';
-        const di=document.getElementById('attDateInput');
-        if(di&&!di.value) di.value=new Date().toISOString().slice(0,10);
-        attTeamTab=ATT_TEAMS[0];
-        renderAttTeamTabs();
-        renderAttTeamTab(attTeamTab);
-    });
+    document.getElementById('modalAttendance').style.display='block';
+    const di=document.getElementById('attDateInput');
+    if(di&&!di.value) di.value=new Date().toISOString().slice(0,10);
+    attTeamTab=ATT_TEAMS[0];
+    renderAttTeamTabs();
+    renderAttTeamTab(attTeamTab);
 }
 
 function renderAttTeamTabs(){
@@ -3156,12 +3223,10 @@ function saveAttendance(){
 }
 
 function openMemberModal(){
-    requirePassword(()=>{
-        document.getElementById('modalMemberMgmt').style.display='block';
-        memberTeamTab=ATT_TEAMS[0];
-        renderMemberTeamTabs();
-        renderMemberTeamTab(memberTeamTab);
-    });
+    document.getElementById('modalMemberMgmt').style.display='block';
+    memberTeamTab=ATT_TEAMS[0];
+    renderMemberTeamTabs();
+    renderMemberTeamTab(memberTeamTab);
 }
 
 function renderMemberTeamTabs(){
