@@ -1467,20 +1467,25 @@ function fmtPeriod(p){
 }
 function smartMonthLabels(months){
     let prevY='';
+    const enM=["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
     return months.map(m=>{
-        const f=fmtPeriod(m);
-        if(!/^\d{2}\.\d{2}$/.test(m))return f;
+        if(!/^\d{2}\.\d{2}$/.test(m))return fmtPeriod(m);
         const[y,mo]=m.split('.');const mn=parseInt(mo);
-        if(y!==prevY){prevY=y;return lang==='en'?(["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][mn]+' \''+y):('\''+y+'-'+mn);}
-        return lang==='en'?["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][mn]:String(mn);
+        if(y!==prevY){prevY=y;return lang==='en'?(enM[mn]+' \''+y):('\''+y+'년 '+mn+'월');}
+        return lang==='en'?enM[mn]:(mn+'월');
     });
 }
 function smartDateLabels(dates){
     let prevY='';
     return dates.map(d=>{
         const[y,m,day]=d.split('-');const sy=y.slice(2),mn=parseInt(m),dn=parseInt(day);
-        if(sy!==prevY){prevY=sy;return"'"+sy+'-'+mn+'-'+dn;}
-        return mn+'-'+dn;
+        if(lang==='en'){
+            const enM=["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+            if(sy!==prevY){prevY=sy;return enM[mn]+' '+dn+' \''+sy;}
+            return enM[mn]+' '+dn;
+        }
+        if(sy!==prevY){prevY=sy;return"'"+sy+'년 '+mn+'월 '+dn+'일';}
+        return mn+'월 '+dn+'일';
     });
 }
 function getPM(){return[...new Set(prodData.map(d=>d.month))].sort();}
