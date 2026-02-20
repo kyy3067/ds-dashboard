@@ -3410,30 +3410,61 @@ function drawAttendanceCharts(){
         });
     }
 
-    // ── Grouped Bar Chart: daily attendance by team ──
+    // ── Stacked Grouped Bar Chart: daily attendance by team + status ──
     const barCanvas=document.getElementById('attChartBar');
     if(barCanvas){
-        const teamColors={'DS TEST':'#6366f1','DS SMD':'#0891b2','DS Quality':'#10b981','DS Warehouse':'#f59e0b','DS Technical':'#ec4899'};
-        const datasets=ATT_TEAMS.map(team=>({
-            label:team,
-            backgroundColor:teamColors[team],
-            borderRadius:4,
-            data:dates.map(dt=>{
-                const td=data.filter(d=>d.date===dt&&d.team===team&&d.status==='Work');
-                return td.length;
-            })
-        }));
+        const teamColors=['#6366f1','#0891b2','#10b981','#f59e0b','#ec4899'];
+        const statusDefs=[
+            {key:'Work',label:lang==='ko'?'출근':'Work',alpha:['FF','FF','FF','FF','FF']},
+            {key:'Vacation',label:lang==='ko'?'휴가':'Vacation',alpha:['88','88','88','88','88']},
+            {key:'_absent',label:lang==='ko'?'결근·조퇴':'Absent',alpha:['44','44','44','44','44']}
+        ];
+        const datasets=[];
+        ATT_TEAMS.forEach((team,ti)=>{
+            const stackId='stack'+ti;
+            statusDefs.forEach((sd,si)=>{
+                datasets.push({
+                    label:team+' '+sd.label,
+                    backgroundColor:teamColors[ti]+sd.alpha[ti],
+                    borderRadius:si===0?{topLeft:3,topRight:3}:0,
+                    stack:stackId,
+                    barPercentage:0.85,
+                    categoryPercentage:0.82,
+                    data:dates.map(dt=>{
+                        if(sd.key==='_absent') return data.filter(d=>d.date===dt&&d.team===team&&(d.status==='Unauthorized absence'||d.status==='Early retirement')).length;
+                        return data.filter(d=>d.date===dt&&d.team===team&&d.status===sd.key).length;
+                    })
+                });
+            });
+        });
         attCharts.bar=new Chart(barCanvas,{
             type:'bar',
             data:{labels:smartDateLabels(dates),datasets},
             options:{responsive:true,maintainAspectRatio:false,
-                layout:{padding:{top:25,left:10,right:10}},
-                plugins:{legend:{position:'bottom',labels:{font:{size:11,weight:'600',family:'Noto Sans KR,Inter,sans-serif'},usePointStyle:true,padding:10,boxWidth:10}},
-                    datalabels:{display:ctx=>ctx.dataset.data[ctx.dataIndex]>0,
-                        color:ctx=>{const c=Object.values(teamColors);return c[ctx.datasetIndex%c.length];},
-                        font:{weight:'700',size:9,family:'JetBrains Mono,monospace'},
-                        anchor:'end',align:'top',offset:2,
-                        formatter:v=>v+(lang==='ko'?'명':'')}},
+                layout:{padding:{top:20,left:10,right:10}},
+                plugins:{legend:{
+                    position:'bottom',
+                    labels:{
+                        font:{size:10,weight:'600',family:'Noto Sans KR,Inter,sans-serif'},usePointStyle:true,padding:8,boxWidth:8,
+                        generateLabels:()=>{
+                            const labels=ATT_TEAMS.map((t,i)=>({text:t,fillStyle:teamColors[i],strokeStyle:teamColors[i],lineWidth:0,pointStyle:'rectRounded',hidden:false}));
+                            labels.push({text:'',fillStyle:'transparent',strokeStyle:'transparent',lineWidth:0,pointStyle:'line',hidden:false});
+                            labels.push({text:statusDefs[0].label,fillStyle:'#334155FF',strokeStyle:'#334155',lineWidth:0,pointStyle:'rectRounded',hidden:false});
+                            labels.push({text:statusDefs[1].label,fillStyle:'#33415588',strokeStyle:'#334155',lineWidth:0,pointStyle:'rectRounded',hidden:false});
+                            labels.push({text:statusDefs[2].label,fillStyle:'#33415544',strokeStyle:'#334155',lineWidth:0,pointStyle:'rectRounded',hidden:false});
+                            return labels;
+                        }
+                    },
+                    onClick:()=>{}
+                },
+                    tooltip:{callbacks:{
+                        title:items=>items[0]?.label||'',
+                        label:item=>{
+                            if(item.raw===0) return null;
+                            return item.dataset.label+': '+item.raw+(lang==='ko'?'명':'');
+                        }
+                    }},
+                    datalabels:{display:false}},
                 scales:{
                     x:{grid:{display:false},ticks:{font:{size:10},color:'#94a3b8',maxRotation:45},border:{display:false}},
                     y:{beginAtZero:true,grid:{color:'#f1f5f9'},ticks:{font:{size:11},color:'#94a3b8',stepSize:5,callback:v=>v+(lang==='ko'?'명':'')},border:{display:false},
