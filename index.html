@@ -714,15 +714,15 @@
         <div class="login-logo">DREAM<span>TECH</span></div>
         <div class="login-sub">DS Division · Quality Dashboard</div>
         <div class="login-divider"></div>
-        <div class="login-title">🔐 로그인 Login</div>
-        <div class="login-title-en">Enter your access password</div>
-        <div class="login-desc">접속 비밀번호를 입력하세요</div>
+        <div class="login-title" id="loginTitle">🔐 로그인 Login</div>
+        <div class="login-title-en" id="loginTitleEn">Enter your access password</div>
+        <div class="login-desc" id="loginDesc">접속 비밀번호를 입력하세요</div>
         <input type="password" class="login-input" id="loginInput" placeholder="••••" maxlength="20" onkeydown="if(event.key==='Enter')doLogin()">
         <div class="login-err" id="loginErr"></div>
-        <button class="login-btn" onclick="doLogin()">접속 Connect</button>
+        <button class="login-btn" onclick="doLogin()" id="loginBtn">접속 Connect</button>
         <div class="login-divider" style="margin:16px 0 12px;"></div>
-        <button class="login-att-btn" onclick="goAttendance()">👥 출퇴근 관리 Attendance<div class="login-att-sub">비밀번호 없이 바로 접속 · No password required</div></button>
-        <div class="login-hint">🔑 접속 Access: <code>LOGIN_PASSWORD</code> &nbsp;|&nbsp; 데이터입력 Data: <code>DATA_PASSWORD</code></div>
+        <button class="login-att-btn" onclick="goAttendance()" id="loginAttBtn">👥 출퇴근 관리 Attendance<div class="login-att-sub" id="loginAttSub">비밀번호 없이 바로 접속 · No password required</div></button>
+        <div class="login-hint" id="loginHint">🔑 접속 Access: <code>LOGIN_PASSWORD</code> &nbsp;|&nbsp; 데이터입력 Data: <code>DATA_PASSWORD</code></div>
     </div>
 </div>
 
@@ -730,7 +730,7 @@
 <div id="loadingOverlay" style="display:none;">
     <div class="loading-logo">DREAM<span>TECH</span></div>
     <div class="loading-bar"><div class="loading-bar-inner"></div></div>
-    <div class="loading-text">🔥 Firebase에서 데이터를 불러오는 중...</div>
+    <div class="loading-text" id="loadingText">🔥 Firebase에서 데이터를 불러오는 중...</div>
 </div>
 
 <div id="syncStatus" class="sync-online">
@@ -738,7 +738,7 @@
     <span id="syncText">실시간 연결됨</span>
 </div>
 
-<div id="saveSuccess" class="save-toast">✅ 저장 완료! 모든 팀원에게 즉시 반영됩니다.</div>
+<div id="saveSuccess" class="save-toast" data-ko="✅ 저장 완료! 모든 팀원에게 즉시 반영됩니다." data-en="✅ Saved! Changes synced to all users.">✅ 저장 완료! 모든 팀원에게 즉시 반영됩니다.</div>
 <div id="configBanner">
     <h3>⚠️ Firebase 설정이 필요합니다</h3>
     <p>파일의 <code>FIREBASE_CONFIG</code> 값을 실제 Firebase 프로젝트 정보로 교체해 주세요.</p>
@@ -917,7 +917,7 @@
     <div class="card">
         <div class="card-head">
             <div class="card-title"><div class="card-title-dot"></div><span id="titDefectType">불량 유형 차트</span></div>
-            <button class="btn-del" onclick="openModal('defect')">수정</button>
+            <button class="btn-del" onclick="openModal('defect')" id="btnDefectEdit">수정</button>
         </div>
         <div class="card-body">
             <div class="mini-filters" id="defectTypeFilters"></div>
@@ -925,7 +925,7 @@
         </div>
     </div>
     <div class="card">
-        <div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span>불량 유형 비율 (Pie)</span></div></div>
+        <div class="card-head"><div class="card-title"><div class="card-title-dot"></div><span id="titDefectPie">불량 유형 비율 (Pie)</span></div></div>
         <div class="card-body"><div class="ch-lg"><canvas id="chartDefectTypePie"></canvas></div></div>
     </div>
     <div class="card">
@@ -933,7 +933,7 @@
         <div class="card-body" style="padding-top:0;">
             <div class="tbl-wrap" style="max-height:320px;overflow-y:auto;">
                 <table id="tblDefectType">
-                    <thead><tr><th>기간</th><th>Human Error</th><th>Handling Damage</th><th>Component Lifting</th><th>합계</th></tr></thead>
+                    <thead><tr><th id="thDefPeriod">기간</th><th>Human Error</th><th>Handling Damage</th><th>Component Lifting</th><th id="thDefTotal">합계</th></tr></thead>
                     <tbody></tbody>
                 </table>
             </div>
@@ -1224,19 +1224,19 @@
 <!-- ═══ Daily Production Entry Modal ═══ -->
 <div id="modalDailyProd" class="modal">
     <div class="modal-box">
-        <div class="modal-title">📅 일별 생산 데이터 입력</div>
+        <div class="modal-title" id="dprodModalTitle">📅 일별 생산 데이터 입력</div>
         <div class="modal-desc" id="dprodModalDesc">날짜·모델·공정별로 <strong>투입수량, 양품수량, 불량수량</strong>을 입력하세요.<br><strong style="color:#4f46e5;">붙여넣기 순서: 날짜(YYYY-MM-DD) | 모델 | 공정 | 팀 | 투입수량 | 양품수량 | 불량수량</strong></div>
         <textarea class="paste-area" id="pasteDailyProd" placeholder="Excel 데이터를 여기에 붙여넣기 (Ctrl+V)"></textarea>
-        <div style="display:flex;gap:10px;margin-bottom:20px;"><button class="btn-parse" onclick="parseDailyPaste()">📋 데이터 적용</button><span id="pasteSkipHint" style="font-size:11px;color:#f59e0b;margin-left:8px;font-family:'Noto Sans KR',sans-serif;"></span><button class="btn-clr" onclick="document.querySelector('#tblDailyProdEntry tbody').innerHTML='';document.getElementById('pasteDailyProd').value=''">🗑️ 초기화</button></div>
+        <div style="display:flex;gap:10px;margin-bottom:20px;"><button class="btn-parse" onclick="parseDailyPaste()" id="btnDprodParse">📋 데이터 적용</button><span id="pasteSkipHint" style="font-size:11px;color:#f59e0b;margin-left:8px;font-family:'Noto Sans KR',sans-serif;"></span><button class="btn-clr" onclick="document.querySelector('#tblDailyProdEntry tbody').innerHTML='';document.getElementById('pasteDailyProd').value=''" id="btnDprodClear">🗑️ 초기화</button></div>
         <div style="max-height:380px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;">
             <table class="entry-tbl" id="tblDailyProdEntry">
-                <thead><tr><th>날짜</th><th>모델</th><th>공정</th><th>팀</th><th id="dThInQtyM">투입수량</th><th id="dThGoodQtyM">양품수량</th><th id="dThDefQtyM">불량수량</th><th>삭제</th></tr></thead>
+                <thead><tr><th id="dprodThDate">날짜</th><th id="dprodThModel">모델</th><th id="dprodThProc">공정</th><th id="dprodThTeam">팀</th><th id="dThInQtyM">투입수량</th><th id="dThGoodQtyM">양품수량</th><th id="dThDefQtyM">불량수량</th><th id="dprodThDel">삭제</th></tr></thead>
                 <tbody></tbody>
             </table>
         </div>
-        <button class="btn-addrow" onclick="addDailyProdRow()">+ 행 추가</button>
-        <div style="padding:10px 20px 0;"><button onclick="clearAllDailyProdData()" style="width:100%;padding:10px;background:#fff0f0;border:1.5px solid #fca5a5;border-radius:10px;color:#e11d48;font-size:12px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">🗑️ Firebase 일별 생산 데이터 전체 초기화 (주의: 복구 불가)</button></div>
-        <div class="modal-footer"><button class="btn-save btn-full" onclick="saveDailyProd()">💾 저장 (즉시 반영)</button><button class="btn-cancel btn-full" onclick="document.getElementById('modalDailyProd').style.display='none'">취소</button></div>
+        <button class="btn-addrow" onclick="addDailyProdRow()" id="btnDprodAddRow">+ 행 추가</button>
+        <div style="padding:10px 20px 0;"><button onclick="clearAllDailyProdData()" id="btnDprodClearAll" style="width:100%;padding:10px;background:#fff0f0;border:1.5px solid #fca5a5;border-radius:10px;color:#e11d48;font-size:12px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">🗑️ Firebase 일별 생산 데이터 전체 초기화 (주의: 복구 불가)</button></div>
+        <div class="modal-footer"><button class="btn-save btn-full" onclick="saveDailyProd()" id="btnDprodSave">💾 저장 (즉시 반영)</button><button class="btn-cancel btn-full" onclick="document.getElementById('modalDailyProd').style.display='none'" id="btnDprodCancel">취소</button></div>
     </div>
 </div>
 
@@ -1247,16 +1247,16 @@
         <div class="modal-desc" id="ddefModalDesc">공정별 <strong>불량 수량 내에서만</strong> 입력 가능합니다. 공정 선택 시 해당 불량 수량이 자동으로 표시됩니다.<br>
         <span style="color:#6366f1;font-weight:700;">🔵 SMT (SMD/ROUTER): 1000번대</span> &nbsp;|&nbsp; <span style="color:#0891b2;font-weight:700;">🔬 TEST (ATE/PCT/AVI/TC): 4000번대</span></div>
         <div id="ddefAvailPanel" style="background:#f0f4fb;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:12px;font-family:'Noto Sans KR',sans-serif;">
-            <strong>📋 현재 날짜 범위 미입력 불량:</strong> <span id="ddefAvailList" style="color:var(--text-sub);">생산 데이터에서 불량 수량을 가져옵니다</span>
+            <strong id="ddefAvailLabel">📋 현재 날짜 범위 미입력 불량:</strong> <span id="ddefAvailList" style="color:var(--text-sub);">생산 데이터에서 불량 수량을 가져옵니다</span>
         </div>
         <div style="max-height:420px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;">
             <table class="entry-tbl" id="tblDailyDefEntry">
-                <thead><tr><th style="min-width:80px;">모델</th><th style="min-width:130px;">날짜</th><th style="min-width:80px;">공정</th><th style="min-width:50px;">팀</th><th style="min-width:220px;">불량 코드 검색</th><th style="min-width:90px;">수량<br><span style="font-size:10px;color:#94a3b8;">(가용/잔여)</span></th><th>삭제</th></tr></thead>
+                <thead><tr><th style="min-width:80px;" id="ddefThModel">모델</th><th style="min-width:130px;" id="ddefThDate">날짜</th><th style="min-width:80px;" id="ddefThProc">공정</th><th style="min-width:50px;" id="ddefThTeam">팀</th><th style="min-width:220px;" id="ddefThCode">불량 코드 검색</th><th style="min-width:90px;" id="ddefThQty">수량<br><span style="font-size:10px;color:#94a3b8;">(가용/잔여)</span></th><th id="ddefThDel">삭제</th></tr></thead>
                 <tbody></tbody>
             </table>
         </div>
-        <button class="btn-addrow" onclick="addDailyDefRow()">+ 행 추가</button>
-        <div class="modal-footer"><button class="btn-save btn-full" onclick="saveDailyDef()">💾 저장 (즉시 반영)</button><button class="btn-cancel btn-full" onclick="document.getElementById('modalDailyDef').style.display='none'">취소</button></div>
+        <button class="btn-addrow" onclick="addDailyDefRow()" id="btnDdefAddRow">+ 행 추가</button>
+        <div class="modal-footer"><button class="btn-save btn-full" onclick="saveDailyDef()" id="btnDdefSave">💾 저장 (즉시 반영)</button><button class="btn-cancel btn-full" onclick="document.getElementById('modalDailyDef').style.display='none'" id="btnDdefCancel">취소</button></div>
     </div>
 </div>
 <!-- ═══ Attendance Entry Modal ═══ -->
@@ -1274,13 +1274,13 @@
         </div>
         <div style="max-height:400px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;">
             <table class="entry-tbl" id="tblAttEntry">
-                <thead><tr><th style="min-width:120px;">이름</th><th style="min-width:80px;">직급</th><th style="min-width:180px;">상태</th></tr></thead>
+                <thead><tr><th style="min-width:120px;" id="attThName">이름</th><th style="min-width:80px;" id="attThPos">직급</th><th style="min-width:180px;" id="attThStatus">상태</th></tr></thead>
                 <tbody></tbody>
             </table>
         </div>
         <div class="modal-footer">
-            <button class="btn-save btn-full" onclick="saveAttendance()">💾 저장 (즉시 반영)</button>
-            <button class="btn-cancel btn-full" onclick="document.getElementById('modalAttendance').style.display='none'">취소</button>
+            <button class="btn-save btn-full" onclick="saveAttendance()" id="btnAttSave">💾 저장 (즉시 반영)</button>
+            <button class="btn-cancel btn-full" onclick="document.getElementById('modalAttendance').style.display='none'" id="btnAttCancel">취소</button>
         </div>
     </div>
 </div>
@@ -1288,8 +1288,8 @@
 <!-- ═══ Attendance Edit Modal ═══ -->
 <div id="modalAttEdit" class="modal">
     <div class="modal-box">
-        <div class="modal-title">✏️ 출근 데이터 수정 Edit Attendance</div>
-        <div class="modal-desc">날짜와 팀을 선택하여 기존 데이터를 수정하거나 삭제하세요.<br>Select date and team to edit or delete existing data.</div>
+        <div class="modal-title" id="attEditModalTitle">✏️ 출근 데이터 수정</div>
+        <div class="modal-desc" id="attEditModalDesc">날짜와 팀을 선택하여 기존 데이터를 수정하거나 삭제하세요.</div>
         <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap;">
             <input type="date" id="attEditDate" onchange="renderAttEditList()" style="padding:8px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'JetBrains Mono',monospace;font-size:13px;">
             <div id="attEditTeamTabs" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
@@ -1297,18 +1297,18 @@
         <div id="attEditInfo" style="margin-bottom:10px;font-size:12px;color:#64748b;"></div>
         <div style="max-height:400px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;">
             <table class="entry-tbl" id="tblAttEdit">
-                <thead><tr><th style="min-width:120px;">이름 Name</th><th style="min-width:80px;">직급 Position</th><th style="min-width:160px;">상태 Status</th><th style="width:50px;">삭제</th></tr></thead>
+                <thead><tr><th style="min-width:120px;" id="attEditThName">이름</th><th style="min-width:80px;" id="attEditThPos">직급</th><th style="min-width:160px;" id="attEditThStatus">상태</th><th style="width:50px;" id="attEditThDel">삭제</th></tr></thead>
                 <tbody></tbody>
             </table>
         </div>
         <div id="attEditDates" style="margin-top:14px;padding:12px;background:#f8fafc;border-radius:10px;border:1px solid var(--border);">
-            <div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:8px;">📋 등록된 날짜 Registered Dates</div>
+            <div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:8px;" id="attEditDatesLabel">📋 등록된 날짜</div>
             <div id="attEditDateList" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
         </div>
         <div class="modal-footer">
-            <button class="btn-save btn-full" onclick="saveAttEdit()">💾 수정 저장 Save Changes</button>
-            <button class="btn-clr" onclick="deleteAttDate()" style="width:100%;padding:12px;border-radius:10px;font-size:13px;font-weight:700;">🗑️ 이 날짜 전체 삭제 Delete This Date</button>
-            <button class="btn-cancel btn-full" onclick="document.getElementById('modalAttEdit').style.display='none'">닫기 Close</button>
+            <button class="btn-save btn-full" onclick="saveAttEdit()" id="btnAttEditSave">💾 수정 저장</button>
+            <button class="btn-clr" onclick="deleteAttDate()" style="width:100%;padding:12px;border-radius:10px;font-size:13px;font-weight:700;" id="btnAttEditDel">🗑️ 이 날짜 전체 삭제</button>
+            <button class="btn-cancel btn-full" onclick="document.getElementById('modalAttEdit').style.display='none'" id="btnAttEditClose">닫기</button>
         </div>
     </div>
 </div>
@@ -1317,22 +1317,22 @@
 <div id="modalMemberMgmt" class="modal">
     <div class="modal-box">
         <div class="modal-title" id="memberModalTitle">👤 팀원 관리</div>
-        <div class="modal-desc">팀원을 추가하거나 삭제할 수 있습니다.</div>
+        <div class="modal-desc" id="memberModalDesc">팀원을 추가하거나 삭제할 수 있습니다.</div>
         <div id="memberTeamTabs" style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px;"></div>
         <div style="max-height:400px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;">
             <table class="entry-tbl" id="tblMemberEntry">
-                <thead><tr><th style="min-width:140px;">이름</th><th style="min-width:100px;">직급</th><th>삭제</th></tr></thead>
+                <thead><tr><th style="min-width:140px;" id="memberThName">이름</th><th style="min-width:100px;" id="memberThPos">직급</th><th id="memberThDel">삭제</th></tr></thead>
                 <tbody></tbody>
             </table>
         </div>
         <div style="display:flex;gap:8px;margin:12px 0;">
             <input type="text" id="newMemberName" placeholder="이름" style="flex:2;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Noto Sans KR',sans-serif;font-size:12px;">
             <input type="text" id="newMemberPos" placeholder="직급" style="flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Noto Sans KR',sans-serif;font-size:12px;">
-            <button class="btn-parse" onclick="addNewMember()">+ 추가</button>
+            <button class="btn-parse" onclick="addNewMember()" id="btnAddMember">+ 추가</button>
         </div>
         <div class="modal-footer">
-            <button class="btn-save btn-full" onclick="saveMemberData()">💾 저장</button>
-            <button class="btn-cancel btn-full" onclick="document.getElementById('modalMemberMgmt').style.display='none'">취소</button>
+            <button class="btn-save btn-full" onclick="saveMemberData()" id="btnMemberSave">💾 저장</button>
+            <button class="btn-cancel btn-full" onclick="document.getElementById('modalMemberMgmt').style.display='none'" id="btnMemberCancel">취소</button>
         </div>
     </div>
 </div>
@@ -1444,7 +1444,7 @@ function createBackup(){
             alert(lang==='ko'?'✅ 백업이 생성되었습니다!':'✅ Backup created successfully!');
         }).catch(()=>alert(lang==='ko'?'⚠️ 백업 저장 실패':'⚠️ Backup failed'));
     } else {
-        try{const bs=JSON.parse(localStorage.getItem('ds_backups')||'{}');bs[key]=snapshot;const keys=Object.keys(bs).sort();if(keys.length>10){delete bs[keys[0]];}localStorage.setItem('ds_backups',JSON.stringify(bs));loadBackupList();alert(lang==='ko'?'✅ 백업이 생성되었습니다! (로컬 저장)':'✅ Backup created (local)!');}catch(e){alert('백업 오류');}
+        try{const bs=JSON.parse(localStorage.getItem('ds_backups')||'{}');bs[key]=snapshot;const keys=Object.keys(bs).sort();if(keys.length>10){delete bs[keys[0]];}localStorage.setItem('ds_backups',JSON.stringify(bs));loadBackupList();alert(lang==='ko'?'✅ 백업이 생성되었습니다! (로컬 저장)':'✅ Backup created (local)!');}catch(e){alert(lang==='ko'?'백업 오류':'Backup error');}
     }
 }
 function cleanOldBackups(){
@@ -1494,7 +1494,7 @@ function initFirebase(){
     if(!isConfigured){
         document.getElementById('configBanner').style.display='block';
         document.getElementById('loadingOverlay').style.display='none';
-        setSyncStatus('offline','⚠️ Firebase 미설정');
+        setSyncStatus('offline',lang==='ko'?'⚠️ Firebase 미설정':'⚠️ Firebase not configured');
         prodData=getDefaultProdData(); shipData=getDefaultShipData(); defectTypeData=getDefaultDefectData();
         dailyProdData=[]; dailyDefectData=[]; attendanceData=[]; teamMembers=getDefaultTeamMembers();
         Object.keys(dataLoaded).forEach(k=>dataLoaded[k]=true);
@@ -1519,11 +1519,11 @@ function initFirebase(){
                 initUI();
             }
         },10000);
-    }catch(e){ setSyncStatus('offline','연결 오류'); document.getElementById('loadingOverlay').style.display='none'; }
+    }catch(e){ setSyncStatus('offline',lang==='ko'?'연결 오류':'Connection error'); document.getElementById('loadingOverlay').style.display='none'; }
 }
 
 function setupListeners(){
-    setSyncStatus('saving','데이터 로딩 중...');
+    setSyncStatus('saving',lang==='ko'?'데이터 로딩 중...':'Loading data...');
     db.ref('prodData').on('value',s=>{ prodData=s.val()?Object.values(s.val()):getDefaultProdData(); dataLoaded.prod=true; checkLoaded(); },e=>{ console.error('prodData error:',e); prodData=getDefaultProdData(); dataLoaded.prod=true; checkLoaded(); });
     db.ref('shipData').on('value',s=>{ shipData=s.val()?Object.values(s.val()):getDefaultShipData(); dataLoaded.ship=true; checkLoaded(); },e=>{ console.error('shipData error:',e); shipData=getDefaultShipData(); dataLoaded.ship=true; checkLoaded(); });
     db.ref('defectTypeData').on('value',s=>{ defectTypeData=s.val()?Object.values(s.val()):getDefaultDefectData(); dataLoaded.defect=true; checkLoaded(); },e=>{ console.error('defectTypeData error:',e); defectTypeData=getDefaultDefectData(); dataLoaded.defect=true; checkLoaded(); });
@@ -1545,7 +1545,7 @@ function setupListeners(){
     db.ref('dailyDefectData').on('value',s=>{ dailyDefectData=s.val()?Object.values(s.val()):[]; dataLoaded.ddef=true; checkLoaded(); if(currentView==='daily') updateDailyUI(); },e=>{ console.error('dailyDefectData error:',e); dailyDefectData=[]; dataLoaded.ddef=true; checkLoaded(); });
     db.ref('teamMembers').on('value',s=>{ teamMembers=s.val()||getDefaultTeamMembers(); dataLoaded.members=true; checkLoaded(); if(currentView==='daily') updateDailyUI(); },e=>{ console.error('teamMembers listener error:',e); teamMembers=getDefaultTeamMembers(); dataLoaded.members=true; checkLoaded(); });
     db.ref('attendanceData').on('value',s=>{ attendanceData=s.val()?Object.values(s.val()):[]; dataLoaded.att=true; checkLoaded(); if(currentView==='daily') updateDailyUI(); },e=>{ console.error('attendanceData listener error:',e); attendanceData=[]; dataLoaded.att=true; checkLoaded(); });
-    firebase.database().ref('.info/connected').on('value',s=>setSyncStatus(s.val()?'online':'offline',s.val()?'실시간 연결됨':'오프라인'));
+    firebase.database().ref('.info/connected').on('value',s=>setSyncStatus(s.val()?'online':'offline',s.val()?(lang==='ko'?'실시간 연결됨':'Connected'):(lang==='ko'?'오프라인':'Offline')));
 }
 
 function checkLoaded(){
@@ -1560,19 +1560,19 @@ function setSyncStatus(t,x){ const e=document.getElementById('syncStatus'); e.cl
 
 function saveToFirebase(type,data){
     if(!db) return Promise.resolve();
-    setSyncStatus('saving','저장 중...');
+    setSyncStatus('saving',lang==='ko'?'저장 중...':'Saving...');
     const k={prod:'prodData',ship:'shipData',defect:'defectTypeData',dprod:'dailyProdData',ddef:'dailyDefectData',att:'attendanceData',members:'teamMembers'}[type]||'prodData';
-    return db.ref(k).set(data).then(()=>{setSyncStatus('online','실시간 연결됨');const t=document.getElementById('saveSuccess');t.style.display='block';setTimeout(()=>t.style.display='none',2500);}).catch(()=>setSyncStatus('offline','저장 실패'));
+    return db.ref(k).set(data).then(()=>{setSyncStatus('online',lang==='ko'?'실시간 연결됨':'Connected');const t=document.getElementById('saveSuccess');t.innerText=lang==='ko'?'✅ 저장 완료! 모든 팀원에게 즉시 반영됩니다.':'✅ Saved! Changes synced to all users.';t.style.display='block';setTimeout(()=>t.style.display='none',2500);}).catch(()=>setSyncStatus('offline',lang==='ko'?'저장 실패':'Save failed'));
 }
 
 function getDefaultProdData(){return[{"prod":"RDIMM","month":"10월","proc":"SMD","in":3450,"out":3450,"fail":0},{"prod":"RDIMM","month":"10월","proc":"ROUTER","in":3450,"out":3450,"fail":0},{"prod":"RDIMM","month":"10월","proc":"ATE","in":3450,"out":3448,"fail":2},{"prod":"RDIMM","month":"10월","proc":"PCT","in":3448,"out":3418,"fail":30},{"prod":"RDIMM","month":"10월","proc":"AVI","in":3418,"out":3413,"fail":5},{"prod":"RDIMM","month":"11월","proc":"SMD","in":1410,"out":1410,"fail":0},{"prod":"RDIMM","month":"11월","proc":"ROUTER","in":1410,"out":1409,"fail":1},{"prod":"RDIMM","month":"11월","proc":"ATE","in":1409,"out":1407,"fail":2},{"prod":"RDIMM","month":"11월","proc":"PCT","in":1407,"out":1386,"fail":21},{"prod":"RDIMM","month":"11월","proc":"AVI","in":1386,"out":1384,"fail":2},{"prod":"RDIMM","month":"12월","proc":"SMD","in":7632,"out":7630,"fail":2},{"prod":"RDIMM","month":"12월","proc":"ROUTER","in":7630,"out":7628,"fail":2},{"prod":"RDIMM","month":"12월","proc":"ATE","in":7628,"out":7622,"fail":6},{"prod":"RDIMM","month":"12월","proc":"PCT","in":7622,"out":7581,"fail":41},{"prod":"RDIMM","month":"12월","proc":"AVI","in":7581,"out":7576,"fail":5},{"prod":"RDIMM","month":"1월","proc":"SMD","in":3204,"out":3204,"fail":0},{"prod":"RDIMM","month":"1월","proc":"ROUTER","in":3204,"out":3204,"fail":0},{"prod":"RDIMM","month":"1월","proc":"ATE","in":3204,"out":3201,"fail":3},{"prod":"RDIMM","month":"1월","proc":"PCT","in":3201,"out":3179,"fail":22},{"prod":"RDIMM","month":"1월","proc":"AVI","in":3179,"out":3179,"fail":0},{"prod":"SODIMM","month":"11월","proc":"SMD","in":2574,"out":2574,"fail":0},{"prod":"SODIMM","month":"11월","proc":"ROUTER","in":2574,"out":2574,"fail":0},{"prod":"SODIMM","month":"11월","proc":"ATE","in":2574,"out":2574,"fail":0},{"prod":"SODIMM","month":"11월","proc":"PCT","in":2574,"out":2562,"fail":12},{"prod":"SODIMM","month":"11월","proc":"AVI","in":2562,"out":2559,"fail":3},{"prod":"SODIMM","month":"12월","proc":"SMD","in":1404,"out":1404,"fail":0},{"prod":"SODIMM","month":"12월","proc":"ROUTER","in":1404,"out":1404,"fail":0},{"prod":"SODIMM","month":"12월","proc":"ATE","in":1404,"out":1404,"fail":0},{"prod":"SODIMM","month":"12월","proc":"PCT","in":1404,"out":1399,"fail":5},{"prod":"SODIMM","month":"12월","proc":"AVI","in":1399,"out":1398,"fail":1},{"prod":"UDIMM","month":"12월","proc":"SMD","in":4212,"out":4212,"fail":0},{"prod":"UDIMM","month":"12월","proc":"ROUTER","in":4212,"out":4212,"fail":0},{"prod":"UDIMM","month":"12월","proc":"ATE","in":4212,"out":4212,"fail":0},{"prod":"UDIMM","month":"12월","proc":"PCT","in":4212,"out":4198,"fail":14},{"prod":"UDIMM","month":"12월","proc":"AVI","in":4198,"out":4198,"fail":0},{"prod":"UDIMM","month":"1월","proc":"SMD","in":2046,"out":2046,"fail":0},{"prod":"UDIMM","month":"1월","proc":"ROUTER","in":2046,"out":2046,"fail":0},{"prod":"UDIMM","month":"1월","proc":"ATE","in":2046,"out":2045,"fail":1},{"prod":"UDIMM","month":"1월","proc":"PCT","in":2045,"out":2042,"fail":3},{"prod":"UDIMM","month":"1월","proc":"AVI","in":2042,"out":2042,"fail":0}];}
 function getDefaultShipData(){return[{"model":"RDIMM","name":"M321R8GA0EB2-CWMXJ-IRB","date":"2025-10-28","qty":1026,"reason":"Mass Production","month":"25.10"},{"model":"RDIMM","name":"M321R8GA0EB2-CWMXJ-IRB","date":"2025-11-06","qty":4304,"reason":"Mass Production","month":"25.11"},{"model":"UDIMM","name":"M323R2GA3EB0-CWMOL-IYB","date":"2025-11-25","qty":2000,"reason":"Mass Production","month":"25.11"},{"model":"RDIMM","name":"M321R8GA0EB2-CWMXJ-IRB","date":"2025-12-16","qty":2344,"reason":"Mass Production","month":"25.12"},{"model":"SODIMM","name":"M425R2GA3EB0-CWMOL-IYB","date":"2025-12-16","qty":1935,"reason":"Mass Production","month":"25.12"}];}
 function getDefaultDefectData(){return[{"reason":"Human Error","month":"25.10","qty":0},{"reason":"Human Error","month":"25.11","qty":3},{"reason":"Human Error","month":"25.12","qty":1},{"reason":"Human Error","month":"26.01","qty":0},{"reason":"Handling Damage","month":"25.10","qty":5},{"reason":"Handling Damage","month":"25.11","qty":3},{"reason":"Handling Damage","month":"25.12","qty":8},{"reason":"Handling Damage","month":"26.01","qty":0},{"reason":"Component Lifting","month":"25.10","qty":0},{"reason":"Component Lifting","month":"25.11","qty":0},{"reason":"Component Lifting","month":"25.12","qty":1},{"reason":"Component Lifting","month":"26.01","qty":0}];}
 
-const T={ko:{mainTitle:'📊 DS Quality Performance',lblProd:'제품',lblPeriod:'기간',lblProcess:'공정',btnProd:'✏️ 생산 입력',btnShip:'📦 출하 입력',btnDefect:'🛠️ 불량 유형 입력',lblKpiYield:'종합 수율',lblKpiPPM:'당사 귀책 PPM',lblKpiInput:'총 투입 수량',lblKpiOutput:'총 양품 수량',lblKpiDefect:'총 불량 수량',lblKpiDefectPPM:'총 불량 PPM',lblKpiCompDefect:'당사 귀책 불량 수',titProcYield:'공정별 수율 현황',titMonthYield:'공정별 월별 수율 추이',titProdYield:'제품별 수율 현황',titTotalTrend:'종합 수율 월별 트렌드 (%)',titPpmTrend:'종합 PPM 월별 트렌드',titProdTrend:'제품별 수율 추이 (%)',titProcTrend:'공정별 수율 추이 (%)',titProdVol:'DS 생산 실적',titTotalDefect:'월별 불량 수 트렌드',titCompDefect:'당사 귀책 불량 수 트렌드',titDefectType:'불량 유형 차트',titDefectTable:'불량 유형 상세 현황',titDefectSection:'📉 불량 분석 및 상세 현황',titShipSection:'📦 출하 실적',titShipTable:'월별 출하 수량',titShipChart:'월별 출하 실적 추이',thProc:'공정',thIn:'투입',thOut:'산출',thFail:'불량',thYld:'수율',thStat:'판정',thMonth:'기간',thProd:'제품',thIn2:'투입',thOut2:'산출',thFail2:'불량',thYld2:'수율',thStat2:'판정',thShipMonth:'기간',thTotal:'합계',moTitProd:'✏️ 생산 데이터 입력',moTitShip:'📦 출하 데이터 입력',moTitDefect:'🛠️ 불량 유형 데이터 입력',all:'전체',good:'양호',warn:'경고',
+const T={ko:{mainTitle:'📊 DS Quality Performance',lblProd:'제품',lblPeriod:'기간',lblProcess:'공정',btnProd:'✏️ 생산 입력',btnShip:'📦 출하 입력',btnDefect:'🛠️ 불량 유형 입력',lblKpiYield:'종합 수율 / 당사 귀책',lblKpiPPM:'당사 귀책 PPM',lblKpiInput:'총 투입 수량',lblKpiOutput:'총 양품 수량',lblKpiDefect:'총 불량 수량',lblKpiDefectPPM:'총 불량 PPM',lblKpiCompDefect:'당사 귀책 불량 수',titProcYield:'공정별 수율 현황',titMonthYield:'공정별 월별 수율 추이',titProdYield:'제품별 수율 현황',titTotalTrend:'종합 수율 월별 트렌드 (%)',titPpmTrend:'종합 PPM 월별 트렌드',titProdTrend:'제품별 수율 추이 (%)',titProcTrend:'공정별 수율 추이 (%)',titProdVol:'DS 생산 실적',titTotalDefect:'월별 불량 수 트렌드',titCompDefect:'당사 귀책 불량 수 트렌드',titDefectType:'불량 유형 차트',titDefectPie:'불량 유형 비율 (Pie)',titDefectTable:'불량 유형 상세 현황',titDefectSection:'📉 불량 분석 및 상세 현황',titShipSection:'📦 출하 실적',titShipTable:'월별 출하 수량',titShipChart:'월별 출하 실적 추이',thProc:'공정',thIn:'투입',thOut:'산출',thFail:'불량',thYld:'수율',thStat:'판정',thMonth:'기간',thProd:'제품',thIn2:'투입',thOut2:'산출',thFail2:'불량',thYld2:'수율',thStat2:'판정',thShipMonth:'기간',thTotal:'합계',thDefPeriod:'기간',thDefTotal:'합계',moTitProd:'✏️ 생산 데이터 입력',moTitShip:'📦 출하 데이터 입력',moTitDefect:'🛠️ 불량 유형 데이터 입력',all:'전체',good:'양호',warn:'경고',btnDefectEdit:'수정',
     btnViewMonthly:'📅 월별',btnViewDaily:'📆 일별',btnViewAtt:'👥 출퇴근',btnDailyProd:'📅 일별 생산 입력',btnDailyDef:'🔴 불량 코드 입력',
     dlblDate:'날짜',dlblProd:'제품',dlblTeam:'팀',dlblProcess:'공정',
-    dLblYield:'종합 수율',dLblInput:'총 투입 수량',dLblDefect:'총 불량 수량',dLblDefectPPM:'총 불량 PPM',dLblCompDefect:'당사 귀책 불량 수',dLblPpm:'당사 귀책 PPM',
+    dLblYield:'종합 수율 / 당사 귀책',dLblInput:'총 투입 수량',dLblDefect:'총 불량 수량',dLblDefectPPM:'총 불량 PPM',dLblCompDefect:'당사 귀책 불량 수',dLblPpm:'당사 귀책 PPM',
     dTitYieldTrend:'일별 수율 트렌드',dTitPpmTrend:'일별 당사 귀책 PPM 트렌드',dTitVolTrend:'일별 투입량 트렌드',
     dTitDefectSection:'📉 불량 코드 분석',dTitDefectBar:'불량 코드 TOP 10',dTitDefectPie:'불량 코드 비율',dTitDefectTable:'불량 코드 상세',
     dTitProdSection:'📋 일별 생산 데이터',dTitProcVolTrend:'공정별 일별 생산수량',dTitProdBarProc:'공정별 투입수량',dTitProdBarModel:'모델별 투입수량',dTitProdYieldDefect:'날짜별 수율 & 불량 추이',
@@ -1585,15 +1585,25 @@ const T={ko:{mainTitle:'📊 DS Quality Performance',lblProd:'제품',lblPeriod:
     dSortLabel:'정렬:',dSortDateDesc:'날짜 ↓',dSortDateAsc:'날짜 ↑',dSortYieldAsc:'수율 ↑',dSortYieldDesc:'수율 ↓',dSortDefectDesc:'불량 ↓',
     modalDailyProdTitle:'📅 일별 생산 데이터 입력',modalDailyProdDesc:'붙여넣기 순서: 날짜(YYYY-MM-DD) | 모델 | 공정 | 팀 | 투입수량 | 양품수량 | 불량수량',
     modalDailyDefTitle:'🔴 일별 불량 코드 입력',modalDailyDefDesc:'공정별 불량 수량 내에서만 코드를 입력할 수 있습니다',
-    btnAttendance:'👥 출근 등록 Register',btnAttEdit:'✏️ 출근 수정 Edit',btnMemberMgmt:'👤 팀원 관리 Members',
+    btnAttendance:'👥 출근 등록',btnAttEdit:'✏️ 출근 수정',btnMemberMgmt:'👤 팀원 관리',
     attLblDate:'날짜',attBtnToday:'오늘',attBtnThisWeek:'이번 주',attBtnThisMonth:'이번 달',
     attSection:'📍 출근 현황',attKpiRate:'출근율',attKpiWork:'출근',attKpiVacation:'휴가',attKpiAbsent:'결근·조퇴',
     attTitDonut:'출근 상태 비율',attTitBar:'날짜별 출근 현황',
     attModalTitle:'👥 출근 인원 등록',attModalDesc:'날짜와 팀을 선택하고 각 팀원의 출근 상태를 입력하세요.',
-    attSetAllWork:'✅ 전체 출근',attSetAllVacation:'🏖️ 전체 휴가',memberModalTitle:'👤 팀원 관리'},en:{mainTitle:'📊 DS Quality Performance',lblProd:'Product',lblPeriod:'Period',lblProcess:'Process',btnProd:'✏️ Production',btnShip:'📦 Shipment',btnDefect:'🛠️ Defect Types',lblKpiYield:'Overall Yield',lblKpiPPM:'Company Defect PPM',lblKpiInput:'Total Input',lblKpiOutput:'Good Qty',lblKpiDefect:'Total Defects',lblKpiDefectPPM:'Total Defect PPM',lblKpiCompDefect:'Company Defect Qty',titProcYield:'Process Yield',titMonthYield:'Monthly Process Yield',titProdYield:'Product Yield',titTotalTrend:'Overall Yield Trend (%)',titPpmTrend:'Overall PPM Trend',titProdTrend:'Product Yield Trend (%)',titProcTrend:'Process Yield Trend (%)',titProdVol:'Production Volume',titTotalDefect:'Total Defect Trend',titCompDefect:'Company Defect Trend',titDefectType:'Defect Type Chart',titDefectTable:'Defect Type Details',titDefectSection:'📉 Defect Analysis',titShipSection:'📦 Shipment Performance',titShipTable:'Monthly Shipment',titShipChart:'Shipment Trend',thProc:'Process',thIn:'Input',thOut:'Output',thFail:'Defect',thYld:'Yield',thStat:'Status',thMonth:'Period',thProd:'Product',thIn2:'Input',thOut2:'Output',thFail2:'Defect',thYld2:'Yield',thStat2:'Status',thShipMonth:'Period',thTotal:'Total',moTitProd:'✏️ Production Data Entry',moTitShip:'📦 Shipment Data Entry',moTitDefect:'🛠️ Defect Type Data Entry',all:'All',good:'Good',warn:'Warning',
+    attSetAllWork:'✅ 전체 출근',attSetAllVacation:'🏖️ 전체 휴가',memberModalTitle:'👤 팀원 관리',
+    attThName:'이름',attThPos:'직급',attThStatus:'상태',
+    attEditModalTitle:'✏️ 출근 데이터 수정',attEditModalDesc:'날짜와 팀을 선택하여 기존 데이터를 수정하거나 삭제하세요.',
+    attEditThName:'이름',attEditThPos:'직급',attEditThStatus:'상태',attEditThDel:'삭제',
+    attEditDatesLabel:'📋 등록된 날짜',btnAttEditSave:'💾 수정 저장',btnAttEditDel:'🗑️ 이 날짜 전체 삭제',btnAttEditClose:'닫기',
+    btnAttSave:'💾 저장 (즉시 반영)',btnAttCancel:'취소',
+    memberModalDesc:'팀원을 추가하거나 삭제할 수 있습니다.',memberThName:'이름',memberThPos:'직급',memberThDel:'삭제',btnAddMember:'+ 추가',btnMemberSave:'💾 저장',btnMemberCancel:'취소',
+    loginTitle:'🔐 로그인',loginTitleEn:'접속 비밀번호를 입력하세요',loginDesc:'접속 비밀번호를 입력하세요',loginBtn:'접속',loginAttBtn:'👥 출퇴근 관리',loginAttSub:'비밀번호 없이 바로 접속',loginHint:'🔑 접속: LOGIN_PASSWORD | 데이터입력: DATA_PASSWORD',loadingText:'🔥 Firebase에서 데이터를 불러오는 중...',
+    dprodModalTitle:'📅 일별 생산 데이터 입력',btnDprodParse:'📋 데이터 적용',btnDprodClear:'🗑️ 초기화',dprodThDate:'날짜',dprodThModel:'모델',dprodThProc:'공정',dprodThTeam:'팀',dprodThDel:'삭제',btnDprodAddRow:'+ 행 추가',btnDprodClearAll:'🗑️ Firebase 일별 생산 데이터 전체 초기화 (주의: 복구 불가)',btnDprodSave:'💾 저장 (즉시 반영)',btnDprodCancel:'취소',
+    ddefAvailLabel:'📋 현재 날짜 범위 미입력 불량:',ddefThModel:'모델',ddefThDate:'날짜',ddefThProc:'공정',ddefThTeam:'팀',ddefThCode:'불량 코드 검색',ddefThQty:'수량',ddefThDel:'삭제',btnDdefAddRow:'+ 행 추가',btnDdefSave:'💾 저장 (즉시 반영)',btnDdefCancel:'취소'
+},en:{mainTitle:'📊 DS Quality Performance',lblProd:'Product',lblPeriod:'Period',lblProcess:'Process',btnProd:'✏️ Production',btnShip:'📦 Shipment',btnDefect:'🛠️ Defect Types',lblKpiYield:'Overall / Company Yield',lblKpiPPM:'Company Defect PPM',lblKpiInput:'Total Input',lblKpiOutput:'Good Qty',lblKpiDefect:'Total Defects',lblKpiDefectPPM:'Total Defect PPM',lblKpiCompDefect:'Company Defect Qty',titProcYield:'Process Yield',titMonthYield:'Monthly Process Yield',titProdYield:'Product Yield',titTotalTrend:'Overall Yield Trend (%)',titPpmTrend:'Overall PPM Trend',titProdTrend:'Product Yield Trend (%)',titProcTrend:'Process Yield Trend (%)',titProdVol:'Production Volume',titTotalDefect:'Total Defect Trend',titCompDefect:'Company Defect Trend',titDefectType:'Defect Type Chart',titDefectPie:'Defect Type Ratio (Pie)',titDefectTable:'Defect Type Details',titDefectSection:'📉 Defect Analysis',titShipSection:'📦 Shipment Performance',titShipTable:'Monthly Shipment',titShipChart:'Shipment Trend',thProc:'Process',thIn:'Input',thOut:'Output',thFail:'Defect',thYld:'Yield',thStat:'Status',thMonth:'Period',thProd:'Product',thIn2:'Input',thOut2:'Output',thFail2:'Defect',thYld2:'Yield',thStat2:'Status',thShipMonth:'Period',thTotal:'Total',thDefPeriod:'Period',thDefTotal:'Total',moTitProd:'✏️ Production Data Entry',moTitShip:'📦 Shipment Data Entry',moTitDefect:'🛠️ Defect Type Data Entry',all:'All',good:'Good',warn:'Warning',btnDefectEdit:'Edit',
     btnViewMonthly:'📅 Monthly',btnViewDaily:'📆 Daily',btnViewAtt:'👥 Attendance',btnDailyProd:'📅 Daily Prod Entry',btnDailyDef:'🔴 Defect Code Entry',
     dlblDate:'Date',dlblProd:'Product',dlblTeam:'Team',dlblProcess:'Process',
-    dLblYield:'Overall Yield',dLblInput:'Total Input Qty',dLblDefect:'Total Defects',dLblDefectPPM:'Total Defect PPM',dLblCompDefect:'Company Defect Qty',dLblPpm:'Company Defect PPM',
+    dLblYield:'Overall / Company Yield',dLblInput:'Total Input Qty',dLblDefect:'Total Defects',dLblDefectPPM:'Total Defect PPM',dLblCompDefect:'Company Defect Qty',dLblPpm:'Company Defect PPM',
     dTitYieldTrend:'Daily Yield Trend',dTitPpmTrend:'Daily Overall PPM Trend',dTitVolTrend:'Daily Input Volume Trend',
     dTitDefectSection:'📉 Defect Code Analysis',dTitDefectBar:'Top 10 Defect Codes',dTitDefectPie:'Defect Code Distribution',dTitDefectTable:'Defect Code Details',
     dTitProdSection:'📋 Daily Production Data',dTitProcVolTrend:'Daily Volume by Process',dTitProdBarProc:'Input Qty by Process',dTitProdBarModel:'Input Qty by Model',dTitProdYieldDefect:'Daily Yield & Defect Trend',
@@ -1606,12 +1616,22 @@ const T={ko:{mainTitle:'📊 DS Quality Performance',lblProd:'제품',lblPeriod:
     dSortLabel:'Sort:',dSortDateDesc:'Date ↓',dSortDateAsc:'Date ↑',dSortYieldAsc:'Yield ↑',dSortYieldDesc:'Yield ↓',dSortDefectDesc:'Defect ↓',
     modalDailyProdTitle:'📅 Daily Production Entry',modalDailyProdDesc:'Paste order: Date(YYYY-MM-DD) | Model | Process | Team | InputQty | GoodQty | DefectQty',
     modalDailyDefTitle:'🔴 Daily Defect Code Entry',modalDailyDefDesc:'Defect codes must be within the defect quantity already recorded for that date/model/process',
-    btnAttendance:'👥 출근 등록 Register',btnAttEdit:'✏️ 출근 수정 Edit',btnMemberMgmt:'👤 팀원 관리 Members',
+    btnAttendance:'👥 Register Attendance',btnAttEdit:'✏️ Edit Attendance',btnMemberMgmt:'👤 Members',
     attLblDate:'Date',attBtnToday:'Today',attBtnThisWeek:'This Week',attBtnThisMonth:'This Month',
     attSection:'📍 Attendance',attKpiRate:'Attendance Rate',attKpiWork:'Present',attKpiVacation:'Vacation',attKpiAbsent:'Absent/Early',
     attTitDonut:'Status Distribution',attTitBar:'Daily Attendance',
     attModalTitle:'👥 Attendance Entry',attModalDesc:'Select date and team, then set attendance status for each member.',
-    attSetAllWork:'✅ All Present',attSetAllVacation:'🏖️ All Vacation',memberModalTitle:'👤 Member Management'}};
+    attSetAllWork:'✅ All Present',attSetAllVacation:'🏖️ All Vacation',memberModalTitle:'👤 Member Management',
+    attThName:'Name',attThPos:'Position',attThStatus:'Status',
+    attEditModalTitle:'✏️ Edit Attendance',attEditModalDesc:'Select date and team to edit or delete existing data.',
+    attEditThName:'Name',attEditThPos:'Position',attEditThStatus:'Status',attEditThDel:'Delete',
+    attEditDatesLabel:'📋 Registered Dates',btnAttEditSave:'💾 Save Changes',btnAttEditDel:'🗑️ Delete This Date',btnAttEditClose:'Close',
+    btnAttSave:'💾 Save (Sync Now)',btnAttCancel:'Cancel',
+    memberModalDesc:'Add or remove team members.',memberThName:'Name',memberThPos:'Position',memberThDel:'Delete',btnAddMember:'+ Add',btnMemberSave:'💾 Save',btnMemberCancel:'Cancel',
+    loginTitle:'🔐 Login',loginTitleEn:'Enter your access password',loginDesc:'Enter your access password',loginBtn:'Connect',loginAttBtn:'👥 Attendance',loginAttSub:'No password required',loginHint:'🔑 Access: LOGIN_PASSWORD | Data Entry: DATA_PASSWORD',loadingText:'🔥 Loading data from Firebase...',
+    dprodModalTitle:'📅 Daily Production Entry',btnDprodParse:'📋 Apply Data',btnDprodClear:'🗑️ Reset',dprodThDate:'Date',dprodThModel:'Model',dprodThProc:'Process',dprodThTeam:'Team',dprodThDel:'Del',btnDprodAddRow:'+ Add Row',btnDprodClearAll:'🗑️ Delete ALL Daily Prod Data (Caution: Cannot Undo)',btnDprodSave:'💾 Save (Sync Now)',btnDprodCancel:'Cancel',
+    ddefAvailLabel:'📋 Unassigned Defects in Date Range:',ddefThModel:'Model',ddefThDate:'Date',ddefThProc:'Process',ddefThTeam:'Team',ddefThCode:'Search Defect Code',ddefThQty:'Qty',ddefThDel:'Del',btnDdefAddRow:'+ Add Row',btnDdefSave:'💾 Save (Sync Now)',btnDdefCancel:'Cancel'
+}};
 
 function getUV(a,k){return[...new Set(a.map(d=>d[k]))].filter(v=>v&&v.toString().trim()).sort();}
 function updateSmartLists(){
@@ -1684,7 +1704,7 @@ function saveData(type){
         else if(type==='ship'&&i[0].value.trim())nd.push({model:i[0].value.trim(),name:i[1].value.trim(),date:i[2].value.trim(),qty:cleanNum(i[3].value),reason:i[4].value.trim(),month:i[5].value.trim()});
         else if(type==='defect'&&i[0].value.trim())nd.push({reason:i[0].value.trim(),month:i[1].value.trim(),qty:cleanNum(i[2].value)});
     });
-    if(!nd.length){alert('⚠️ 데이터가 없습니다.');return;}
+    if(!nd.length){alert(lang==='ko'?'⚠️ 데이터가 없습니다.':'⚠️ No data.');return;}
     if(type==='prod')prodData=nd; else if(type==='ship')shipData=nd; else defectTypeData=nd;
     saveToFirebase(type,nd).then(()=>{
         closeModal(type); updateSmartLists(); updateUI(); updateLastUpdate();
@@ -1698,8 +1718,14 @@ function setLang(l){
     document.getElementById('btnEn').className=l==='en'?'lang-btn active':'lang-btn';
     for(let k in T[lang]){const e=document.getElementById(k);if(e)e.innerText=T[lang][k];}
     const wni=document.getElementById('weekNumInput');if(wni)wni.placeholder=lang==='ko'?'예) 8':'e.g. 8';
+    // Update placeholders for member modal
+    const nmn=document.getElementById('newMemberName');if(nmn)nmn.placeholder=lang==='ko'?'이름':'Name';
+    const nmp=document.getElementById('newMemberPos');if(nmp)nmp.placeholder=lang==='ko'?'직급':'Position';
+    // Update save toast
+    const st=document.getElementById('saveSuccess');if(st)st.innerText=lang==='ko'?'✅ 저장 완료! 모든 팀원에게 즉시 반영됩니다.':'✅ Saved! Changes synced to all users.';
     updateUI(); updateLastUpdate(); updateModalLang();
     if(typeof currentView!=='undefined'&&currentView==='daily') updateDailyUI();
+    if(typeof currentView!=='undefined'&&currentView==='attendance'){updateAttendanceUI();drawAttendanceCharts();}
 }
 function filter(t,v){filters[t]=v; updateUI();}
 
@@ -2026,7 +2052,7 @@ function drawCharts(data){
                 }
             }
         });
-    }catch(e){console.error('차트 오류:',e);}
+    }catch(e){console.error('Chart error:',e);}
 }
 
 function openModal(t){
@@ -2080,17 +2106,30 @@ function updateModalLang(){
     document.getElementById('backupTitle').innerText=lang==='ko'?'💾 데이터 백업 관리':'💾 Backup Manager';
     document.getElementById('backupSubTitle').innerText=lang==='ko'?'최대 10개 백업 저장 · 잘못 입력 시 복원 가능':'Up to 10 backups · Restore anytime';
     document.getElementById('backupNowBtn').innerText=lang==='ko'?'📸 지금 백업 생성':'📸 Create Backup Now';
+    // Daily Prod modal desc (has HTML)
+    const dpd=document.getElementById('dprodModalDesc');
+    if(dpd) dpd.innerHTML=lang==='ko'?'날짜·모델·공정별로 <strong>투입수량, 양품수량, 불량수량</strong>을 입력하세요.<br><strong style="color:#4f46e5;">붙여넣기 순서: 날짜(YYYY-MM-DD) | 모델 | 공정 | 팀 | 투입수량 | 양품수량 | 불량수량</strong>':'Enter <strong>Input Qty, Good Qty, Defect Qty</strong> by date/model/process.<br><strong style="color:#4f46e5;">Paste order: Date(YYYY-MM-DD) | Model | Process | Team | InputQty | GoodQty | DefectQty</strong>';
+    const dpp=document.getElementById('pasteDailyProd');
+    if(dpp) dpp.placeholder=lang==='ko'?'Excel 데이터를 여기에 붙여넣기 (Ctrl+V)':'Paste Excel data here (Ctrl+V)';
+    // Daily Defect modal desc (has HTML)
+    const ddd=document.getElementById('ddefModalDesc');
+    if(ddd) ddd.innerHTML=lang==='ko'?'공정별 <strong>불량 수량 내에서만</strong> 입력 가능합니다. 공정 선택 시 해당 불량 수량이 자동으로 표시됩니다.<br><span style="color:#6366f1;font-weight:700;">🔵 SMT (SMD/ROUTER): 1000번대</span> &nbsp;|&nbsp; <span style="color:#0891b2;font-weight:700;">🔬 TEST (ATE/PCT/AVI/TC): 4000번대</span>':'Enter defect codes <strong>within the defect quantity</strong> for each process. Available qty shown automatically.<br><span style="color:#6366f1;font-weight:700;">🔵 SMT (SMD/ROUTER): 1000 series</span> &nbsp;|&nbsp; <span style="color:#0891b2;font-weight:700;">🔬 TEST (ATE/PCT/AVI/TC): 4000 series</span>';
+    // ddefThQty has HTML
+    const dq=document.getElementById('ddefThQty');
+    if(dq) dq.innerHTML=lang==='ko'?'수량<br><span style="font-size:10px;color:#94a3b8;">(가용/잔여)</span>':'Qty<br><span style="font-size:10px;color:#94a3b8;">(avail/remain)</span>';
 }
 
 function renderEntryTable(type){
     const tid=type==='prod'?'tblEntryProd':type==='ship'?'tblEntryShip':'tblEntryDefect';
     const tbody=document.querySelector(`#${tid} tbody`); tbody.innerHTML='';
     const src=type==='prod'?prodData:type==='ship'?shipData:defectTypeData;
+    const _sel=lang==='ko'?'선택':'Select';
+    const _del=lang==='ko'?'삭제':'Del';
     src.forEach(d=>{
         const tr=document.createElement('tr');
-        if(type==='prod'){tr.innerHTML=`<td><select><option value="">선택</option><option value="RDIMM"${d.prod==='RDIMM'?' selected':''}>RDIMM</option><option value="SODIMM"${d.prod==='SODIMM'?' selected':''}>SODIMM</option><option value="UDIMM"${d.prod==='UDIMM'?' selected':''}>UDIMM</option></select></td><td><input list="list-months" value="${d.month}"></td><td><select><option value="">선택</option><option value="SMD"${d.proc==='SMD'?' selected':''}>SMD</option><option value="ROUTER"${d.proc==='ROUTER'?' selected':''}>ROUTER</option><option value="ATE"${d.proc==='ATE'?' selected':''}>ATE</option><option value="PCT"${d.proc==='PCT'?' selected':''}>PCT</option><option value="AVI"${d.proc==='AVI'?' selected':''}>AVI</option><option value="TC"${d.proc==='TC'?' selected':''}>TC</option></select></td><td><input type="number" value="${d.in}"></td><td><input type="number" value="${d.out}"></td><td><input type="number" value="${d.fail}"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">삭제</button></td>`;}
-        else if(type==='ship'){tr.innerHTML=`<td><input list="list-products" value="${d.model}"></td><td><input list="list-model-names" value="${d.name}"></td><td><input type="date" value="${d.date}"></td><td><input type="number" value="${d.qty}"></td><td><input list="list-ship-reasons" value="${d.reason}"></td><td><input list="list-months" value="${d.month}"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">삭제</button></td>`;}
-        else{tr.innerHTML=`<td><input list="list-defect-reasons" value="${d.reason||''}"></td><td><input list="list-months" value="${d.month||''}"></td><td><input type="number" value="${d.qty||0}"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">삭제</button></td>`;}
+        if(type==='prod'){tr.innerHTML=`<td><select><option value="">${_sel}</option><option value="RDIMM"${d.prod==='RDIMM'?' selected':''}>RDIMM</option><option value="SODIMM"${d.prod==='SODIMM'?' selected':''}>SODIMM</option><option value="UDIMM"${d.prod==='UDIMM'?' selected':''}>UDIMM</option></select></td><td><input list="list-months" value="${d.month}"></td><td><select><option value="">${_sel}</option><option value="SMD"${d.proc==='SMD'?' selected':''}>SMD</option><option value="ROUTER"${d.proc==='ROUTER'?' selected':''}>ROUTER</option><option value="ATE"${d.proc==='ATE'?' selected':''}>ATE</option><option value="PCT"${d.proc==='PCT'?' selected':''}>PCT</option><option value="AVI"${d.proc==='AVI'?' selected':''}>AVI</option><option value="TC"${d.proc==='TC'?' selected':''}>TC</option></select></td><td><input type="number" value="${d.in}"></td><td><input type="number" value="${d.out}"></td><td><input type="number" value="${d.fail}"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">${_del}</button></td>`;}
+        else if(type==='ship'){tr.innerHTML=`<td><input list="list-products" value="${d.model}"></td><td><input list="list-model-names" value="${d.name}"></td><td><input type="date" value="${d.date}"></td><td><input type="number" value="${d.qty}"></td><td><input list="list-ship-reasons" value="${d.reason}"></td><td><input list="list-months" value="${d.month}"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">${_del}</button></td>`;}
+        else{tr.innerHTML=`<td><input list="list-defect-reasons" value="${d.reason||''}"></td><td><input list="list-months" value="${d.month||''}"></td><td><input type="number" value="${d.qty||0}"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">${_del}</button></td>`;}
         tbody.appendChild(tr);
     });
 }
@@ -2099,39 +2138,43 @@ function addRow(type){
     const tid=type==='prod'?'tblEntryProd':type==='ship'?'tblEntryShip':'tblEntryDefect';
     const tbody=document.querySelector(`#${tid} tbody`);
     const tr=document.createElement('tr');
-    if(type==='prod'){tr.innerHTML=`<td><select><option value="">선택</option><option value="RDIMM">RDIMM</option><option value="SODIMM">SODIMM</option><option value="UDIMM">UDIMM</option></select></td><td><input list="list-months" placeholder="26.02" value="26.02"></td><td><select><option value="">선택</option><option value="SMD">SMD</option><option value="ROUTER">ROUTER</option><option value="ATE">ATE</option><option value="PCT">PCT</option><option value="AVI">AVI</option><option value="TC">TC</option></select></td><td><input type="number" placeholder="1000"></td><td><input type="number" placeholder="995"></td><td><input type="number" value="0"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">삭제</button></td>`;}
-    else if(type==='ship'){tr.innerHTML=`<td><input list="list-products" placeholder="RDIMM"></td><td><input list="list-model-names" placeholder="모델명"></td><td><input type="date"></td><td><input type="number" placeholder="1000"></td><td><input list="list-ship-reasons" placeholder="Mass Production"></td><td><input list="list-months" placeholder="26.02" value="26.02"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">삭제</button></td>`;}
-    else{tr.innerHTML=`<td><input list="list-defect-reasons" placeholder="Human Error"></td><td><input list="list-months" placeholder="26.02" value="26.02"></td><td><input type="number" value="0"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">삭제</button></td>`;}
+    const _sel=lang==='ko'?'선택':'Select';
+    const _del=lang==='ko'?'삭제':'Del';
+    if(type==='prod'){tr.innerHTML=`<td><select><option value="">${_sel}</option><option value="RDIMM">RDIMM</option><option value="SODIMM">SODIMM</option><option value="UDIMM">UDIMM</option></select></td><td><input list="list-months" placeholder="26.02" value="26.02"></td><td><select><option value="">${_sel}</option><option value="SMD">SMD</option><option value="ROUTER">ROUTER</option><option value="ATE">ATE</option><option value="PCT">PCT</option><option value="AVI">AVI</option><option value="TC">TC</option></select></td><td><input type="number" placeholder="1000"></td><td><input type="number" placeholder="995"></td><td><input type="number" value="0"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">${_del}</button></td>`;}
+    else if(type==='ship'){tr.innerHTML=`<td><input list="list-products" placeholder="RDIMM"></td><td><input list="list-model-names" placeholder="${lang==='ko'?'모델명':'Model name'}"></td><td><input type="date"></td><td><input type="number" placeholder="1000"></td><td><input list="list-ship-reasons" placeholder="Mass Production"></td><td><input list="list-months" placeholder="26.02" value="26.02"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">${_del}</button></td>`;}
+    else{tr.innerHTML=`<td><input list="list-defect-reasons" placeholder="Human Error"></td><td><input list="list-months" placeholder="26.02" value="26.02"></td><td><input type="number" value="0"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">${_del}</button></td>`;}
     tbody.appendChild(tr); tr.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
 function parsePaste(type){
     const pid=type==='prod'?'pasteProd':type==='ship'?'pasteShip':'pasteDefect';
     const txt=document.getElementById(pid).value.trim();
-    if(!txt){alert('붙여넣을 데이터가 없습니다.');return;}
+    if(!txt){alert(lang==='ko'?'붙여넣을 데이터가 없습니다.':'No data to paste.');return;}
     const tid=type==='prod'?'tblEntryProd':type==='ship'?'tblEntryShip':'tblEntryDefect';
     const tbody=document.querySelector(`#${tid} tbody`); let cnt=0;
+    const _s=lang==='ko'?'선택':'Select';
+    const _d=lang==='ko'?'삭제':'Del';
     txt.split('\n').forEach(row=>{
         const c=row.split(/\t/); const tr=document.createElement('tr');
-        if(type==='prod'&&c.length>=6){const mv=extractYM(c[1].trim());tr.innerHTML=`<td><select><option value="">선택</option><option value="RDIMM"${c[0].trim()==='RDIMM'?' selected':''}>RDIMM</option><option value="SODIMM"${c[0].trim()==='SODIMM'?' selected':''}>SODIMM</option><option value="UDIMM"${c[0].trim()==='UDIMM'?' selected':''}>UDIMM</option></select></td><td><input list="list-months" value="${mv}"></td><td><select><option value="">선택</option><option value="SMD"${c[2].trim()==='SMD'?' selected':''}>SMD</option><option value="ROUTER"${c[2].trim()==='ROUTER'?' selected':''}>ROUTER</option><option value="ATE"${c[2].trim()==='ATE'?' selected':''}>ATE</option><option value="PCT"${c[2].trim()==='PCT'?' selected':''}>PCT</option><option value="AVI"${c[2].trim()==='AVI'?' selected':''}>AVI</option><option value="TC"${c[2].trim()==='TC'?' selected':''}>TC</option></select></td><td><input type="number" value="${cleanNum(c[3])}"></td><td><input type="number" value="${cleanNum(c[4])}"></td><td><input type="number" value="${cleanNum(c[5])}"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">삭제</button></td>`;tbody.appendChild(tr);cnt++;}
-        else if(type==='ship'&&c.length>=5){const mv=c.length>=6&&c[5].trim()?extractYM(c[5].trim()):extractYM(c[2].trim());tr.innerHTML=`<td><input list="list-products" value="${c[0].trim()}"></td><td><input list="list-model-names" value="${c[1].trim()}"></td><td><input type="date" value="${c[2].trim()}"></td><td><input type="number" value="${cleanNum(c[3])}"></td><td><input list="list-ship-reasons" value="${c[4].trim()}"></td><td><input list="list-months" value="${mv}"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">삭제</button></td>`;tbody.appendChild(tr);cnt++;}
-        else if(type==='defect'&&c.length>=3){const mv=extractYM(c[1].trim());tr.innerHTML=`<td><input list="list-defect-reasons" value="${c[0].trim()}"></td><td><input list="list-months" value="${mv}"></td><td><input type="number" value="${cleanNum(c[2])}"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">삭제</button></td>`;tbody.appendChild(tr);cnt++;}
+        if(type==='prod'&&c.length>=6){const mv=extractYM(c[1].trim());tr.innerHTML=`<td><select><option value="">${_s}</option><option value="RDIMM"${c[0].trim()==='RDIMM'?' selected':''}>RDIMM</option><option value="SODIMM"${c[0].trim()==='SODIMM'?' selected':''}>SODIMM</option><option value="UDIMM"${c[0].trim()==='UDIMM'?' selected':''}>UDIMM</option></select></td><td><input list="list-months" value="${mv}"></td><td><select><option value="">${_s}</option><option value="SMD"${c[2].trim()==='SMD'?' selected':''}>SMD</option><option value="ROUTER"${c[2].trim()==='ROUTER'?' selected':''}>ROUTER</option><option value="ATE"${c[2].trim()==='ATE'?' selected':''}>ATE</option><option value="PCT"${c[2].trim()==='PCT'?' selected':''}>PCT</option><option value="AVI"${c[2].trim()==='AVI'?' selected':''}>AVI</option><option value="TC"${c[2].trim()==='TC'?' selected':''}>TC</option></select></td><td><input type="number" value="${cleanNum(c[3])}"></td><td><input type="number" value="${cleanNum(c[4])}"></td><td><input type="number" value="${cleanNum(c[5])}"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">${_d}</button></td>`;tbody.appendChild(tr);cnt++;}
+        else if(type==='ship'&&c.length>=5){const mv=c.length>=6&&c[5].trim()?extractYM(c[5].trim()):extractYM(c[2].trim());tr.innerHTML=`<td><input list="list-products" value="${c[0].trim()}"></td><td><input list="list-model-names" value="${c[1].trim()}"></td><td><input type="date" value="${c[2].trim()}"></td><td><input type="number" value="${cleanNum(c[3])}"></td><td><input list="list-ship-reasons" value="${c[4].trim()}"></td><td><input list="list-months" value="${mv}"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">${_d}</button></td>`;tbody.appendChild(tr);cnt++;}
+        else if(type==='defect'&&c.length>=3){const mv=extractYM(c[1].trim());tr.innerHTML=`<td><input list="list-defect-reasons" value="${c[0].trim()}"></td><td><input list="list-months" value="${mv}"></td><td><input type="number" value="${cleanNum(c[2])}"></td><td><button class="btn-del" onclick="this.closest('tr').remove()">${_d}</button></td>`;tbody.appendChild(tr);cnt++;}
     });
-    if(cnt>0){alert(`✅ ${cnt}개 데이터 추가됨. 저장 버튼을 눌러주세요.`);document.getElementById(pid).value='';}
-    else alert('⚠️ 유효한 데이터가 없습니다.');
+    if(cnt>0){alert(lang==='ko'?`✅ ${cnt}개 데이터 추가됨. 저장 버튼을 눌러주세요.`:`✅ ${cnt} rows added. Click Save.`);document.getElementById(pid).value='';}
+    else alert(lang==='ko'?'⚠️ 유효한 데이터가 없습니다.':'⚠️ No valid data found.');
 }
 
 function exportExcel(){
     try{
         const wb=XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(prodData.map(d=>({'제품':d.prod,'기간':fmtPeriod(d.month),'공정':d.proc,'투입':d.in,'산출':d.out,'불량':d.fail}))),"생산데이터");
-        XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(shipData.map(d=>({'모델':d.model,'모델명':d.name,'출하일':d.date,'수량':d.qty,'사유':d.reason,'기간':fmtPeriod(d.month)}))),"출하데이터");
+        XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(prodData.map(d=>({[lang==='ko'?'제품':'Product']:d.prod,[lang==='ko'?'기간':'Period']:fmtPeriod(d.month),[lang==='ko'?'공정':'Process']:d.proc,[lang==='ko'?'투입':'Input']:d.in,[lang==='ko'?'산출':'Output']:d.out,[lang==='ko'?'불량':'Defect']:d.fail}))),lang==='ko'?"생산데이터":"Production");
+        XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(shipData.map(d=>({[lang==='ko'?'모델':'Model']:d.model,[lang==='ko'?'모델명':'Name']:d.name,[lang==='ko'?'출하일':'Date']:d.date,[lang==='ko'?'수량':'Qty']:d.qty,[lang==='ko'?'사유':'Reason']:d.reason,[lang==='ko'?'기간':'Period']:fmtPeriod(d.month)}))),lang==='ko'?"출하데이터":"Shipment");
         XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(defectTypeData.map(d=>({'불량명':d.reason,'기간':fmtPeriod(d.month),'수량':d.qty}))),lang==='ko'?"불량유형데이터":"Defect_Types");
         if(dailyProdData&&dailyProdData.length) XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(dailyProdData.map(d=>({[lang==='ko'?'날짜':'Date']:d.date,[lang==='ko'?'모델':'Model']:d.model,[lang==='ko'?'공정':'Process']:d.proc,[lang==='ko'?'팀':'Team']:d.team,[lang==='ko'?'투입수량':'Input Qty']:d.inspQty,[lang==='ko'?'양품수량':'Good Qty']:d.goodQty,[lang==='ko'?'불량수량':'Defect Qty']:d.defectQty}))),lang==='ko'?"일별생산":"Daily_Prod");
         if(dailyDefectData&&dailyDefectData.length) XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(dailyDefectData.map(d=>({[lang==='ko'?'날짜':'Date']:d.date,[lang==='ko'?'모델':'Model']:d.model,[lang==='ko'?'공정':'Process']:d.proc,[lang==='ko'?'팀':'Team']:d.team,[lang==='ko'?'불량코드':'Code']:d.defectCode,[lang==='ko'?'불량명':'Name']:d.defectName,[lang==='ko'?'수량':'Qty']:d.qty}))),lang==='ko'?"일별불량코드":"Daily_Defects");
         XLSX.writeFile(wb,`DS_Quality_Performance_${new Date().toISOString().slice(0,10).replace(/-/g,'')}.xlsx`);
-        alert('✅ Excel 파일이 다운로드되었습니다!');
-    }catch(e){alert('Excel 오류: '+e.message);}
+        alert(lang==='ko'?'✅ Excel 파일이 다운로드되었습니다!':'✅ Excel file downloaded!');
+    }catch(e){alert((lang==='ko'?'Excel 오류: ':'Excel error: ')+e.message);}
 }
 
 // ══════════════════════════════════════════════════════
@@ -2149,7 +2192,7 @@ function doLogin(){
         initFirebase();
     } else {
         const e=document.getElementById('loginErr');
-        e.innerText='❌ 비밀번호가 틀렸습니다';
+        e.innerText=lang==='ko'?'❌ 비밀번호가 틀렸습니다':'❌ Incorrect password';
         document.getElementById('loginInput').value='';
         document.getElementById('loginInput').focus();
         setTimeout(()=>e.innerText='',2000);
@@ -2737,7 +2780,7 @@ function drawDailyCharts(data){
             }
             drawProdYieldDefChart('전체');
         }
-    }catch(e){console.error('일별 차트 오류:',e);}
+    }catch(e){console.error('Daily chart error:',e);}
 }
 
 function drawProdYieldDefChart(modelFilter){
