@@ -536,9 +536,20 @@
         .btn-daily-member{background:rgba(139,92,246,0.85);color:white;border:1px solid rgba(139,92,246,0.6);backdrop-filter:blur(4px);box-shadow:0 2px 8px rgba(139,92,246,0.3);}
         .btn-daily-member:hover{background:rgba(139,92,246,1);box-shadow:0 4px 12px rgba(139,92,246,0.4);}
         /* ─── Attendance ─── */
-        .att-team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:20px;}
-        .att-team-card{background:white;border-radius:14px;padding:16px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.04);}
-        .att-team-name{font-size:14px;font-weight:800;color:var(--navy);font-family:'Noto Sans KR',sans-serif;margin-bottom:8px;}
+        .att-team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:20px;}
+        .att-team-card{background:white;border-radius:14px;padding:16px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.04);cursor:pointer;transition:all .2s;}
+        .att-team-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.1);transform:translateY(-2px);}
+        .att-team-card.expanded{box-shadow:0 4px 16px rgba(0,0,0,0.08);}
+        .att-card-top{display:flex;justify-content:space-between;align-items:flex-start;}
+        .att-card-info{flex:1;min-width:0;}
+        .att-card-mini-chart{width:60px;height:60px;flex-shrink:0;margin-left:8px;}
+        .att-team-name{font-size:14px;font-weight:800;color:var(--navy);font-family:'Noto Sans KR',sans-serif;margin-bottom:4px;}
+        .att-team-detail{max-height:0;overflow:hidden;transition:max-height .3s ease;}
+        .att-team-card.expanded .att-team-detail{max-height:600px;}
+        .att-detail-section{margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);}
+        .att-detail-title{font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:6px;display:flex;align-items:center;gap:4px;}
+        .att-detail-names{display:flex;flex-wrap:wrap;gap:4px;}
+        .att-name-tag{font-size:11px;padding:3px 8px;border-radius:6px;font-weight:600;font-family:'Noto Sans KR',sans-serif;}
         .att-team-count{font-size:11px;color:var(--text-muted);margin-bottom:10px;}
         .att-team-rate{font-size:24px;font-weight:800;font-family:'JetBrains Mono',monospace;margin-bottom:6px;}
         .att-stat-row{display:flex;gap:10px;flex-wrap:wrap;}
@@ -3293,27 +3304,83 @@ function updateAttendanceUI(){
     // Team cards
     const grid=el('attTeamGrid');
     if(grid){
-        grid.innerHTML=ATT_TEAMS.map(team=>{
+        // Destroy previous mini charts
+        if(window._attMiniCharts) window._attMiniCharts.forEach(c=>c&&c.destroy());
+        window._attMiniCharts=[];
+
+        grid.innerHTML=ATT_TEAMS.map((team,ti)=>{
             const members=teamMembers[team]||[];
             const teamLatest=latestDate?data.filter(d=>d.date===latestDate&&d.team===team):[];
             const tw=teamLatest.filter(d=>d.status==='Work').length;
             const tv=teamLatest.filter(d=>d.status==='Vacation').length;
-            const ta=teamLatest.filter(d=>d.status==='Unauthorized absence'||d.status==='Early retirement').length;
+            const tua=teamLatest.filter(d=>d.status==='Unauthorized absence').length;
+            const ter=teamLatest.filter(d=>d.status==='Early retirement').length;
+            const ta=tua+ter;
             const tt=teamLatest.length||members.length;
             const rate=tt>0?(tw/tt*100).toFixed(1):'0.0';
-            return `<div class="att-team-card">
-                <div class="att-team-name">${team}</div>
-                <div style="font-size:12px;color:#64748b;margin-bottom:6px">${members.length}${lang==='ko'?'명':' members'}</div>
-                <div class="att-team-rate" style="color:${parseFloat(rate)>=90?'#10b981':parseFloat(rate)>=70?'#f59e0b':'#ef4444'}">${rate}%</div>
-                <div class="att-stat-row">
-                    <span class="att-stat"><span class="att-badge att-badge-work"></span>${lang==='ko'?'출근':'Work'} ${tw}</span>
-                    <span class="att-stat"><span class="att-badge att-badge-vacation"></span>${lang==='ko'?'휴가':'Vac'} ${tv}</span>
-                    <span class="att-stat"><span class="att-badge att-badge-absence"></span>${lang==='ko'?'결근·조퇴':'Abs'} ${ta}</span>
+
+            // Build name lists by status
+            const workNames=teamLatest.filter(d=>d.status==='Work').map(d=>d.name);
+            const vacNames=teamLatest.filter(d=>d.status==='Vacation').map(d=>d.name);
+            const absNames=teamLatest.filter(d=>d.status==='Unauthorized absence'||d.status==='Early retirement').map(d=>d.name);
+            // Members not in data (no record)
+            const recordedNames=teamLatest.map(d=>d.name);
+            const noRecordNames=members.filter(m=>!recordedNames.includes(m.name)).map(m=>m.name);
+
+            const nameTag=(name,bg,color)=>`<span class="att-name-tag" style="background:${bg};color:${color}">${name}</span>`;
+            const workTags=workNames.map(n=>nameTag(n,'#d1fae5','#059669')).join('');
+            const vacTags=vacNames.map(n=>nameTag(n,'#dbeafe','#2563eb')).join('');
+            const absTags=absNames.map(n=>nameTag(n,'#fee2e2','#dc2626')).join('');
+            const noRecTags=noRecordNames.map(n=>nameTag(n,'#f1f5f9','#64748b')).join('');
+
+            return `<div class="att-team-card" onclick="toggleAttCard(this)">
+                <div class="att-card-top">
+                    <div class="att-card-info">
+                        <div class="att-team-name">${team}</div>
+                        <div style="font-size:12px;color:#64748b;margin-bottom:6px">${members.length}${lang==='ko'?'명':' members'}</div>
+                        <div class="att-team-rate" style="color:${parseFloat(rate)>=90?'#10b981':parseFloat(rate)>=70?'#f59e0b':'#ef4444'}">${rate}%</div>
+                        <div class="att-stat-row">
+                            <span class="att-stat"><span class="att-badge att-badge-work"></span>${lang==='ko'?'출근':'Work'} ${tw}</span>
+                            <span class="att-stat"><span class="att-badge att-badge-vacation"></span>${lang==='ko'?'휴가':'Vac'} ${tv}</span>
+                            <span class="att-stat"><span class="att-badge att-badge-absence"></span>${lang==='ko'?'결근·조퇴':'Abs'} ${ta}</span>
+                        </div>
+                    </div>
+                    <div class="att-card-mini-chart"><canvas id="attMini${ti}"></canvas></div>
+                </div>
+                <div class="att-team-detail">
+                    ${workNames.length?`<div class="att-detail-section"><div class="att-detail-title">✅ ${lang==='ko'?'출근':'Present'} (${workNames.length})</div><div class="att-detail-names">${workTags}</div></div>`:''}
+                    ${vacNames.length?`<div class="att-detail-section"><div class="att-detail-title">🏖️ ${lang==='ko'?'휴가':'Vacation'} (${vacNames.length})</div><div class="att-detail-names">${vacTags}</div></div>`:''}
+                    ${absNames.length?`<div class="att-detail-section"><div class="att-detail-title">⚠️ ${lang==='ko'?'결근·조퇴':'Absent/Early'} (${absNames.length})</div><div class="att-detail-names">${absTags}</div></div>`:''}
+                    ${noRecordNames.length?`<div class="att-detail-section"><div class="att-detail-title">❓ ${lang==='ko'?'미등록':'No Record'} (${noRecordNames.length})</div><div class="att-detail-names">${noRecTags}</div></div>`:''}
                 </div>
             </div>`;
         }).join('');
+
+        // Render mini donut charts
+        ATT_TEAMS.forEach((team,ti)=>{
+            const canvas=document.getElementById('attMini'+ti);
+            if(!canvas) return;
+            const teamLatest=latestDate?data.filter(d=>d.date===latestDate&&d.team===team):[];
+            const tw=teamLatest.filter(d=>d.status==='Work').length;
+            const tv=teamLatest.filter(d=>d.status==='Vacation').length;
+            const ta=teamLatest.filter(d=>d.status==='Unauthorized absence'||d.status==='Early retirement').length;
+            const vals=[tw,tv,ta];
+            if(vals.every(v=>v===0)) vals[0]=1; // empty placeholder
+            const ch=new Chart(canvas,{
+                type:'doughnut',
+                data:{datasets:[{data:vals,backgroundColor:['#10b981','#3b82f6','#ef4444'],borderWidth:2,borderColor:'white'}]},
+                options:{responsive:true,maintainAspectRatio:true,cutout:'55%',
+                    plugins:{legend:{display:false},datalabels:{display:false},tooltip:{enabled:false}},
+                    events:[]}
+            });
+            window._attMiniCharts.push(ch);
+        });
     }
 
+}
+
+function toggleAttCard(cardEl){
+    cardEl.classList.toggle('expanded');
 }
 
 function drawAttendanceCharts(){
